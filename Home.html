@@ -2,27 +2,12 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Bryan's Travel Map | Interactive Europe Map & 歐洲自由行足跡</title>
-
-<meta name="description" content="Explore Europe with Bryan! An interactive 3D travel map tracking journeys from 2023 to 2026. 跟著 Bryan 探索歐洲！透過 3D 互動地圖完整記錄自由行足跡、跨國行程攻略與城市私房景點推薦。">
-
-<meta name="keywords" content="Europe travel, 歐洲旅遊, interactive travel map, 互動旅遊地圖, backpacking Europe, 歐洲自由行, Europe itinerary, 行程規劃, Europe road trip, 歐洲跨國, Bryan Travel Map">
-
-<meta property="og:title" content="Bryan's Travel Map | Interactive Europe Map & 歐洲自由行足跡">
-<meta property="og:description" content="An interactive 3D travel map tracking journeys and sharing travel guides. 透過 3D 飛梭地圖完整記錄歐洲自由行足跡與私房推薦。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://你的網站網址.com">
-<meta property="og:image" content="https://你的網站網址.com/preview-image.jpg"> 
-
-</head>
+<meta name="description" content="Explore Europe with Bryan! An interactive 3D travel map tracking journeys from 2023 to 2026.">
 <style>
 /* --- 1. Reset & Base --- */
-html, body { margin:0; padding:0; height:100%; overflow:hidden; font-family:Arial,sans-serif; background: #000; }
+html, body { margin:0; padding:0; height:100%; overflow:hidden; font-family:Arial,sans-serif; background: #000; touch-action: none; }
 a { text-decoration: none; color: inherit; }
 
 /* --- 2. Layout & Map Container --- */
@@ -43,7 +28,7 @@ a { text-decoration: none; color: inherit; }
     position: absolute; left: 50%; top: 50%;
     transform-origin: center center;
     box-shadow: 0 10px 40px rgba(0,0,0,1);
-    border-radius: 6px; width: 280px; object-fit: cover;
+    border-radius: 6px; width: 280px; max-width: 80vw; object-fit: cover;
     will-change: transform, opacity;
 }
 
@@ -67,11 +52,12 @@ a { text-decoration: none; color: inherit; }
 .intro-title-content h1 { font-size: 3.5em; margin: 0; text-shadow: 0 4px 20px rgba(0,0,0,0.8); white-space: nowrap; }
 .intro-title-content h2 { font-size: 1.5em; margin: 10px 0 0; font-weight: normal; }
 
-/* --- 4. Left Panel --- */
+/* --- 4. Left Panel (Desktop) --- */
 #leftPanel {
   position:absolute; top:0; left:-33.33%; width:33.33%; height:100%;
   background:#3f3f3f; color:#fff; display:flex; flex-direction:column;
   align-items:center; padding-top:0; overflow:hidden; opacity:0; z-index:30;
+  transition: opacity 0.3s ease;
 }
 #panelContent { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; position: relative; transition: transform 0.4s ease, opacity 0.4s ease; }
 #leftPanel h1 { font-size:1.6em; font-weight:normal; text-align:center; margin: 0; padding: 40px 0 20px; width: 100%; flex-shrink: 0; z-index: 25; background-color: #3f3f3f; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
@@ -136,7 +122,29 @@ a { text-decoration: none; color: inherit; }
 .rightPoint.map-marker-highlight, .star.map-marker-highlight { background-color: #ffd700 !important; transform: scale(1.6) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); z-index: 250 !important; border: 2px solid #fff; transition: all 0.2s ease; }
 .event-route-line { display: none !important; }
 
-@media (max-width:480px){ .intro-title-content h1 { font-size:2em; } .overlay-bottom .inner { gap:8px; font-size:14px; } #infoBox { width: 95%; } }
+/* --- 9. Mobile Responsive Layout --- */
+@media (max-width: 768px) {
+    .intro-title-content h1 { font-size: 2.2em; white-space: normal; line-height: 1.2; }
+    .intro-title-content h2 { font-size: 1.2em; }
+    
+    #leftPanel {
+        width: 100%;
+        height: 50%;
+        left: 0;
+        top: -50%; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    
+    #leftPanel.mobile-active {
+        top: 0;
+    }
+    
+    #infoBox { width: 95%; max-height: 90vh; }
+    #infoBox img { height: 140px; }
+    
+    .overlay-bottom .inner { gap: 8px; font-size: 14px; flex-wrap: wrap; justify-content: center; text-align: center;}
+    .overlay-bottom .sep { display: none; }
+}
 </style>
 </head>
 <body>
@@ -213,18 +221,18 @@ a { text-decoration: none; color: inherit; }
 <script>
 const CONFIG = {
     scrollFactor: 0.002, friction: 0.85, 
-    svgUrl: 'https://raw.githubusercontent.com/bryanCycwalker/Travel_Web_svg/refs/heads/main/Europe_map_new_202602.svg'
+    svgUrl: 'https://raw.githubusercontent.com/bryanCycwalker/Travel_Web_svg/refs/heads/main/Europe_map_new.svg'
 };
 
 const state = {
-    // 【修改】將總深度大幅提升，創造遙遠距離感
     WARP_DEPTH: 25000, 
     scrollDepth: 0, velocity: 0, bottomAccum: 0, progress: 0,
     countryFocused: false, focusedCountryId: null,
     eventFocused: false, focusedEvent: null,
     savedSVGState: null, savedLeftPanel: null,
     hoverEl: null, stopoverActive: false, animatingReturn: false,
-    returnToCountryMode: false 
+    returnToCountryMode: false,
+    isMobile: window.innerWidth <= 768
 };
 
 const DATA = window.DATA;
@@ -346,16 +354,7 @@ function showRichInfo(id) {
         });
     }
 
-    // 【終極防呆：圖片路徑判斷與印出】
-    let imagePath = "";
-    if (baseData && baseData.img) {
-        if (baseData.img.includes("/")) {
-            imagePath = baseData.img; // 如果裡面已經有斜線，代表寫了完整路徑
-        } else {
-            imagePath = `Photos/${cityName}/${baseData.img}`; // 只有檔名，自動補齊
-        }
-        console.log(`[Debug] 城市 ${cityName} 嘗試載入圖片路徑:`, imagePath);
-    }
+    let imagePath = baseData?.img ? baseData.img : "";
     const imgHTML = imagePath ? `<img src="${imagePath}" alt="${cityName}">` : '';
 
     dom.infoBox.innerHTML = `
@@ -407,26 +406,49 @@ function setupMapInteractions() {
     dom.svg.querySelectorAll('path, polygon, rect, circle').forEach(el => {
         if (el.id && el.id.toLowerCase().includes("path")) return;
         el.style.cursor = "pointer";
-        el.addEventListener("mouseenter", () => {
+        
+        // 電腦版滑鼠事件
+        el.addEventListener("mouseenter", () => { handleMapHoverEnter(el); });
+        el.addEventListener("mouseleave", () => { handleMapHoverLeave(); });
+        el.addEventListener("click", (e) => { 
+            e.stopPropagation(); 
+            if (!state.eventFocused && !state.countryFocused) focusOnCountry(el); 
+        });
+
+        // 手機版觸控 (模擬 hover 與 click)
+        let touchTimer;
+        el.addEventListener('touchstart', (e) => {
             if (state.eventFocused || state.progress < 0.1) return;
-            if (state.countryFocused && el.tagName !== 'circle') return; 
-            state.hoverEl = el;
-            const g = el.closest('g') || el;
-            g.classList.add('country-highlight');
-            g.querySelectorAll('*').forEach(c => c.classList.add('country-highlight'));
-            let name = g.querySelector('title')?.textContent || g.id || el.id;
-            if (name) updateTooltip(name, el, true);
-            updateAllMarkers(getCountryId(el)); 
+            touchTimer = setTimeout(() => {
+                handleMapHoverEnter(el);
+            }, 300);
         });
-        el.addEventListener("mouseleave", () => {
-            if (state.countryFocused || state.eventFocused) return;
-            state.hoverEl = null; clearMapHover(); dom.countryLabel.style.opacity = 0; updateAllMarkers(); 
+        el.addEventListener('touchend', (e) => {
+            clearTimeout(touchTimer); 
+            if (!state.eventFocused && !state.countryFocused) {
+                 e.preventDefault(); 
+                 focusOnCountry(el);
+            }
         });
-        el.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (!state.eventFocused && !state.countryFocused) focusOnCountry(el);
-        });
+        el.addEventListener('touchmove', () => { clearTimeout(touchTimer); }); 
     });
+}
+
+function handleMapHoverEnter(el) {
+    if (state.eventFocused || state.progress < 0.1) return;
+    if (state.countryFocused && el.tagName !== 'circle') return; 
+    state.hoverEl = el;
+    const g = el.closest('g') || el;
+    g.classList.add('country-highlight');
+    g.querySelectorAll('*').forEach(c => c.classList.add('country-highlight'));
+    let name = g.querySelector('title')?.textContent || g.id || el.id;
+    if (name) updateTooltip(name, el, true);
+    updateAllMarkers(getCountryId(el)); 
+}
+
+function handleMapHoverLeave() {
+    if (state.countryFocused || state.eventFocused) return;
+    state.hoverEl = null; clearMapHover(); dom.countryLabel.style.opacity = 0; updateAllMarkers(); 
 }
 
 function clearMapHover() { if(dom.svg) dom.svg.querySelectorAll('.country-highlight').forEach(el => el.classList.remove('country-highlight')); }
@@ -458,7 +480,6 @@ function updateCityTooltip(text, targetEl) {
 function updateAllMarkers(hoverCountryId = null) {
     if (!dom.svg) return;
     
-    // 若退回飛梭階段，星星再度消失、並隱藏所有標籤
     if (state.scrollDepth <= state.WARP_DEPTH) {
         dom.markers.forEach(el => {
             el.style.opacity = 0;
@@ -520,13 +541,21 @@ function focusOnCountry(el) {
     updateTooltip(g.querySelector('title')?.textContent || g.id || el.id, el, true);
     dom.countryLabel.dataset.locked = "true";
     dom.countryLabel.style.transform = "translate(-50%, -50%) scale(2)"; 
-    tween(0, -33.33, 600, (val) => { dom.leftPanel.style.left = `${val}%`; });
+    
+    if (state.isMobile) {
+        dom.leftPanel.classList.remove('mobile-active');
+    } else {
+        tween(0, -33.33, 600, (val) => { dom.leftPanel.style.left = `${val}%`; });
+    }
+    
     dom.backBtn.style.left = '20px'; 
     dom.svg.querySelectorAll('.country-focus').forEach(e => e.classList.remove('country-focus'));
     g.classList.add('country-focus'); g.querySelectorAll('*').forEach(e => e.classList.add('country-focus'));
     updateAllMarkers(state.focusedCountryId);
+    
     const bbox = el.getBBox(), padding = 5;
-    animateSVGView(bbox.x + bbox.width/2, bbox.y + bbox.height/2, bbox.width + padding*2, bbox.height + padding*2);
+    // 【修復1：聚焦國家時，選單已收合，強制全螢幕滿版放大，解決英國偏右上的問題】
+    animateSVGView(bbox.x + bbox.width/2, bbox.y + bbox.height/2, bbox.width + padding*2, bbox.height + padding*2, false);
     dom.overlayBottom.style.transform = 'translateY(100%)';
 }
 
@@ -536,7 +565,13 @@ function returnFromCountryFocus() {
     delete dom.countryLabel.dataset.locked;
     dom.countryLabel.style.opacity = 0; dom.countryLabel.style.transform = "translate(-50%, -50%) scale(1)"; 
     buildTimeline();
-    tween(-33.33, 0, 600, (val) => { dom.leftPanel.style.left = `${val}%`; });
+    
+    if (state.isMobile) {
+        dom.leftPanel.classList.add('mobile-active');
+    } else {
+        tween(-33.33, 0, 600, (val) => { dom.leftPanel.style.left = `${val}%`; });
+    }
+    
     animateBackToMainView(() => { state.countryFocused = false; state.focusedCountryId = null; state.velocity = 0; state.returnToCountryMode = false; updateAllMarkers(null); });
 }
 
@@ -547,7 +582,12 @@ function focusOnEvent(ev, highlightMarkerId = null) {
         state.savedSVGState = { w: parseFloat(dom.svg.style.width), h: parseFloat(dom.svg.style.height), t: dom.svg.style.transform };
         transitionPanelContent('forward', () => updateTimelineForEvent(ev, highlightMarkerId));
     } else {
-        dom.backBtn.style.left = '-80px'; tween(-33.33, 0, 600, (val) => { dom.leftPanel.style.left = `${val}%`; dom.leftPanel.style.opacity = 1; });
+        dom.backBtn.style.left = '-80px'; 
+        if (state.isMobile) {
+            dom.leftPanel.classList.add('mobile-active');
+        } else {
+            tween(-33.33, 0, 600, (val) => { dom.leftPanel.style.left = `${val}%`; dom.leftPanel.style.opacity = 1; });
+        }
         updateTimelineForEvent(ev, highlightMarkerId);
     }
     let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity; const allPoints = [];
@@ -559,14 +599,21 @@ function focusOnEvent(ev, highlightMarkerId = null) {
         if (px === undefined) { const base = findMarkerBaseData(p.id); if(base) { px = base.x; py = base.y; } }
         if (px !== undefined) { if(px < minX) minX=px; if(px > maxX) maxX=px; if(py < minY) minY=py; if(py > maxY) maxY=py; }
     });
-    if(minX !== Infinity) { const padding = 30; animateSVGView((minX + maxX)/2, (minY + maxY)/2, (maxX - minX) + padding*2, (maxY - minY) + padding*2, true); }
+    
+    if(minX !== Infinity) { 
+        const padding = 30; 
+        // 聚焦 Event 時，選單在畫面上，所以需要依賴 offsetRightPanel = true 避開遮擋
+        animateSVGView((minX + maxX)/2, (minY + maxY)/2, (maxX - minX) + padding*2, (maxY - minY) + padding*2, true); 
+    }
     dom.eventBackBtn.classList.add('active'); dom.overlayBottom.style.transform = 'translateY(100%)';
 }
 
 function returnFromEvent() {
     if(!state.eventFocused) return; dom.eventBackBtn.classList.remove('active'); clearHighlighting();
     if (state.returnToCountryMode) {
-        dom.backBtn.style.left = '20px'; tween(0, -33.33, 600, (val) => { dom.leftPanel.style.left = `${val}%`; }, () => { if(state.savedLeftPanel) { dom.leftPanel.querySelector('h1').textContent = state.savedLeftPanel.title; dom.timeline.innerHTML = state.savedLeftPanel.html; dom.leftPanel.querySelector('h1').textContent = "Timeline"; buildTimeline(); } });
+        dom.backBtn.style.left = '20px'; 
+        if(state.isMobile) { dom.leftPanel.classList.remove('mobile-active'); }
+        else { tween(0, -33.33, 600, (val) => { dom.leftPanel.style.left = `${val}%`; }, () => { if(state.savedLeftPanel) { dom.leftPanel.querySelector('h1').textContent = state.savedLeftPanel.title; dom.timeline.innerHTML = state.savedLeftPanel.html; dom.leftPanel.querySelector('h1').textContent = "Timeline"; buildTimeline(); } }); }
         animateBackToMainView(() => { state.eventFocused = false; state.focusedEvent = null; state.returnToCountryMode = false; updateAllMarkers(state.focusedCountryId); }, state.savedSVGState); 
     } else {
         transitionPanelContent('backward', () => { dom.leftPanel.querySelector('h1').textContent = state.savedLeftPanel.title; dom.timeline.innerHTML = state.savedLeftPanel.html; dom.timeline.querySelectorAll('.timeline-event').forEach((div, i) => { div._eventData = DATA.events[i]; }); rebindTimelineEvents(); });
@@ -597,26 +644,43 @@ function updateTimelineFade() {
     });
 }
 
-// 核心還原滿版演算法
+/* =======================================================================
+   【修復2：還原地圖縮放演算法，解決 Timeline 出現時地圖邊緣被切斷的問題】
+======================================================================= */
 function updateSVGTransform() {
     if (!dom.svg) return;
     const winW = window.innerWidth, winH = window.innerHeight, vb = dom.svg.viewBox.baseVal;
+    const vbW = vb.width || 2000, vbH = vb.height || 1200;
     
-    // 最原始、最正確的滿版 (cover) 計算公式
-    const getCoverSize = (frameW, frameH) => { 
-        const sR = vb.width / vb.height, fR = frameW / frameH; 
-        return (sR < fR) ? {w: frameW, h: frameW/sR} : {h: frameH, w: frameH*sR}; 
+    // 重新啟用「縮小配合容器」的計算，確保歐洲板塊永遠被完整包覆
+    const getCoverSize = (fW, fH) => { 
+        const sR = vbW / vbH, fR = fW / fH; 
+        return (sR < fR) ? {w: fW, h: fW/sR} : {h: fH, w: fH*sR}; 
     };
     
+    // 起始狀態：全螢幕
     const s0 = getCoverSize(winW, winH); 
-    const s1 = getCoverSize(winW * 2/3, winH); 
+    const cx0 = winW / 2, cy0 = winH / 2;
     
+    // 目標狀態：依照手機或電腦版，推算各自的縮小視窗
+    let frameW, frameH, cx1, cy1;
+    if (state.isMobile) {
+        frameW = winW;        // 手機版：寬度佔滿
+        frameH = winH * 0.5;  // 手機版：高度只用下半部 50%
+        cx1 = winW / 2;       // 手機版：X軸置中
+        cy1 = winH * 0.75;    // 手機版：Y軸往下推到下半部中心
+    } else {
+        frameW = winW * 2/3;  // 電腦版：寬度用右側 2/3
+        frameH = winH;        // 電腦版：高度佔滿
+        cx1 = winW/3 + frameW/2; // 電腦版：X軸往右推
+        cy1 = winH / 2;       // 電腦版：Y軸置中
+    }
+    
+    const s1 = getCoverSize(frameW, frameH); 
+    
+    // 漸變計算
     const currW = s0.w + (s1.w - s0.w) * state.progress; 
     const currH = s0.h + (s1.h - s0.h) * state.progress;
-    
-    const cx0 = winW/2, cy0 = winH/2;
-    const cx1 = winW/3 + (winW*2/3)/2, cy1 = winH/2;
-    
     const curX = cx0 + (cx1 - cx0) * state.progress; 
     const curY = cy0 + (cy1 - cy0) * state.progress;
     
@@ -634,17 +698,29 @@ function animateBackToMainView(onComplete, forcedTargetState = null) {
         targetW = forcedTargetState.w; targetH = forcedTargetState.h; const tm = new DOMMatrixReadOnly(forcedTargetState.t); targetX = tm.m41; targetY = tm.m42;
     } else {
         const winW = window.innerWidth, winH = window.innerHeight, vb = dom.svg.viewBox.baseVal;
-        const getCoverSize = (frameW, frameH) => { const sR = vb.width / vb.height, fR = frameW / frameH; return (sR < fR) ? {w: frameW, h: frameW/sR} : {h: frameH, w: frameH*sR}; };
+        const vbW = vb.width || 2000, vbH = vb.height || 1200;
+        const getCoverSize = (fW, fH) => { const sR = vbW / vbH, fR = fW / fH; return (sR < fR) ? {w: fW, h: fW/sR} : {h: fH, w: fH*sR}; };
         
         const s0 = getCoverSize(winW, winH);
-        const s1 = getCoverSize(winW * 2/3, winH);
+        
+        let frameW, frameH, cx1, cy1;
+        if (state.isMobile) {
+            frameW = winW; frameH = winH * 0.5;
+            cx1 = winW / 2; cy1 = winH * 0.75;
+        } else {
+            frameW = winW * 2/3; frameH = winH;
+            cx1 = winW/3 + frameW/2; cy1 = winH / 2;
+        }
+        const s1 = getCoverSize(frameW, frameH);
         
         targetW = s0.w + (s1.w - s0.w) * state.progress; 
         targetH = s0.h + (s1.h - s0.h) * state.progress;
         
-        const cx0 = winW/2, cy0 = winH/2, cx1 = winW/3 + (winW*2/3)/2, cy1 = winH/2;
-        targetX = (cx0 + (cx1 - cx0) * state.progress) - targetW/2; 
-        targetY = (cy0 + (cy1 - cy0) * state.progress) - targetH/2;
+        const curX = (winW/2) + (cx1 - winW/2) * state.progress; 
+        const curY = (winH/2) + (cy1 - winH/2) * state.progress;
+        
+        targetX = curX - targetW/2; 
+        targetY = curY - targetH/2;
     }
     tween(0, 1, 600, (val, eased) => {
         dom.svg.style.width = `${startW + (targetW - startW) * eased}px`; 
@@ -655,12 +731,36 @@ function animateBackToMainView(onComplete, forcedTargetState = null) {
 }
 
 function animateSVGView(cx, cy, targetW, targetH, offsetRightPanel = false) {
-    const winW = window.innerWidth, winH = window.innerHeight, frameW = offsetRightPanel ? winW * 2/3 : winW, scale = Math.min(frameW / targetW, winH / targetH), vb = dom.svg.viewBox.baseVal;
-    let screenCX = offsetRightPanel ? (winW/3 + (winW*2/3)/2) : winW / 2;
-    const targetX = screenCX - cx * scale, targetY = winH/2 - cy * scale;
+    const winW = window.innerWidth, winH = window.innerHeight;
+    
+    // 依照是否有側邊攔，精準決定要填滿的虛擬畫布大小
+    let frameW = winW, frameH = winH;
+    let screenCX = winW / 2, screenCY = winH / 2;
+    
+    if (offsetRightPanel) {
+        if (state.isMobile) {
+            frameW = winW;
+            frameH = winH * 0.5;
+            screenCY = winH * 0.75;
+        } else {
+            frameW = winW * 2/3;
+            frameH = winH;
+            screenCX = winW/3 + frameW/2;
+        }
+    }
+    
+    const scale = Math.min(frameW / targetW, frameH / targetH);
+    
+    let vbW = 2000, vbH = 1200;
+    if (dom.svg && dom.svg.viewBox && dom.svg.viewBox.baseVal && dom.svg.viewBox.baseVal.width > 0) {
+        vbW = dom.svg.viewBox.baseVal.width;
+        vbH = dom.svg.viewBox.baseVal.height;
+    }
+
+    const targetX = screenCX - cx * scale, targetY = screenCY - cy * scale;
     const startW = parseFloat(dom.svg.style.width), startH = parseFloat(dom.svg.style.height), startM = new DOMMatrixReadOnly(getComputedStyle(dom.svg).transform);
     tween(0, 1, 600, (val, eased) => {
-        dom.svg.style.width = `${startW + (vb.width * scale - startW) * eased}px`; dom.svg.style.height = `${startH + (vb.height * scale - startH) * eased}px`; 
+        dom.svg.style.width = `${startW + (vbW * scale - startW) * eased}px`; dom.svg.style.height = `${startH + (vbH * scale - startH) * eased}px`; 
         dom.svg.style.transform = `translate(${startM.m41 + (targetX - startM.m41) * eased}px, ${startM.m42 + (targetY - startM.m42) * eased}px)`;
         updateAllMarkers();
     });
@@ -731,9 +831,6 @@ function rebindTimelineEvents() {
     });
 }
 
-/* =========================================================
-   照片飛梭核心功能區塊
-========================================================= */
 function setupIntroGallery() {
     const gallery = document.getElementById('introPhotos');
     let photos = [];
@@ -741,12 +838,7 @@ function setupIntroGallery() {
     if (window.DATA && window.DATA.events) {
         window.DATA.events.forEach(ev => {
             if(ev.eventMarkers) ev.eventMarkers.forEach(m => {
-                // 智慧判斷路徑
-                if(m.img) {
-                    let path = m.img.includes("/") ? m.img : `Photos/${m.city}/${m.img}`;
-                    photos.push(path);
-                }
-                // 支援讀取 photo1, photo2, photo3 等多張照片
+                if(m.img) photos.push(m.img);
                 if(m.notes) m.notes.forEach(n => { 
                     Object.keys(n).forEach(key => {
                         if (key.startsWith('photo') && n[key]) photos.push(n[key]);
@@ -758,10 +850,7 @@ function setupIntroGallery() {
     if (window.DATA && window.DATA.markers) {
         Object.values(window.DATA.markers).forEach(arr => {
             arr.forEach(m => { 
-                if(m.img) {
-                    let path = m.img.includes("/") ? m.img : `Photos/${m.city}/${m.img}`;
-                    if (!photos.includes(path)) photos.push(path); 
-                }
+                if(m.img && !photos.includes(m.img)) photos.push(m.img); 
             });
         });
     }
@@ -797,7 +886,6 @@ function startAnimationLoop() {
             if (state.scrollDepth < 0) { state.scrollDepth = 0; state.velocity = 0; }
             if (state.scrollDepth > MAX_DEPTH) { state.scrollDepth = MAX_DEPTH; state.velocity = 0; }
             
-            // 強制精準歸零機制，解決頂部標題可能沒有100%顯示的Bug
             if (state.scrollDepth > 0 && state.scrollDepth < 50 && Math.abs(state.velocity) < 1) {
                 state.scrollDepth = 0;
                 state.velocity = 0;
@@ -805,17 +893,17 @@ function startAnimationLoop() {
 
             if (state.scrollDepth <= state.WARP_DEPTH) {
                 // --- Phase 1: 飛梭模式 ---
-                dom.bgContainer.style.pointerEvents = "none"; // 【地圖不可互動】
+                dom.bgContainer.style.pointerEvents = "none"; 
 
                 let warpProgress = state.scrollDepth / state.WARP_DEPTH;
-                
-                // 【地圖放大曲線】使用 4 次方，讓地圖在最後才急速衝到面前
                 let mapScale = 0.05 + (0.95 * Math.pow(warpProgress, 4)); 
                 bgContainer.style.opacity = Math.min(1, warpProgress * 2.5); 
                 
                 if(dom.svg) {
                     const winW = window.innerWidth, winH = window.innerHeight, vb = dom.svg.viewBox.baseVal;
-                    const getCoverSize = (fW, fH) => { const sR = vb.width / vb.height, fR = fW / fH; return (sR < fR) ? {w: fW, h: fW/sR} : {h: fH, w: fH*sR}; };
+                    const vbW = vb.width || 2000, vbH = vb.height || 1200;
+                    const getCoverSize = (fW, fH) => { const sR = vbW / vbH, fR = fW / fH; return (sR < fR) ? {w: fW, h: fW/sR} : {h: fH, w: fH*sR}; };
+                    
                     const s0 = getCoverSize(winW, winH);
                     dom.svg.style.width = `${s0.w}px`; dom.svg.style.height = `${s0.h}px`;
                     dom.svg.style.transform = `translate(${(winW - s0.w)/2}px, ${(winH - s0.h)/2}px) scale(${mapScale})`;
@@ -827,11 +915,9 @@ function startAnimationLoop() {
                     const oy = el.dataset.origY ? parseFloat(el.dataset.origY) : 0;
                     const currentZ = oz + state.scrollDepth;
                     
-                    let op = 1.0; // 【所有照片完全不透明】
-                    
+                    let op = 1.0; 
                     if (currentZ > 100) op = 1.0 - ((currentZ - 100) / 600); 
                     
-                    // 純靠 opacity 隱藏，避免 visibility 卡頓造成退回時消失
                     if (currentZ > 800 || op <= 0) {
                         el.style.opacity = 0;
                     } else {
@@ -841,25 +927,34 @@ function startAnimationLoop() {
                 });
 
                 state.progress = 0;
-                dom.leftPanel.style.left = `-33.33%`; dom.leftPanel.style.opacity = 0;
+                if (state.isMobile) {
+                    dom.leftPanel.style.opacity = 0;
+                    dom.leftPanel.classList.remove('mobile-active');
+                } else {
+                    dom.leftPanel.style.left = `-33.33%`; dom.leftPanel.style.opacity = 0;
+                }
                 
                 dom.warpMask.style.opacity = 0.7 - (warpProgress * 0.5);
-                
                 updateAllMarkers();
 
             } else {
                 // --- Phase 2: 地圖右移與 Timeline ---
-                dom.bgContainer.style.pointerEvents = "auto"; // 【地圖恢復可互動】
+                dom.bgContainer.style.pointerEvents = "auto"; 
                 bgContainer.style.opacity = 1;
                 
                 state.progress = (state.scrollDepth - state.WARP_DEPTH) / TIMELINE_DEPTH;
                 const panelPhase = Math.min(Math.max((state.progress) / 1, 0), 1);
                 
-                dom.leftPanel.style.left = `${-33.33 + 33.33 * panelPhase}%`;
-                dom.leftPanel.style.opacity = panelPhase;
+                if (state.isMobile) {
+                    dom.leftPanel.style.opacity = panelPhase;
+                    if (panelPhase > 0.1) dom.leftPanel.classList.add('mobile-active');
+                    else dom.leftPanel.classList.remove('mobile-active');
+                } else {
+                    dom.leftPanel.style.left = `${-33.33 + 33.33 * panelPhase}%`;
+                    dom.leftPanel.style.opacity = panelPhase;
+                }
                 
                 dom.warpMask.style.opacity = 0.2 - (panelPhase * 0.2); 
-                
                 if(dom.svg) dom.svg.style.transform = ''; 
                 updateSVGTransform(); 
             }
@@ -875,24 +970,38 @@ function init() {
     });
 
     const onWheel = e => { 
-        // 【Timeline 滾動鎖定】
         const isInsidePanel = e.target.closest('#leftPanel');
         if (isInsidePanel && state.scrollDepth >= state.WARP_DEPTH) {
             if (dom.scrollArea.scrollTop > 0 && e.deltaY < 0) return; 
         }
-        
-        // 【動態物理加速】: 越接近地圖速度越快，最高提速 5.5 倍
         let speedMultiplier = 1;
         if (state.scrollDepth <= state.WARP_DEPTH) {
             let progress = Math.max(0, state.scrollDepth / state.WARP_DEPTH);
             speedMultiplier = 1 + Math.pow(progress, 3) * 4.5; 
         }
-        
         state.velocity += e.deltaY * 0.8 * speedMultiplier; 
     };
     
     window.addEventListener('wheel', onWheel, { passive: false }); 
     
+    let touchStartY = 0;
+    window.addEventListener('touchstart', e => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    window.addEventListener('touchmove', e => {
+        if (e.target.closest('#leftPanel')) return;
+        const touchY = e.touches[0].clientY;
+        const deltaY = touchStartY - touchY;
+        touchStartY = touchY;
+        let speedMultiplier = 1;
+        if (state.scrollDepth <= state.WARP_DEPTH) {
+            let progress = Math.max(0, state.scrollDepth / state.WARP_DEPTH);
+            speedMultiplier = 1 + Math.pow(progress, 3) * 4.5; 
+        }
+        state.velocity += deltaY * 2.5 * speedMultiplier; 
+    }, { passive: false });
+
     setupIntroGallery();
 
     dom.scrollArea.addEventListener('scroll', () => {
@@ -916,6 +1025,11 @@ function init() {
         });
         el.addEventListener('mouseleave', () => { updateCityTooltip(null); if (state.eventFocused) clearHighlighting(); });
         el.addEventListener('click', (e) => { e.stopPropagation(); dom.cityLabel.style.opacity = 0; showRichInfo(id); });
+        
+        el.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+            dom.cityLabel.style.opacity = 0; showRichInfo(id);
+        });
     });
     
     buildTimeline(); 
@@ -923,7 +1037,10 @@ function init() {
 }
 
 window.addEventListener('load', init);
-window.addEventListener('resize', () => { if(!state.countryFocused && !state.eventFocused) updateSVGTransform(); });
+window.addEventListener('resize', () => { 
+    state.isMobile = window.innerWidth <= 768; 
+    if(!state.countryFocused && !state.eventFocused) updateSVGTransform(); 
+});
 </script>
 </body>
 </html>
