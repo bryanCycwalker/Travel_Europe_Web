@@ -1,0 +1,190 @@
+/* =========================================
+   全域與基礎版面設定
+   ========================================= */
+:root { 
+    --primary-color: #b16837; 
+    --bg-color: #f5f2e8; 
+}
+
+body { 
+    font-family: 'Noto Sans TC', Arial, sans-serif; 
+    margin: 0; 
+    background: var(--bg-color); 
+    overflow-x: hidden; 
+}
+
+.layout-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
+
+/* =========================================
+   標題與導覽列
+   ========================================= */
+header { 
+    width: 100%; background: #000; color: white; padding: 20px 0; 
+    text-align: center; letter-spacing: 2px; position: relative; z-index: 10; 
+}
+header h1 { cursor: pointer; display: inline-block; transition: 0.3s; margin: 0; font-family: 'Playfair Display', serif; }
+header h1:hover { opacity: 0.7; }
+
+.home-btn { 
+    position: absolute; left: 20px; top: 50%; transform: translateY(-50%); 
+    color: white; text-decoration: none; border: 1px solid white; 
+    padding: 5px 15px; font-size: 12px; transition: 0.3s; 
+}
+.home-btn:hover { background: white; color: black; }
+
+.city-nav { width: 90%; max-width: 1200px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 20px 0; z-index: 10; position: relative; }
+.city-btn { padding: 10px 20px; border: 1px solid #ddd; background: white; cursor: pointer; transition: 0.3s; font-size: 14px; border-radius: 2px; font-weight: bold; }
+.city-btn:hover, .city-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+/* =========================================
+   主內容區塊 (資訊、側邊欄、地圖)
+   ========================================= */
+.container { 
+    width: 95%; max-width: 1200px; background: white; padding: 30px; 
+    border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 50px; 
+    z-index: 10; position: relative; 
+}
+#city-info { margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 20px; }
+#city-title { margin: 0; font-size: 28px; font-family: 'Playfair Display', serif; color: #333; }
+#city-desc { color: #666; margin-top: 10px; font-size: 14px; }
+
+.main-content { display: flex; gap: 20px; height: 550px; align-items: stretch; }
+#event-sidebar { flex: 1; max-width: 300px; display: flex; flex-direction: column; border: 1px solid #eee; border-radius: 4px; background: #fafafa; }
+#event-list-header { padding: 12px; background: #222; color: #fff; font-size: 14px; font-weight: bold; text-align: center; letter-spacing: 1px; }
+#event-container { flex: 1; overflow-y: auto; padding: 15px; }
+
+.event-card { background: white; border: 1px solid #ddd; padding: 12px; margin-bottom: 12px; border-left: 4px solid var(--primary-color); cursor: pointer; transition: 0.2s; }
+.event-card:hover { border-color: var(--primary-color); transform: translateX(5px); box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+.event-card.no-link { cursor: default; }
+.event-card.no-link:hover { transform: none; box-shadow: none; border-color: #ddd;}
+.event-name { font-weight: bold; font-size: 14px; margin-bottom: 6px; color: #333; line-height: 1.3; }
+.event-date { font-size: 11px; color: #888; font-family: monospace; }
+
+#map { flex: 3; height: 100%; border-radius: 4px; border: 1px solid #eee; min-height: 550px; z-index: 1; }
+
+.custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); }
+.marker-v0 { background-color: #9e9e9e; } 
+.marker-v1 { background-color: #d48a5b; } 
+.marker-v2 { background-color: #8b5a2b; } 
+
+/* =========================================
+   自訂地圖 Pop-up 樣式與排版矩陣
+   ========================================= */
+.custom-popup { width: 100%; text-align: left; font-family: 'Noto Sans TC', sans-serif; }
+.custom-popup .popup-title { font-size: 18px; font-weight: bold; color: #8b5a2b; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; font-family: 'Playfair Display', serif; line-height: 1.2; }
+.custom-popup .popup-image { width: 100%; max-height: 160px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.custom-popup .popup-desc { font-size: 13px; color: #444; margin-bottom: 12px; line-height: 1.6; text-align: justify; }
+
+.custom-popup .popup-wiki { float: right; color: #b16837; font-weight: bold; text-decoration: none; font-size: 12px; margin-left: 8px; margin-top: 2px; }
+.custom-popup .popup-wiki:hover { text-decoration: underline; }
+.custom-popup .popup-desc::after { content: ""; display: table; clear: both; }
+
+.custom-popup .popup-detail { font-size: 12px; color: #555; margin-top: 6px; display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; border-top: 1px dashed #f0f0f0; padding-top: 6px; }
+.custom-popup .popup-detail a { color: #b16837; text-decoration: none; font-weight: bold; }
+.custom-popup .popup-detail a:hover { text-decoration: underline; }
+
+/* 一般時間/價格對齊格線 */
+.price-grid { display: grid; grid-template-columns: auto 1fr; gap: 0 12px; width: 100%; }
+.time-grid { display: grid; grid-template-columns: 32px 1fr; gap: 0 8px; width: 100%; }
+.grid-label { color: #666; white-space: nowrap; }
+.grid-price { color: #333; font-weight: bold; text-align: left; }
+.grid-day { color: #666; font-weight: 500; }
+.grid-time { color: #333; white-space: nowrap; }
+
+/* 完美的 3 欄式季節矩陣排版 */
+.matrix-time-grid { display: grid; grid-template-columns: 32px 1fr 1fr; gap: 4px 10px; width: 100%; }
+.matrix-price-grid-cat { display: grid; grid-template-columns: auto 1fr 1fr; gap: 4px 10px; width: 100%; }
+.matrix-price-grid-nocat { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; width: 100%; }
+.matrix-header { font-weight: bold; color: #b16837; font-size: 12px; border-bottom: 1px dashed #eee; padding-bottom: 4px; margin-bottom: 2px; }
+.matrix-empty-header { border-bottom: 1px dashed #eee; margin-bottom: 2px; }
+
+/* =========================================
+   3D 飛梭畫廊與動態環境背景
+   ========================================= */
+#dark-mode-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #0a0a0a;
+    opacity: 0; pointer-events: none; z-index: 40;
+    will-change: opacity;
+}
+
+#dynamic-blur-bg {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 41; overflow: hidden;
+}
+
+.blur-bg-item {
+    position: absolute; 
+    /* 【極致效能 1% 版】大幅減少 GPU 記憶體消耗 */
+    top: 45%; left: 45%; width: 10%; height: 10%;
+    object-fit: cover;
+    transform: scale(12) translateZ(0); 
+    filter: blur(2.5px) brightness(0.4) saturate(1.4); 
+    opacity: 0; visibility: hidden; 
+    will-change: opacity, visibility;
+}
+
+#trip-notes-wrapper { width: 100%; position: relative; display: none; z-index: 50; }
+
+#trip-notes-pinned { 
+    height: 100vh; width: 100vw; position: relative; overflow: hidden; 
+    display: flex; align-items: center; justify-content: center; 
+    left: calc(-50vw + 50%);
+    perspective: 1500px; 
+    transform-style: preserve-3d;
+    pointer-events: none; 
+}
+
+#trip-notes-container {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+    transform-style: preserve-3d;
+}
+
+.note-card-fly { 
+    position: absolute; top: 50%; left: 50%; width: 280px; 
+    display: flex; flex-direction: column; align-items: center; 
+    opacity: 0; visibility: hidden; 
+    color: #ffffff; 
+    will-change: transform, opacity, visibility; 
+    transform-style: preserve-3d;
+    pointer-events: none; 
+}
+
+.note-card-fly .title { 
+    width: 100%; font-size: 26px; font-family: 'Playfair Display', serif; font-style: italic;
+    text-align: center; margin-bottom: 20px; color: #e6a77e; 
+    text-shadow: 0 4px 15px rgba(0,0,0,0.9); line-height: 1.2; letter-spacing: 1px;
+}
+
+.note-card-fly .texts-wrapper { 
+    width: 100%; margin-top: 70px; text-align: center; position: relative; z-index: 10; 
+    pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 50px; 
+}
+
+.date-item {
+    font-size: 15px; font-family: monospace; color: #e6a77e; letter-spacing: 1px; font-weight: bold;
+    transition: all 0.3s ease; opacity: 1; position: relative; visibility: visible;
+}
+
+.text-item { 
+    font-size: 13px; line-height: 1.7; margin: 0; text-shadow: 0 2px 8px rgba(0,0,0,1); color: #ffffff; 
+    transition: all 0.3s ease; will-change: opacity, transform;
+    opacity: 0; visibility: hidden; position: absolute; transform: translateY(10px);
+}
+
+.photo-fan { 
+    position: relative; width: 100%; aspect-ratio: 4/5; perspective: 1000px; cursor: pointer; 
+    pointer-events: auto; 
+}
+.fan-item { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease; 
+    transform-origin: center bottom; border: 4px solid #1a1a1a; border-radius: 4px; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.9); background: #000; overflow: hidden; 
+}
+.fan-item img, .fan-item video { 
+    width: 100%; height: 100%; object-fit: cover; opacity: 1; 
+    transition: transform 0.3s; transform: translateZ(0); will-change: transform;
+}
+.photo-fan:hover .fan-item img, .photo-fan:hover .fan-item video { transform: scale(1.05); }

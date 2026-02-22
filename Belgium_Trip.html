@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belgium Trip - Perfect Layout & Fan Hover</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* --- 基礎設定 (比利時雜誌風配色) --- */
+        body, html {
+            margin: 0; padding: 0;
+            overflow-x: hidden; overflow-y: auto; 
+            background-color: #F9F6F0; 
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #2C2A29; 
+            height: auto; min-height: 100vh;
+        }
+
+        #back-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 100;
+            background-color: #A62626; color: #F9F6F0; 
+            padding: 10px 20px; border-radius: 30px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
+        }
+        #back-btn:hover { background-color: #2C2A29; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+
+        #map-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1; display: flex; justify-content: center; align-items: center;
+            overflow: hidden; pointer-events: none; background-color: #F9F6F0; 
+        }
+        #responsive-stage { position: relative; width: 1000px; height: 1000px; flex-shrink: 0; transform-origin: center center; }
+        #map-content-wrapper { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transform-origin: 0 0; }
+        #europe-map { width: 100%; height: 100%; display: block; object-fit: contain; }
+        
+        .marker { position: absolute; transform: translate(-50%, -50%); z-index: 6; opacity: 0; }
+        .marker.waypoint-dot { width: 3px; height: 3px; background-color: #A62626; border: 0.5px solid #F9F6F0; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .marker.home-icon {
+            width: 6px; height: 6px; background-color: #C19A2B; 
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E") no-repeat center / contain;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E") no-repeat center / contain;
+            filter: drop-shadow(0 3px 3px rgba(0,0,0,0.4));
+        }
+
+        .city-label {
+            position: absolute; transform: translate(-50%, -50%); transform-origin: center center; 
+            background: rgba(249, 246, 240, 0.95); padding: 1.5px 1px; 
+            border-radius: 1px; box-shadow: 0 0.5px 2px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; align-items: center; text-align: center; 
+            pointer-events: auto; z-index: 7; opacity: 0; visibility: hidden; white-space: nowrap; border: 0.5px solid none;
+        }
+        .city-label h3 { margin: 0; font-size: 3px; color: #A62626; font-family: 'Playfair Display', serif; font-weight: bold; }
+        .city-label p { margin: 0.5px 0 1px 0; font-size: 2px; color: #2C2A29; font-weight: bold; }
+
+        .city-label.stay-label { background: rgba(44, 42, 41, 0.95); border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.5); padding: 2px 4px; border-radius: 2px; }
+        .city-label.stay-label .stay-city-name { font-size: 1.5px; color: #F9F6F0; margin: 0 0 0.2px 0; font-family: 'Playfair Display', serif; font-weight: normal; }
+        .city-label.stay-label .stay-title { font-size: 3px; color: #C19A2B; letter-spacing: 0.2px; margin: 0 0 0.5px 0; font-weight: bold; text-transform: uppercase; }
+        .city-label.stay-label p { color: #ccc; font-weight: normal; font-size: 1.5px; margin: 0; }
+
+        .explore-btn {
+            display: inline-block; text-decoration: none; background-color: #C19A2B; color: white;
+            font-size: 1.8px; padding: 0.5px 2px; border-radius: 0.5px; margin-top: 1px; align-self: center; 
+            transition: background-color 0.2s; cursor: pointer;
+        }
+        .explore-btn:hover { background-color: #A62626; }
+
+        #map-dim-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(249, 246, 240, 0.85); opacity: 0; z-index: 5; pointer-events: none; }
+        #cover-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('Photos/Belgium_trip/cover.JPEG') center/cover no-repeat; background-color: #333; z-index: 10; pointer-events: none; }
+        #hero-text-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; background: rgba(0, 0, 0, 0.5); z-index: 20; pointer-events: none; }
+        #hero-text-layer h1 { font-size: 4rem; margin: 0; font-weight: bold; font-family: 'Playfair Display', serif; }
+        #hero-text-layer p { font-size: 1.5rem; opacity: 0.9; margin-top: 10px; }
+
+        #end-title-layer { position: fixed; bottom: 40px; left: 40px; z-index: 40; pointer-events: none; color: #A62626; text-shadow: 0 2px 10px rgba(249, 246, 240, 0.9); opacity: 0; transform: translateY(100%); }
+        #end-title-layer h1 { font-size: 3rem; margin: 0; font-weight: bold; font-family: 'Playfair Display', serif; }
+        #end-title-layer p { font-size: 1.2rem; margin: 5px 0 0 0; color: #2C2A29; opacity: 0.9; font-weight: bold; }
+
+        #story-content-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+        .story-element { position: absolute; left: 50%; width: 80%; max-width: 600px; opacity: 0; visibility: hidden; pointer-events: auto; }
+
+        /* --- 【修改】：黑底卡片放大與按鈕靠右下角 --- */
+        .card-type-title {
+            top: 50%; transform: translate(-150%, -50%) translateY(120vh); 
+            background: #2C2A29; color: #F9F6F0; 
+            padding: 30px 40px; 
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1); text-align: left;
+            width: 80%; 
+            max-width: 400px; 
+            left: 5%; z-index: 50; display: flex; flex-direction: column; align-items: flex-start;
+        }
+        .card-type-title h2 { font-size: 3rem; margin: 0 0 10px 0; color: #C19A2B; font-family: 'Playfair Display', serif; }
+        .card-type-title p { font-size: 1rem; margin: 0; opacity: 0.9; }
+
+        .title-explore-btn {
+            display: inline-block; 
+            margin-top: auto; 
+            padding: 10px 24px; 
+            background-color: #A62626; color: white; text-decoration: none; font-weight: bold;
+            font-size: 1rem; 
+            border-radius: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s, background-color 0.2s; 
+            align-self: flex-end; 
+        }
+        .title-explore-btn:hover { transform: translateY(-2px); background-color: #C19A2B; }
+        /* ------------------------------------------- */
+
+        /* =========================================================
+           【佈局防溢出修正】
+           ========================================================= */
+        .article-container {
+            top: 50%; left: 50%; transform: translate(-50%, 0) translateY(120vh);
+            width: 95%; max-width: 1400px; display: flex; flex-direction: column; z-index: 60;
+            background: white; background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            background-blend-mode: multiply; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .article-container.stay-mode { background: transparent !important; box-shadow: none !important; border: none !important; }
+
+        .article-section {
+            height: 80vh; min-height: 80vh; max-height: 80vh; 
+            box-sizing: border-box; padding: 20px 5%; 
+            display: flex; gap: 4%; align-items: center; justify-content: center; border-bottom: 1px dashed #e0e0e0;
+            overflow: hidden; 
+        }
+        .article-section:last-child { border-bottom: none; }
+
+        .img-wrapper { 
+            position: relative; 
+            width: 60%; 
+            max-width: 750px; 
+            height: 100%; 
+            max-height: 550px; 
+            flex-shrink: 1; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        .img-frame {
+            position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            max-width: 95%; max-height: 95%; 
+            background-color: white; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+            overflow: hidden; opacity: 0; 
+            transition: box-shadow 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .img-wrapper.interactive-ready:hover .img-frame {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        .collage-img {
+            display: block; 
+            /* 👈 橫向變寬核心：回歸自動比例，放寬橫向限制，維持直向限制 */
+            width: auto; 
+            height: auto; 
+            max-width: 35vw; /* 橫向照片生長上限 */
+            max-height: 60vh; /* 直向照片生長上限 (維持不變) */
+            object-fit: contain; 
+            transform: scale(1.15); 
+        }
+
+        .text-content-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+        .article-section.reverse { flex-direction: row-reverse; }
+        .reverse .text-content-wrapper { text-align: right; }
+
+        .section-subtitle { margin: 0 0 15px 0; font-size: 2.2rem; color: #C19A2B; font-family: 'Playfair Display', serif; font-weight: 700; opacity: 0; }
+        .text-wrapper { display: flex; flex-direction: column; gap: 20px; border-left: 4px solid #2C2A29; padding-left: 30px; }
+        .reverse .text-wrapper { border-left: none; border-right: 4px solid #2C2A29; padding-left: 0; padding-right: 30px; }
+        .text-content-wrapper.full-width { align-items: center; text-align: center; }
+        .text-content-wrapper.full-width .text-wrapper { border: none; padding: 0; }
+        
+        .text-item { font-size: 1.2rem; line-height: 1.8; opacity: 0; }
+        .text-item span { display: inline-block; transform-origin: left center; }
+        .highlight { font-size: 1.35em; font-weight: 900; color: #A62626; font-family: 'Playfair Display', serif; }
+
+        #scroll-flow-container { position: relative; top: 0; left: 0; width: 100%; z-index: -1; }
+        .ghost-step { width: 100%; height: 200vh; }
+    </style>
+</head>
+<body>
+
+    <a href="Home.html" id="back-btn">Home</a>
+
+    <div id="map-container">
+        <div id="responsive-stage">
+            <div id="map-content-wrapper">
+                <img id="europe-map" src="Europe_map_new.svg" alt="Map">
+                <svg id="route-layer" viewBox="0 0 1000 1000" preserveAspectRatio="none" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 2;">
+                    <defs id="route-defs"></defs>
+                </svg>
+                <div id="map-dim-layer"></div>
+                <div id="markers-layer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cover-layer"></div>
+    <div id="hero-text-layer">
+        <h1 id="page-title">Loading...</h1>
+        <p id="page-date">...</p>
+    </div>
+    <div id="end-title-layer">
+        <h1 id="end-page-title">Loading...</h1>
+        <p id="end-page-date">...</p>
+    </div>
+    <div id="story-content-layer"></div>
+    <div id="scroll-flow-container"></div>
+
+    <script src="data.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        const TRANSFORM_PARAMS = { scaleX: 1.5, scaleY: 1.5, offsetX: -8, offsetY: 93 };
+        function transformCoords(homeX, homeY) { return { x: (homeX * TRANSFORM_PARAMS.scaleX) + TRANSFORM_PARAMS.offsetX, y: (homeY * TRANSFORM_PARAMS.scaleY) + TRANSFORM_PARAMS.offsetY }; }
+
+        let CITY_DATE_RANGES = {}; 
+        
+        const frameBaseTransforms = new Map();
+
+        function getMergedData() {
+            const tripEvent = window.DATA.events.find(e => e.text === 'Belgium Trip');
+            if (!tripEvent) return [];
+
+            document.getElementById('page-title').textContent = tripEvent.text;
+            const singleLineDate = tripEvent.date.replace(/<br\s*\/?>/ig, ' ~ ');
+            document.getElementById('page-date').innerHTML = singleLineDate;
+            document.getElementById('end-page-title').textContent = tripEvent.text;
+            document.getElementById('end-page-date').innerHTML = singleLineDate;
+
+            const mappedData = tripEvent.eventMarkers.map((evMarker, idx) => {
+                let baseMarker = window.DATA.markers.home.find(m => m.id === evMarker.id);
+                if (!baseMarker && tripEvent.countryCandidates) {
+                    for (const country of tripEvent.countryCandidates) {
+                        if (window.DATA.markers[country]) {
+                            baseMarker = window.DATA.markers[country].find(m => m.id === evMarker.id);
+                            if (baseMarker) break;
+                        }
+                    }
+                }
+                let finalCoords = { x: 0, y: 0 };
+                if (baseMarker) finalCoords = transformCoords(baseMarker.x, baseMarker.y);
+
+                let parsedNotes = [];
+                if (evMarker.notes) {
+                    evMarker.notes.forEach(note => {
+                        let subNotes = [];
+                        if (note.text1) {
+                            let i = 1;
+                            while (note[`text${i}`] || note[`photo${i}`] || note[`video${i}`]) {
+                                let currentPhoto = note[`photo${i}`] || note[`video${i}`];
+                                if (!currentPhoto && i === 1) currentPhoto = note.photo || note.video || "";
+                                else if (!currentPhoto) currentPhoto = "";
+                                subNotes.push({ photo: currentPhoto, text: note[`text${i}`] || "" });
+                                i++;
+                            }
+                        } else if (note.photo || note.text || note.video) {
+                            subNotes.push({ photo: note.photo || note.video || "", text: note.text || "" });
+                        }
+                        if(subNotes.length > 0) parsedNotes.push({ title: note.title || null, subNotes });
+                    });
+                } else if (evMarker.desc && !evMarker.stay) {
+                    parsedNotes.push({ title: null, subNotes: [{ photo: "", text: evMarker.desc }] });
+                }
+
+                let itemType = evMarker.type;
+                if (!itemType && !evMarker.stay) {
+                    if (idx === 0) itemType = 'start'; else if (idx === tripEvent.eventMarkers.length - 1) itemType = 'end'; else itemType = 'waypoint';
+                }
+
+                return { ...evMarker, type: itemType, coords: finalCoords, parsedNotes: parsedNotes, labelOffset: evMarker.labelOffset || { x: 0, y: 0 } };
+            }).filter(m => m.coords.x !== 0); 
+
+            mappedData.forEach(item => {
+                if (!item.stay && item.type === 'waypoint') {
+                    if (!CITY_DATE_RANGES[item.city]) CITY_DATE_RANGES[item.city] = [];
+                    CITY_DATE_RANGES[item.city].push(item.date);
+                }
+            });
+
+            const finalData = [];
+            for (let i = 0; i < mappedData.length; i++) {
+                const current = mappedData[i];
+                if (current.stay) {
+                    let j = i + 1; let lastDate = current.date;
+                    while (j < mappedData.length && mappedData[j].city === current.city && mappedData[j].stay) { lastDate = mappedData[j].date; j++; }
+                    if (j > i + 1) { current.date = `${current.date} ~ ${lastDate}`; i = j - 1; }
+                    finalData.push(current);
+                } else {
+                    finalData.push(current);
+                }
+            }
+            return finalData;
+        }
+
+        const STORY_DATA = getMergedData();
+        const SEEN_CITIES = new Set(); 
+
+        function updateStage() {
+            const scale = Math.max(window.innerWidth / 1000, window.innerHeight / 1000);
+            document.getElementById("responsive-stage").style.transform = `scale(${scale})`;
+        }
+        window.addEventListener('resize', updateStage);
+        function getFixedPosition(targetX, targetY, zoomLevel) { return { x: 500 - (targetX * zoomLevel), y: 500 - (targetY * zoomLevel) }; }
+
+        function initStory() {
+            updateStage();
+            const markersLayer = document.getElementById('markers-layer');
+            const contentLayer = document.getElementById('story-content-layer');
+            const scrollContainer = document.getElementById('scroll-flow-container');
+            const routeLayer = document.getElementById('route-layer');
+            const routeDefs = document.getElementById('route-defs');
+            
+            scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 150vh'}));
+
+            STORY_DATA.forEach((item, index) => {
+                if (index > 0) {
+                    const prevItem = STORY_DATA[index - 1]; const pathData = `M ${prevItem.coords.x} ${prevItem.coords.y} L ${item.coords.x} ${item.coords.y}`;
+                    const maskId = `path-mask-${index}`; const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+                    mask.setAttribute("id", maskId); mask.setAttribute("maskUnits", "userSpaceOnUse");
+                    const maskPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    maskPath.setAttribute("id", `mask-path-${index}`); maskPath.setAttribute("d", pathData);
+                    maskPath.setAttribute("fill", "none"); maskPath.setAttribute("stroke", "white"); maskPath.setAttribute("stroke-width", "5"); 
+                    mask.appendChild(maskPath); routeDefs.appendChild(mask);
+                    const visiblePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    visiblePath.setAttribute("d", pathData); visiblePath.setAttribute("fill", "none"); visiblePath.setAttribute("stroke", "#A62626"); 
+                    visiblePath.setAttribute("stroke-width", "1.5"); visiblePath.setAttribute("stroke-dasharray", "6, 6"); 
+                    visiblePath.setAttribute("mask", `url(#${maskId})`); routeLayer.appendChild(visiblePath);
+                }
+
+                const marker = document.createElement('div');
+                marker.className = (item.type === 'start' || item.type === 'end') ? 'marker home-icon' : 'marker waypoint-dot';
+                marker.style.left = `${item.coords.x / 10}%`; marker.style.top = `${item.coords.y / 10}%`; marker.id = `marker-${index}`;
+                markersLayer.appendChild(marker);
+
+                const label = document.createElement('div'); label.id = `label-${index}`;
+                let isDummyLabel = false; 
+                
+                const exploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="explore-btn">Explore City &rarr;</a>` : '';
+                const titleExploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="title-explore-btn">Explore City &rarr;</a>` : '';
+
+                if (item.stay) {
+                    label.className = 'city-label stay-label'; label.innerHTML = `<h3 class="stay-city-name">${item.city}</h3><div class="stay-title">OVERNIGHT</div><p>${item.date}</p>`;
+                } else if (item.type === 'waypoint') {
+                    let firstVisitIndex = STORY_DATA.findIndex(d => d.type === 'waypoint' && d.city === item.city);
+                    
+                    if (firstVisitIndex === index) {
+                        SEEN_CITIES.add(item.city); label.className = 'city-label';
+                        const dateStr = item.date; // 💡 確保第一次只顯示第一次的日期
+                        
+                        // 💡 準備兩個隱藏區域：一個給逗號 (inline-block，放右邊)，一個給第二次日期 (block，放下面)
+                        label.innerHTML = `<h3>${item.city}</h3><p style="margin: 0.5px 0 1px 0;">${dateStr}<span id="revisit-comma-${item.city}" style="opacity: 0; width: 0; overflow: hidden; display: inline-block; vertical-align: middle;"></span><span id="revisit-date-${item.city}" style="opacity: 0; height: 0; overflow: hidden; display: block; margin-top: 0.5px;"></span></p>${exploreBtn}`;
+                    } else if (firstVisitIndex !== -1 && firstVisitIndex < index) {
+                        isDummyLabel = true; 
+                        // 將逗號和第二次日期分別寫入對應的 span 裡
+                        let revisitComma = document.getElementById(`revisit-comma-${item.city}`);
+                        let revisitSpan = document.getElementById(`revisit-date-${item.city}`);
+                        if (revisitComma && revisitSpan) {
+                            revisitComma.textContent = `,`;
+                            revisitSpan.textContent = item.date;
+                        }
+                    } else {
+                        isDummyLabel = true;
+                    }
+                } else if (item.type === 'start') {
+                    label.className = 'city-label'; const endItem = STORY_DATA.find(d => d.type === 'end' && d.city === item.city);
+                    const endDateHTML = endItem ? `<span id="end-date-${index}" style="opacity: 0; height: 0; overflow: hidden; display: block;">End: ${endItem.date}</span>` : '';
+                    label.innerHTML = `<h3>${item.city}</h3><p style="margin: 0.5px 0 1px 0;">Start: ${item.date}${endDateHTML}</p>${exploreBtn}`;
+                } else if (item.type === 'end') {
+                    if (STORY_DATA.find(d => d.type === 'start' && d.city === item.city)) isDummyLabel = true; 
+                    else { label.className = 'city-label'; label.innerHTML = `<h3>${item.city}</h3><p>End: ${item.date}</p>${exploreBtn}`; }
+                }
+
+                if (isDummyLabel) label.style.display = 'none'; 
+                else { label.style.left = `${(item.coords.x / 10) + (item.labelOffset?.x || 0)}%`; label.style.top = `${(item.coords.y / 10) + (item.labelOffset?.y || 0)}%`; }
+                markersLayer.appendChild(label);
+
+                const titleCard = document.createElement('div'); titleCard.className = 'story-element card-type-title'; titleCard.id = `city-${index}-title`;
+                const titleSpacer = document.createElement('div'); titleSpacer.className = 'ghost-step';
+                const articleContainer = document.createElement('div'); articleContainer.className = 'story-element article-container'; articleContainer.id = `city-${index}-article`;
+                let totalSubNotes = 0; 
+                
+                // 💡 【新增邏輯】：判斷這筆資料有沒有任何的描述或文章內容
+                let hasArticle = item.parsedNotes && item.parsedNotes.length > 0;
+
+                // 💡 如果既不是過夜，也沒有任何內容，那就直接隱藏白色底紙
+                if (!item.stay && !hasArticle) {
+                    articleContainer.style.display = 'none';
+                }
+
+                if (item.stay) {
+                    titleCard.style.display = 'none'; titleSpacer.style.height = '10vh'; articleContainer.classList.add('stay-mode');
+                } else {
+                    titleCard.innerHTML = `<h2>${item.city}</h2><p>${item.date}</p>${titleExploreBtn}`; titleSpacer.style.height = '150vh';
+
+                    if (hasArticle) {
+                        item.parsedNotes.forEach((note, noteIndex) => {
+                            totalSubNotes += note.subNotes.length; 
+                            const section = document.createElement('div'); section.className = `article-section ${noteIndex % 2 !== 0 ? 'reverse' : ''}`;
+                            let hasPhoto = note.subNotes.some(sn => sn.photo);
+                            
+                            let imgHTML = '';
+                            if (hasPhoto) {
+                                imgHTML += `<div class="img-wrapper" id="wrapper-${index}-${noteIndex}">`;
+                                note.subNotes.forEach((sn, i) => {
+                                    if(sn.photo) {
+                                        const isVideo = /\.(mp4|webm|mov)$/i.test(sn.photo);
+                                        imgHTML += `<div id="frame-${index}-${noteIndex}-${i}" class="img-frame" style="z-index: ${i+1};">`;
+                                        if (isVideo) {
+                                            imgHTML += `<video id="img-${index}-${noteIndex}-${i}" class="collage-img" src="${sn.photo}" muted loop playsinline style="background:#000;"></video>`;
+                                        } else {
+                                            imgHTML += `<img id="img-${index}-${noteIndex}-${i}" class="collage-img" src="${sn.photo}">`;
+                                        }
+                                        imgHTML += `</div>`;
+                                    }
+                                });
+                                imgHTML += `</div>`;
+                            }
+
+                            let textHTML = `<div class="text-content-wrapper ${!hasPhoto ? 'full-width' : ''}">`;
+                            if (note.title) textHTML += `<h3 class="section-subtitle" id="subtitle-${index}-${noteIndex}">${note.title}</h3>`;
+                            
+                            textHTML += `<div class="text-wrapper">`;
+                            note.subNotes.forEach((sn, i) => { if(sn.text) textHTML += `<div class="text-item" id="txt-${index}-${noteIndex}-${i}">${sn.text}</div>`; });
+                            textHTML += `</div></div>`;
+
+                            section.innerHTML = imgHTML + textHTML; articleContainer.appendChild(section);
+                        });
+                    }
+                }
+                
+                contentLayer.appendChild(titleCard); scrollContainer.appendChild(titleSpacer); contentLayer.appendChild(articleContainer);
+
+                const articleSpacer = document.createElement('div'); articleSpacer.className = 'ghost-step';
+                let spacerHeight = item.stay ? 60 : 100 + (item.parsedNotes?.length * 80 || 0) + (totalSubNotes * 60); 
+                articleSpacer.style.height = `${spacerHeight}vh`; scrollContainer.appendChild(articleSpacer);
+                scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 10vh'}));
+            });
+
+            scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 100vh'}));
+            setTimeout(createTimeline, 100);
+        }
+
+        function applyDynamicFanEffect(wrapper, index, noteIndex, totalImages) {
+            let visibleFrames = [];
+            for (let i = 0; i < totalImages; i++) {
+                let frameId = `frame-${index}-${noteIndex}-${i}`;
+                let frameEl = document.getElementById(frameId);
+                if (frameEl && gsap.getProperty(frameEl, "opacity") > 0.1) {
+                    visibleFrames.push({ el: frameEl, id: frameId });
+                }
+            }
+
+            let visibleCount = visibleFrames.length;
+            if (visibleCount === 0) return;
+
+            visibleFrames.forEach((item, visibleIdx) => {
+                let base = frameBaseTransforms.get(item.id);
+                if (!base) return;
+
+                if (visibleCount === 1) {
+                    gsap.to(item.el, { y: base.y - 30, scale: 1.05, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+                } else if (visibleCount === 2) {
+                    let direction = visibleIdx === 0 ? -1 : 1; 
+                    gsap.to(item.el, { x: base.x + (direction * 40), y: base.y - 15, rotation: base.rotation + (direction * 8), scale: 1.05, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+                } else {
+                    let centerIndex = (visibleCount - 1) / 2;
+                    let spreadFactor = visibleIdx - centerIndex; 
+                    gsap.to(item.el, { x: base.x + (spreadFactor * 50), y: base.y - 10 - (Math.abs(spreadFactor) === 0 ? 20 : 0), rotation: base.rotation + (spreadFactor * 10), scale: 1.05, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+                }
+            });
+        }
+
+        function initDynamicHover(wrapperId, index, noteIndex, totalImages) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+
+            wrapper.addEventListener("mouseenter", () => {
+                if (!wrapper.classList.contains("interactive-ready")) return;
+                wrapper.isHovered = true; 
+                applyDynamicFanEffect(wrapper, index, noteIndex, totalImages);
+            });
+
+            wrapper.addEventListener("mouseleave", () => {
+                if (!wrapper.classList.contains("interactive-ready")) return;
+                wrapper.isHovered = false; 
+                
+                for (let i = 0; i < totalImages; i++) {
+                    let frameId = `frame-${index}-${noteIndex}-${i}`;
+                    let frameEl = document.getElementById(frameId);
+                    let base = frameBaseTransforms.get(frameId);
+                    if (frameEl && base) {
+                        gsap.to(frameEl, { x: base.x, y: base.y, rotation: base.rotation, scale: 1, duration: 0.5, ease: "back.out(1.5)", overwrite: "auto" });
+                    }
+                }
+            });
+        }
+
+        function createTimeline() {
+            const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1, invalidateOnRefresh: true } });
+
+            gsap.set(".article-container", { xPercent: -50, yPercent: 0 }); 
+            gsap.set("#map-content-wrapper", { x: 0, y: 0, scale: 1 });
+            tl.to("#cover-layer", { opacity: 0, duration: 1.5 }).to("#hero-text-layer", { y: -200, opacity: 0, duration: 1.5 }, "<");
+
+            STORY_DATA.forEach((item, index) => {
+                const targetScale = 5; const pos = getFixedPosition(item.coords.x, item.coords.y, targetScale);
+                tl.to("#map-content-wrapper", { scale: targetScale, x: pos.x, y: pos.y, duration: 2, ease: "power1.inOut" });
+
+                if (index > 0) {
+                    const maskPath = document.querySelector(`#mask-path-${index}`);
+                    if (maskPath) { const len = maskPath.getTotalLength(); gsap.set(maskPath, { strokeDasharray: len, strokeDashoffset: len }); tl.to(maskPath, { strokeDashoffset: 0, duration: 2, ease: "power1.inOut" }, "<"); }
+                }
+
+                tl.to(`#marker-${index}`, { opacity: 1, scale: 1.5, duration: 0.5 }, "-=1");
+
+                const titleId = `#city-${index}-title`; const articleId = `#city-${index}-article`; const flowStart = `flow-${index}`;
+                
+                // 💡 抓取這筆資料是否有文章內容
+                let hasArticle = item.parsedNotes && item.parsedNotes.length > 0;
+
+                if (!item.stay) { tl.to(titleId, { y: 0, x: "0%", yPercent: -50, autoAlpha: 1, duration: 2, ease: "power2.out" }); tl.to({}, { duration: 1.5 }); }
+                tl.addLabel(flowStart);
+                
+                if (!item.stay) {
+                    // 💡 【修正】：如果這城市「有內容」，才需要顯示半透明的白色遮罩讓地圖變暗
+                    if (hasArticle) {
+                        tl.to("#map-dim-layer", { opacity: 0.85, duration: 1.5 }, flowStart); 
+                        tl.to(["#markers-layer", "#route-layer"], { opacity: 0.3, duration: 1.5 }, flowStart);
+                    }
+                    tl.to(titleId, { y: "-150vh", autoAlpha: 0, duration: 2, ease: "power1.in" }, flowStart); 
+                }
+
+                let timeOffset = 2; const SECTION_VH = 80; 
+                let lastMoveStart = 0; 
+                
+                if (item.stay) {
+                    tl.fromTo(articleId, { y: "100vh" }, { y: `-50vh`, duration: 4, ease: "none" }, flowStart); timeOffset += 4;
+                } else if (hasArticle) { // 💡 【修正】：確定有文章才執行紙張進場動畫
+                    
+                    let currentY = -40; 
+                    tl.fromTo(articleId, { y: "50vh", autoAlpha: 0 }, { y: `${currentY}vh`, autoAlpha: 1, duration: 2, ease: "power2.out" }, flowStart);
+                    
+                    item.parsedNotes.forEach((note, noteIndex) => {
+                        let isMulti = note.subNotes.length > 1; 
+                        let numImages = note.subNotes.length;
+
+                        if (numImages > 0) {
+                            initDynamicHover(`wrapper-${index}-${noteIndex}`, index, noteIndex, numImages);
+                        }
+
+                        if (isMulti) {
+                            let moveDur = 2.5;
+                            if (noteIndex > 0) {
+                                let nextY = currentY - SECTION_VH; 
+                                tl.to(articleId, { y: `${nextY}vh`, duration: moveDur, ease: "power2.inOut" }, `${flowStart}+=${timeOffset}`);
+                                currentY = nextY;
+                                timeOffset += moveDur; 
+                            }
+                            
+                            let holdTime = 4; 
+                            let staggerGap = 1.8; 
+                            let appearTime = timeOffset; 
+
+                            note.subNotes.forEach((sn, i) => {
+                                let itemLabel = `${flowStart}+=${appearTime + (i * staggerGap)}`;
+                                let parallaxDuration = (numImages - i) * holdTime + 0.5; 
+                                let parallaxSpeed = 1; 
+                                let moveDist = parallaxDuration * parallaxSpeed; 
+                                
+                                if (sn.photo) {
+                                    let frameId = `frame-${index}-${noteIndex}-${i}`; let imgId = `#img-${index}-${noteIndex}-${i}`;
+                                    let wrapperId = `wrapper-${index}-${noteIndex}`;
+                                    let xOffset = (i - (numImages - 1) / 2) * 20; let yOffset = (i - (numImages - 1) / 2) * 20; 
+                                    let endRot = (i % 2 === 0 ? -2 : 3) + (Math.random() * 2 - 1); 
+                                    
+                                    frameBaseTransforms.set(frameId, { x: xOffset, y: yOffset, rotation: endRot });
+
+                                    tl.fromTo(`#${frameId}`, 
+                                        { scale: 1.4, opacity: 0, rotation: endRot*2, x: 0, y: 0, xPercent: -50, yPercent: -50 }, 
+                                        { scale: 1, opacity: 1, rotation: endRot, x: 0, y: 0, xPercent: -50, yPercent: -50, duration: 1.2, ease: "power2.out", 
+                                          onStart: () => { const el = document.querySelector(imgId); if(el && el.tagName === 'VIDEO') el.play(); },
+                                          onComplete: () => {
+                                              let wrapper = document.getElementById(wrapperId);
+                                              if (wrapper) {
+                                                  wrapper.classList.add("interactive-ready");
+                                                  if (wrapper.isHovered) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, 1), 50);
+                                              }
+                                          } 
+                                        }, itemLabel
+                                    );
+                                    
+                                    tl.fromTo(imgId, { y: 0 }, { y: -moveDist, duration: parallaxDuration, ease: "none" }, `${itemLabel}+=0.5`);
+                                }
+                                
+                                if (i === 0 && note.title) {
+                                    let subId = `#subtitle-${index}-${noteIndex}`;
+                                    tl.fromTo(subId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
+                                    tl.to(subId, { y: -moveDist, duration: parallaxDuration, ease: "none" }, `${itemLabel}+=0.5`);
+                                }
+                                if (sn.text) {
+                                    let txtId = `#txt-${index}-${noteIndex}-${i}`;
+                                    tl.fromTo(txtId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
+                                    tl.to(txtId, { y: -moveDist, duration: parallaxDuration, ease: "none" }, `${itemLabel}+=0.5`);
+                                }
+                            });
+                            
+                            timeOffset += (numImages * staggerGap) + 3; 
+
+                        } else {
+                            let slideDur = 4; 
+                            if (noteIndex > 0) {
+                                let nextY = currentY - SECTION_VH; 
+                                tl.to(articleId, { y: `${nextY}vh`, duration: slideDur, ease: "none" }, `${flowStart}+=${timeOffset}`);
+                                currentY = nextY;
+                                lastMoveStart = timeOffset;
+                            } else {
+                                lastMoveStart = 0; 
+                            }
+
+                            let appearTime = (noteIndex === 0) ? 0.5 : lastMoveStart + (slideDur * 0.25);
+                            let itemLabel = `${flowStart}+=${appearTime}`;
+                            
+                            note.subNotes.forEach((sn, i) => { 
+                                let parallaxDuration = slideDur; 
+                                let parallaxSpeed = 1; 
+                                let moveDist = parallaxDuration * parallaxSpeed; 
+                                
+                                if (sn.photo) {
+                                    let frameId = `frame-${index}-${noteIndex}-${i}`; let imgId = `#img-${index}-${noteIndex}-${i}`;
+                                    let wrapperId = `wrapper-${index}-${noteIndex}`;
+                                    let endRot = (Math.random() > 0.5 ? -2 : 3) + (Math.random() * 2 - 1); 
+
+                                    frameBaseTransforms.set(frameId, { x: 0, y: 0, rotation: endRot });
+
+                                    tl.fromTo(`#${frameId}`, 
+                                        { scale: 1.4, opacity: 0, rotation: endRot*2, x: 0, y: 0, xPercent: -50, yPercent: -50 }, 
+                                        { scale: 1, opacity: 1, rotation: endRot, x: 0, y: 0, xPercent: -50, yPercent: -50, duration: 1.2, ease: "power2.out", 
+                                          onStart: () => { const el = document.querySelector(imgId); if(el && el.tagName === 'VIDEO') el.play(); },
+                                          onComplete: () => {
+                                              let wrapper = document.getElementById(wrapperId);
+                                              if (wrapper) {
+                                                  wrapper.classList.add("interactive-ready");
+                                                  if (wrapper.isHovered) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, 1), 50);
+                                              }
+                                          } 
+                                        }, itemLabel
+                                    );
+                                    
+                                    tl.fromTo(imgId, { y: 0 }, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
+                                }
+                                
+                                if (i === 0 && note.title) {
+                                    let subId = `#subtitle-${index}-${noteIndex}`;
+                                    tl.fromTo(subId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
+                                    tl.to(subId, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
+                                }
+                                if (sn.text) {
+                                    let txtId = `#txt-${index}-${noteIndex}-${i}`;
+                                    tl.fromTo(txtId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
+                                    tl.to(txtId, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
+                                }
+                            });
+                            
+                            timeOffset += slideDur; 
+                        }
+                    });
+
+                    let isLastMulti = item.parsedNotes[item.parsedNotes.length - 1].subNotes.length > 1;
+                    if (isLastMulti) {
+                        tl.to(articleId, { y: `${currentY - SECTION_VH}vh`, autoAlpha: 0, duration: 2, ease: "power1.in" }, `${flowStart}+=${timeOffset}`);
+                        timeOffset += 2;
+                    } else {
+                        tl.to(articleId, { y: `${currentY - SECTION_VH}vh`, duration: 4, ease: "none" }, `${flowStart}+=${timeOffset - 4}`);
+                        tl.to(articleId, { autoAlpha: 0, duration: 1.5, ease: "power1.in" }, `${flowStart}+=${timeOffset - 1.5}`);
+                    }
+                }
+
+                let scrollDur = timeOffset; const flowEnd = `flowEnd-${index}`; tl.addLabel(flowEnd, `${flowStart}+=${scrollDur}`);
+                
+                // 💡 【修正】：只有在有文章的情況下，離開城市時才需要把遮罩還原（變回透明）
+                if (!item.stay && hasArticle) { 
+                    tl.to("#map-dim-layer", { opacity: 0, duration: 0.8 }, flowEnd); 
+                    tl.to(["#markers-layer", "#route-layer"], { opacity: 1, duration: 0.8 }, flowEnd); 
+                }
+
+                const labelEl = document.getElementById(`label-${index}`);
+                if (labelEl && labelEl.style.display !== 'none') {
+                    if (item.stay) { tl.to(`#label-${index}`, { autoAlpha: 1, y: "0%", duration: 0.5, ease: "back.out(1.7)" }, flowStart); tl.to(`#label-${index}`, { autoAlpha: 0, duration: 0.5 }, flowEnd); } 
+                    else { tl.to(`#label-${index}`, { autoAlpha: 1, y: "0%", duration: 0.5, ease: "back.out(1.7)" }, `${flowEnd}-=0.5`); }
+                }
+                if (item.type === 'end') {
+                    const startIndex = STORY_DATA.findIndex(d => d.type === 'start' && d.city === item.city);
+                    if (startIndex !== -1) tl.to(`#end-date-${startIndex}`, { autoAlpha: 1, height: "auto", marginTop: "0.5px", duration: 0.5 }, `${flowEnd}-=0.5`);
+                }
+                
+                // 💡 新增：如果是第二次造訪，觸發逗號與下方日期的展開動畫
+                if (!item.stay && item.type === 'waypoint') {
+                    let firstVisitIndex = STORY_DATA.findIndex(d => d.type === 'waypoint' && d.city === item.city);
+                    if (firstVisitIndex !== -1 && firstVisitIndex < index) {
+                        let revisitCommaId = `#revisit-comma-${item.city}`;
+                        let revisitSpanId = `#revisit-date-${item.city}`;
+                        // 同時讓逗號寬度變正常，第二日期高度變正常
+                        tl.to([revisitCommaId, revisitSpanId], { autoAlpha: 1, width: "auto", height: "auto", duration: 0.5 }, flowStart);
+                    }
+                }
+            });
+
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            
+            STORY_DATA.forEach(item => {
+                if (item.coords.x < minX) minX = item.coords.x; if (item.coords.x > maxX) maxX = item.coords.x;
+                if (item.coords.y < minY) minY = item.coords.y; if (item.coords.y > maxY) maxY = item.coords.y;
+            });
+            const padding = 50; const bbWidth = (maxX - minX) + padding * 2; const bbHeight = (maxY - minY) + padding * 2;
+            const centerX = (minX + maxX) / 2; const centerY = (minY + maxY) / 2;
+            let finalScale = Math.max(1, Math.min(Math.min(1000 / bbWidth, 1000 / bbHeight), 4)); 
+            const finalPos = getFixedPosition(centerX, centerY, finalScale);
+
+            tl.to("#map-content-wrapper", { scale: finalScale, x: finalPos.x, y: finalPos.y, duration: 2.5, ease: "power2.inOut" }, "zoomOut"); 
+            tl.to(".city-label", { scale: 4.5 / finalScale, duration: 2.5, ease: "power2.inOut" }, "zoomOut");
+            tl.to("#end-title-layer", { y: "0%", autoAlpha: 1, duration: 1.5, ease: "power2.out" }, "zoomOut+=1"); 
+        }
+
+        window.onload = initStory;
+    </script>
+</body>
+</html>

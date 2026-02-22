@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paris New Year Trip - Story Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* --- 基礎設定 --- */
+        body, html {
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto; 
+            background-color: #f5f2e8;
+            font-family: 'Noto Sans TC', sans-serif;
+            height: auto; 
+            min-height: 100vh;
+        }
+
+        /* --- 0. Home 按鈕 --- */
+        #back-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 100;
+            background-color: white; color: #8b5a2b;
+            padding: 10px 20px; border-radius: 30px;
+            text-decoration: none; 
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #back-btn:hover {
+            background-color: #8b5a2b; color: white;
+            transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- 1. 地圖容器 --- */
+        #map-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; pointer-events: none;
+            background-color: #f5f2e8; 
+        }
+
+        #responsive-stage {
+            position: relative;
+            width: 1000px; height: 1000px; 
+            flex-shrink: 0;
+            transform-origin: center center;
+        }
+
+        #map-content-wrapper {
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            transform-origin: 0 0; 
+        }
+
+        #europe-map { 
+            width: 100%; height: 100%; 
+            display: block; object-fit: contain; 
+        }
+        
+        /* --- 標記樣式 --- */
+        .marker {
+            position: absolute; 
+            transform: translate(-50%, -50%); 
+            z-index: 6;
+            opacity: 0;
+        }
+
+        .marker.waypoint-dot {
+            width: 3px; height: 3px;
+            background-color: #5e3c1d; 
+            border: 0.5px solid #f5f2e8; 
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .marker.home-icon {
+            width: 6px; height: 6px;
+            background-color: #c0392b; 
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E") no-repeat center / contain;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E") no-repeat center / contain;
+            filter: drop-shadow(0 3px 3px rgba(0,0,0,0.4));
+        }
+
+        /* --- 一般城市資訊方框 --- */
+        .city-label {
+            position: absolute;
+            transform: translate(-50%, -50%); 
+            transform-origin: center center; 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5px 1px 1.5px 1px; 
+            border-radius: 1px;
+            box-shadow: 0 0.5px 2px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; 
+            pointer-events: auto; z-index: 7; 
+            opacity: 0; visibility: hidden; white-space: nowrap;
+            border: 0.5px solid none;
+        }
+        
+        .city-label h3 {
+            margin: 0; font-size: 3px; color: #8b5a2b;
+            font-family: 'Playfair Display', 'Noto Serif TC', serif; 
+            font-weight: bold;
+        }
+        .city-label p {
+            margin: 0.5px 0 1px 0; font-size: 2px; color: #555; font-weight: bold;
+        }
+
+        /* --- 過夜城市標籤 (Stay Label) --- */
+        .city-label.stay-label {
+            background: rgba(40, 40, 40, 0.95); 
+            border: none; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5); 
+            padding: 2px 4px; 
+            border-radius: 2px;
+        }
+        .city-label.stay-label .stay-city-name { 
+            font-size: 1.5px;
+            color: #ddd; 
+            margin: 0 0 0.2px 0;
+            font-family: 'Playfair Display', 'Noto Serif TC', serif;
+            font-weight: normal;
+        }
+        .city-label.stay-label .stay-title {
+            font-size: 3px;
+            color: #f5b041; 
+            letter-spacing: 0.2px;
+            margin: 0 0 0.5px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .city-label.stay-label p { color: #ccc; font-weight: normal; font-size: 1.5px; margin: 0; }
+
+        /* Explore 按鈕 */
+        .explore-btn {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #b16837;
+            color: white;
+            font-size: 1.8px;
+            padding: 0.5px 2px;
+            border-radius: 0.5px;
+            margin-top: 1px;
+            align-self: center; 
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .explore-btn:hover { background-color: #8b5a2b; }
+
+        #map-dim-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.85);
+            opacity: 0; z-index: 5; pointer-events: none;
+        }
+
+        /* --- 2. 封面層 --- */
+        #cover-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            /* 【修改】更換為巴黎行程的封面照片 (請確認您的資料夾中有這張圖) */
+            background: url('Photos/Paris_trip/cover.JPEG') center/cover no-repeat;
+            background-color: #333; z-index: 10; pointer-events: none;
+        }
+
+        /* --- 3. 起點標題層 --- */
+        #hero-text-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: white;
+            background: rgba(0, 0, 0, 0.5); z-index: 20; pointer-events: none;
+        }
+        #hero-text-layer h1 { font-size: 4rem; margin: 0; font-weight: bold; }
+        #hero-text-layer p { font-size: 1.5rem; opacity: 0.9; margin-top: 10px; }
+
+        /* --- 結尾標題層 --- */
+        #end-title-layer {
+            position: fixed; 
+            bottom: 40px; 
+            left: 40px;   
+            z-index: 40; 
+            pointer-events: none;
+            color: #8b5a2b; 
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8); 
+            opacity: 0; 
+            transform: translateY(100%); 
+        }
+        #end-title-layer h1 { font-size: 3rem; margin: 0; font-weight: bold; }
+        #end-title-layer p { font-size: 1.2rem; margin: 5px 0 0 0; opacity: 0.9; font-weight: bold; }
+
+        /* --- 4. 內容卡片層 --- */
+        #story-content-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 30; pointer-events: none;
+        }
+        
+        .story-element {
+            position: absolute; left: 50%; width: 80%; max-width: 600px;
+            opacity: 0; visibility: hidden; pointer-events: auto;
+        }
+
+        /* 標題棕色卡片 */
+        .card-type-title {
+            top: 50%; transform: translate(-150%, -50%) translateY(120vh); 
+            background: #8b5a2b; color: white; padding: 20px 30px;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1); text-align: left;
+            max-width: 400px; left: 5%; z-index: 50;
+            display: flex; flex-direction: column; align-items: flex-start;
+        }
+        .card-type-title h2 { 
+            font-size: 3rem; margin: 0 0 10px 0; 
+            font-family: 'Playfair Display', 'Noto Serif TC', serif;
+        }
+        .card-type-title p { font-size: 1.2rem; margin: 0; opacity: 0.9; }
+
+        .title-explore-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 8px 20px;
+            background-color: white;
+            color: #8b5a2b;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+            align-self: flex-end; 
+        }
+        .title-explore-btn:hover {
+            transform: translateY(-2px); background-color: #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .article-container {
+            top: 50%; transform: translate(-50%, 0) translateY(120vh);
+            width: 95%; max-width: 1400px; 
+            display: flex; flex-direction: column; gap: 0; z-index: 60;
+        }
+
+        /* Stay 模式下清空樣式 */
+        .article-container.stay-mode {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .article-section {
+            background: white; padding: 60px 40px; 
+            display: flex; gap: 50px; align-items: center;
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            background-blend-mode: multiply; border-bottom: 1px dashed #e0e0e0;
+        }
+        .article-section:first-child { border-top-left-radius: 4px; border-top-right-radius: 4px; }
+        .article-section:last-child { border-bottom: none; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+        .article-section img { width: 400px; height: auto; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transform: rotate(-2deg); flex-shrink: 0; }
+        .article-section .text-area { flex: 1; font-size: 1.2rem; line-height: 1.8; border-left: 5px solid #8b5a2b; padding-left: 30px; text-align: left; }
+        .article-section.reverse { flex-direction: row-reverse; }
+        .article-section.reverse img { transform: rotate(2deg); }
+        .article-section.reverse .text-area { border-left: none; border-right: 5px solid #8b5a2b; padding-left: 0; padding-right: 30px; text-align: right; }
+
+        /* --- 5. 實體捲動支撐層 --- */
+        #scroll-flow-container { position: relative; top: 0; left: 0; width: 100%; z-index: -1; }
+        .ghost-step { width: 100%; height: 200vh; }
+    </style>
+</head>
+<body>
+
+    <a href="Home.html" id="back-btn">Home</a>
+
+    <div id="map-container">
+        <div id="responsive-stage">
+            <div id="map-content-wrapper">
+                <img id="europe-map" src="Europe_map_new_202602.svg" alt="Map">
+                <svg id="route-layer" viewBox="0 0 1000 1000" preserveAspectRatio="none" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 2;">
+                    <defs id="route-defs"></defs>
+                </svg>
+                <div id="map-dim-layer"></div>
+                <div id="markers-layer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cover-layer"></div>
+    <div id="hero-text-layer">
+        <h1 id="page-title">Loading...</h1>
+        <p id="page-date">...</p>
+    </div>
+    
+    <div id="end-title-layer">
+        <h1 id="end-page-title">Loading...</h1>
+        <p id="end-page-date">...</p>
+    </div>
+
+    <div id="story-content-layer"></div>
+    <div id="scroll-flow-container"></div>
+
+    <script src="data.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const TRANSFORM_PARAMS = {
+            scaleX: 1.5,
+            scaleY: 1.5,
+            offsetX: -8,
+            offsetY: 93
+        };
+
+        function transformCoords(homeX, homeY) {
+            return {
+                x: (homeX * TRANSFORM_PARAMS.scaleX) + TRANSFORM_PARAMS.offsetX,
+                y: (homeY * TRANSFORM_PARAMS.scaleY) + TRANSFORM_PARAMS.offsetY
+            };
+        }
+
+        // ============================================
+        // 核心邏輯：資料預處理與合併
+        // ============================================
+        let CITY_DATE_RANGES = {}; 
+
+        function getMergedData() {
+            // 【修改】將尋找的目標改為 Paris New Year Trip
+            const tripEvent = window.DATA.events.find(e => e.text === 'Paris New Year Trip');
+            if (!tripEvent) return [];
+
+            document.getElementById('page-title').textContent = tripEvent.text;
+            
+            const singleLineDate = tripEvent.date.replace(/<br\s*\/?>/ig, ' ~ ');
+            document.getElementById('page-date').innerHTML = singleLineDate;
+
+            document.getElementById('end-page-title').textContent = tripEvent.text;
+            document.getElementById('end-page-date').innerHTML = singleLineDate;
+
+            const mappedData = tripEvent.eventMarkers.map(evMarker => {
+                let baseMarker = window.DATA.markers.home.find(m => m.id === evMarker.id);
+                if (!baseMarker && tripEvent.countryCandidates) {
+                    for (const country of tripEvent.countryCandidates) {
+                        if (window.DATA.markers[country]) {
+                            baseMarker = window.DATA.markers[country].find(m => m.id === evMarker.id);
+                            if (baseMarker) break;
+                        }
+                    }
+                }
+                let finalCoords = { x: 0, y: 0 };
+                if (baseMarker) {
+                    finalCoords = transformCoords(baseMarker.x, baseMarker.y);
+                }
+                return {
+                    ...evMarker,
+                    coords: finalCoords,
+                    notes: evMarker.notes || [],
+                    labelOffset: evMarker.labelOffset || { x: 0, y: 0 }
+                };
+            }).filter(m => m.coords.x !== 0); 
+
+            mappedData.forEach(item => {
+                if (!item.stay && item.type === 'waypoint') {
+                    if (!CITY_DATE_RANGES[item.city]) CITY_DATE_RANGES[item.city] = [];
+                    CITY_DATE_RANGES[item.city].push(item.date);
+                }
+            });
+
+            const finalData = [];
+            for (let i = 0; i < mappedData.length; i++) {
+                const current = mappedData[i];
+                if (current.stay) {
+                    let j = i + 1;
+                    let lastDate = current.date;
+                    while (j < mappedData.length && mappedData[j].city === current.city && mappedData[j].stay) {
+                        lastDate = mappedData[j].date;
+                        j++;
+                    }
+                    if (j > i + 1) {
+                        current.date = `${current.date} ~ ${lastDate}`;
+                        i = j - 1; 
+                    }
+                    finalData.push(current);
+                } else {
+                    finalData.push(current);
+                }
+            }
+
+            return finalData;
+        }
+
+        const STORY_DATA = getMergedData();
+        const SEEN_CITIES = new Set(); 
+
+        function updateStage() {
+            const winWidth = window.innerWidth;
+            const winHeight = window.innerHeight;
+            const baseSize = 1000;
+            const scale = Math.max(winWidth / baseSize, winHeight / baseSize);
+            const stage = document.getElementById("responsive-stage");
+            if(stage) stage.style.transform = `scale(${scale})`;
+        }
+        window.addEventListener('resize', updateStage);
+
+        function getFixedPosition(targetX, targetY, zoomLevel) {
+            const stageCenter = 500; 
+            const x = stageCenter - (targetX * zoomLevel);
+            const y = stageCenter - (targetY * zoomLevel);
+            return { x, y };
+        }
+
+        function initStory() {
+            updateStage();
+
+            const markersLayer = document.getElementById('markers-layer');
+            const contentLayer = document.getElementById('story-content-layer');
+            const scrollContainer = document.getElementById('scroll-flow-container');
+            const routeLayer = document.getElementById('route-layer');
+            const routeDefs = document.getElementById('route-defs');
+            
+            const startSpacer = document.createElement('div');
+            startSpacer.className = 'ghost-step';
+            startSpacer.style.height = '150vh'; 
+            scrollContainer.appendChild(startSpacer);
+
+            STORY_DATA.forEach((item, index) => {
+                // Lines
+                if (index > 0) {
+                    const prevItem = STORY_DATA[index - 1];
+                    const pathData = `M ${prevItem.coords.x} ${prevItem.coords.y} L ${item.coords.x} ${item.coords.y}`;
+                    const maskId = `path-mask-${index}`;
+                    const maskPathId = `mask-path-${index}`;
+                    
+                    const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+                    mask.setAttribute("id", maskId);
+                    mask.setAttribute("maskUnits", "userSpaceOnUse");
+                    const maskPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    maskPath.setAttribute("id", maskPathId);
+                    maskPath.setAttribute("d", pathData);
+                    maskPath.setAttribute("fill", "none");
+                    maskPath.setAttribute("stroke", "white");
+                    maskPath.setAttribute("stroke-width", "5"); 
+                    mask.appendChild(maskPath);
+                    routeDefs.appendChild(mask);
+
+                    const visiblePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    visiblePath.setAttribute("d", pathData);
+                    visiblePath.setAttribute("fill", "none");
+                    visiblePath.setAttribute("stroke", "#8b5a2b"); 
+                    visiblePath.setAttribute("stroke-width", "1.5");
+                    visiblePath.setAttribute("stroke-dasharray", "6, 6"); 
+                    visiblePath.setAttribute("mask", `url(#${maskId})`);
+                    routeLayer.appendChild(visiblePath);
+                }
+
+                // Markers
+                const marker = document.createElement('div');
+                if (item.type === 'start' || item.type === 'end') {
+                    marker.className = 'marker home-icon';
+                } else {
+                    marker.className = 'marker waypoint-dot';
+                }
+                marker.style.left = `${item.coords.x / 10}%`;
+                marker.style.top = `${item.coords.y / 10}%`;
+                marker.id = `marker-${index}`;
+                markersLayer.appendChild(marker);
+
+                // --- Labels 產生邏輯 ---
+                const label = document.createElement('div');
+                label.id = `label-${index}`;
+                let isDummyLabel = false; 
+
+                if (item.stay) {
+                    label.className = 'city-label stay-label';
+                    label.innerHTML = `
+                        <h3 class="stay-city-name">${item.city}</h3>
+                        <div class="stay-title">OVERNIGHT</div>
+                        <p>${item.date}</p>
+                    `;
+                } else if (item.type === 'waypoint') {
+                    if (!SEEN_CITIES.has(item.city)) {
+                        SEEN_CITIES.add(item.city);
+                        label.className = 'city-label';
+                        const dates = CITY_DATE_RANGES[item.city] || [item.date];
+                        const dateStr = dates.length > 1 ? `${dates[0]} ~ ${dates[dates.length - 1]}` : dates[0];
+                        const exploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="explore-btn">Explore City &rarr;</a>` : '';
+                        label.innerHTML = `<h3>${item.city}</h3><p>${dateStr}</p>${exploreBtn}`;
+                    } else {
+                        isDummyLabel = true;
+                    }
+                } else if (item.type === 'start') {
+                    label.className = 'city-label';
+                    const exploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="explore-btn">Explore City &rarr;</a>` : '';
+                    const endItem = STORY_DATA.find(d => d.type === 'end' && d.city === item.city);
+                    const endDateHTML = endItem ? `<span id="end-date-${index}" style="opacity: 0; height: 0; overflow: hidden; display: block;">End: ${endItem.date}</span>` : '';
+                    
+                    label.innerHTML = `
+                        <h3>${item.city}</h3>
+                        <p style="margin: 0.5px 0 1px 0;">Start: ${item.date}${endDateHTML}</p>
+                        ${exploreBtn}
+                    `;
+                } else if (item.type === 'end') {
+                    const startItem = STORY_DATA.find(d => d.type === 'start' && d.city === item.city);
+                    if (startItem) {
+                        isDummyLabel = true; 
+                    } else {
+                        label.className = 'city-label';
+                        const exploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="explore-btn">Explore City &rarr;</a>` : '';
+                        label.innerHTML = `<h3>${item.city}</h3><p>End: ${item.date}</p>${exploreBtn}`;
+                    }
+                }
+
+                if (isDummyLabel) {
+                    label.style.display = 'none'; 
+                } else {
+                    const offsetX = item.labelOffset ? item.labelOffset.x : 0;
+                    const offsetY = item.labelOffset ? item.labelOffset.y : 0;
+                    label.style.left = `${(item.coords.x / 10) + offsetX}%`;
+                    label.style.top = `${(item.coords.y / 10) + offsetY}%`;
+                }
+                markersLayer.appendChild(label);
+
+                // --- 內容卡片與文章區塊 ---
+                const titleCard = document.createElement('div');
+                titleCard.className = 'story-element card-type-title';
+                titleCard.id = `city-${index}-title`;
+                
+                const titleSpacer = document.createElement('div');
+                titleSpacer.className = 'ghost-step';
+
+                const articleContainer = document.createElement('div');
+                articleContainer.className = 'story-element article-container';
+                articleContainer.id = `city-${index}-article`;
+
+                if (item.stay) {
+                    titleCard.style.display = 'none';
+                    titleSpacer.style.height = '10vh'; 
+                    articleContainer.classList.add('stay-mode');
+                    articleContainer.innerHTML = ''; 
+                } else {
+                    const exploreBtnHTML = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="title-explore-btn">Explore City &rarr;</a>` : '';
+                    titleCard.innerHTML = `<h2>${item.city}</h2><p>${item.date}</p>${exploreBtnHTML}`;
+                    titleSpacer.style.height = '150vh';
+
+                    item.notes.forEach((note, noteIndex) => {
+                        const section = document.createElement('div');
+                        section.className = `article-section ${noteIndex % 2 !== 0 ? 'reverse' : ''}`;
+                        section.innerHTML = `<img src="${note.photo}" alt="Photo"><div class="text-area">${note.text}</div>`;
+                        articleContainer.appendChild(section);
+                    });
+                }
+                
+                contentLayer.appendChild(titleCard);
+                scrollContainer.appendChild(titleSpacer);
+                contentLayer.appendChild(articleContainer);
+
+                const articleSpacer = document.createElement('div');
+                articleSpacer.className = 'ghost-step';
+                articleSpacer.style.height = item.stay ? '60vh' : `${100 + (item.notes.length * 120)}vh`; 
+                scrollContainer.appendChild(articleSpacer);
+                
+                const exitSpacer = document.createElement('div');
+                exitSpacer.className = 'ghost-step';
+                exitSpacer.style.height = '10vh';
+                scrollContainer.appendChild(exitSpacer);
+            });
+
+            const endSpacer = document.createElement('div');
+            endSpacer.className = 'ghost-step';
+            endSpacer.style.height = '100vh'; 
+            scrollContainer.appendChild(endSpacer);
+
+            setTimeout(createTimeline, 100);
+        }
+
+        function createTimeline() {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "body", start: "top top", end: "bottom bottom",
+                    scrub: 1, markers: false,
+                    invalidateOnRefresh: true 
+                }
+            });
+
+            gsap.set("#map-content-wrapper", { x: 0, y: 0, scale: 1 });
+
+            tl.to("#cover-layer", { opacity: 0, duration: 1.5 }) 
+              .to("#hero-text-layer", { y: -200, opacity: 0, duration: 1.5 }, "<");
+
+            STORY_DATA.forEach((item, index) => {
+                
+                const targetScale = 5;
+                const pos = getFixedPosition(item.coords.x, item.coords.y, targetScale);
+
+                tl.to("#map-content-wrapper", {
+                    scale: targetScale, x: pos.x, y: pos.y, duration: 2, ease: "power1.inOut"
+                });
+
+                if (index > 0) {
+                    const maskPath = document.querySelector(`#mask-path-${index}`);
+                    if (maskPath) {
+                        const len = maskPath.getTotalLength();
+                        gsap.set(maskPath, { strokeDasharray: len, strokeDashoffset: len });
+                        tl.to(maskPath, { strokeDashoffset: 0, duration: 2, ease: "power1.inOut" }, "<"); 
+                    }
+                }
+
+                tl.to(`#marker-${index}`, { opacity: 1, scale: 1.5, duration: 0.5 }, "-=1");
+
+                const titleId = `#city-${index}-title`;
+                const articleId = `#city-${index}-article`;
+                
+                const flowStart = `flow-${index}`;
+                
+                if (!item.stay) {
+                    tl.to(titleId, { y: 0, x: "0%", yPercent: -50, autoAlpha: 1, duration: 2, ease: "power2.out" });
+                    tl.to({}, { duration: 1.5 });
+                }
+
+                tl.addLabel(flowStart);
+                
+                if (!item.stay) {
+                    tl.to("#map-dim-layer", { opacity: 0.85, duration: 1.5 }, flowStart);
+                    tl.to(["#markers-layer", "#route-layer"], { opacity: 0.3, duration: 1.5 }, flowStart);
+                    tl.to(titleId, { y: "-150vh", autoAlpha: 0, duration: 2, ease: "power1.in" }, flowStart); 
+                }
+
+                const scrollDist = item.stay ? 50 : 100 + (item.notes.length * 100); 
+                const scrollDur = item.stay ? 3 : 8 + (item.notes.length * 2);
+
+                tl.fromTo(articleId, { y: "100vh" }, { y: `-${scrollDist}vh`, duration: scrollDur, ease: "none" }, flowStart);
+                tl.fromTo(articleId, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.5, ease: "power1.in" }, flowStart);
+
+                const flowEnd = `flowEnd-${index}`;
+                tl.addLabel(flowEnd, `${flowStart}+=${scrollDur}`);
+
+                if (!item.stay) {
+                    tl.to("#map-dim-layer", { opacity: 0, duration: 0.8 }, flowEnd);
+                    tl.to(["#markers-layer", "#route-layer"], { opacity: 1, duration: 0.8 }, flowEnd);
+                }
+                
+                tl.to(articleId, { autoAlpha: 0, duration: 0.5 }, flowEnd);
+
+                const labelEl = document.getElementById(`label-${index}`);
+                const isDummy = labelEl && labelEl.style.display === 'none';
+
+                if (!isDummy) {
+                    if (item.stay) {
+                        tl.to(`#label-${index}`, { autoAlpha: 1, y: "0%", duration: 0.5, ease: "back.out(1.7)" }, flowStart);
+                        tl.to(`#label-${index}`, { autoAlpha: 0, duration: 0.5 }, flowEnd);
+                    } else {
+                        tl.to(`#label-${index}`, { autoAlpha: 1, y: "0%", duration: 0.5, ease: "back.out(1.7)" }, `${flowEnd}-=0.5`);
+                    }
+                }
+
+                if (item.type === 'end') {
+                    const startIndex = STORY_DATA.findIndex(d => d.type === 'start' && d.city === item.city);
+                    if (startIndex !== -1) {
+                        tl.to(`#end-date-${startIndex}`, { 
+                            autoAlpha: 1, 
+                            height: "auto", 
+                            marginTop: "0.5px", 
+                            duration: 0.5 
+                        }, `${flowEnd}-=0.5`);
+                    }
+                }
+            });
+
+            // ==========================================
+            // 旅程結束：動態計算 Bounding Box 進行 Zoom Out 
+            // ==========================================
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            STORY_DATA.forEach(item => {
+                if (item.coords.x < minX) minX = item.coords.x;
+                if (item.coords.x > maxX) maxX = item.coords.x;
+                if (item.coords.y < minY) minY = item.coords.y;
+                if (item.coords.y > maxY) maxY = item.coords.y;
+            });
+
+            const padding = 50; 
+            const bbWidth = (maxX - minX) + padding * 2;
+            const bbHeight = (maxY - minY) + padding * 2;
+            
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+
+            let finalScale = Math.min(1000 / bbWidth, 1000 / bbHeight);
+            finalScale = Math.max(1, Math.min(finalScale, 4)); 
+
+            const finalPos = getFixedPosition(centerX, centerY, finalScale);
+            const finalLabelScale = 4.5 / finalScale; 
+
+            tl.to("#map-content-wrapper", {
+                scale: finalScale, x: finalPos.x, y: finalPos.y, duration: 2.5, ease: "power2.inOut"
+            }, "zoomOut"); 
+
+            tl.to(".city-label", {
+                scale: finalLabelScale, duration: 2.5, ease: "power2.inOut"
+            }, "zoomOut");
+
+            tl.to("#end-title-layer", {
+                y: "0%",
+                autoAlpha: 1,
+                duration: 1.5,
+                ease: "power2.out"
+            }, "zoomOut+=1"); 
+        }
+
+        window.onload = initStory;
+    </script>
+</body>
+</html>

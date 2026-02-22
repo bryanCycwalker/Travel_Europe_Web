@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Log - Germany</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="Page_cities.css" />
+</head>
+<body>
+
+<div id="dark-mode-overlay"></div>
+<div id="dynamic-blur-bg"></div>
+
+<div class="layout-wrapper">
+    <header>
+        <a href="Home.html" class="home-btn">Home</a>
+        <h1 id="header-title"></h1> </header>
+
+    <nav class="city-nav" id="nav-bar"></nav>
+
+    <div class="container">
+        <div id="city-info">
+            <h2 id="city-title">Loading...</h2>
+            <p id="city-desc">Initializing map data...</p>
+        </div>
+        <div class="main-content">
+            <div id="event-sidebar">
+                <div id="event-list-header">TRAVEL LOG</div>
+                <div id="event-container"></div>
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <div id="trip-notes-wrapper">
+        <div id="trip-notes-pinned">
+            <div id="trip-notes-container"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="data.js"></script>
+
+<script src="Page_cities.js"></script>
+
+<script>
+    // 網頁載入完成後，透過配置檔啟動系統
+    window.onload = function() {
+        initMapApp({
+            countryName: "Germany",
+            // 德國專屬：抓取 de，以及 home 分類裡面的德國城市
+            countryKeys: ["de", "home"], 
+            cityFilter: function(key, item) {
+                if (key === 'home') return (item.city === 'Munich' || item.city === 'Dresden');
+                return true;
+            },
+            defaultCenter: [51.1657, 10.4515], // 德國中心座標
+            defaultZoom: 6,
+            overviewTitle: "Germany Overview",
+            overviewDesc: "Displaying all points of interest across the country."
+        });
+    };
+</script>
+</body>
+</html>
