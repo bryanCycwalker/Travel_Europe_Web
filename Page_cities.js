@@ -2,27 +2,49 @@
 gsap.registerPlugin(ScrollTrigger);
 
 // --- 畫廊互動輔助函式 (全域) ---
+// --- 畫廊互動輔助函式 (全域) ---
 window.expandFan = function(el) {
     let items = el.querySelectorAll('.fan-item');
     if(items.length <= 1) return;
+    
+    // 剛展開時，以整副牌的「正中央」為基準對稱展開
     items.forEach((item, i) => {
         let offset = (i - (items.length - 1) / 2) * 110; 
         let rotate = (i - (items.length - 1) / 2) * 6;  
         item.style.transform = `translateX(${offset}%) scale(1.2) rotate(${rotate}deg)`;
-        item.style.zIndex = 100; 
+        item.style.zIndex = i; // 確保展開時的堆疊順序正常
     });
 }
 
 window.focusItem = function(el) {
     let container = el.closest('.note-card-fly');
     if (!container) return;
-    let index = el.getAttribute('data-index');
+    
+    // 取得目前 Hover 照片的索引值，並轉換為數字
+    let index = parseInt(el.getAttribute('data-index')); 
     let allPhotos = container.querySelectorAll('.fan-item');
 
-    allPhotos.forEach(p => {
-        p.style.filter = (p === el) ? 'blur(0px) brightness(1)' : 'blur(6px) brightness(0.4)';
+    // 【動態位移魔法】讓被選中的照片變成座標系的「中心點 (0)」
+    allPhotos.forEach((p, i) => {
+        // 新的偏移量：只看該照片與「被選中照片」的距離
+        let offset = (i - index) * 110; 
+        let rotate = (i - index) * 6;
+
+        if (p === el) {
+            // Hover 的照片：回到中心(translateX=0)，立正(rotate=0)，放大且變亮
+            p.style.filter = 'blur(0px) brightness(1)';
+            p.style.transform = `translateX(${offset}%) scale(1.2) rotate(${rotate}deg)`;
+            p.style.zIndex = 100; // 絕對在最上層
+        } else {
+            // 其他照片：退居兩側，縮小並變暗模糊
+            p.style.filter = 'blur(6px) brightness(0.4)';
+            p.style.transform = `translateX(${offset}%) scale(1.1) rotate(${rotate}deg)`;
+            // 讓距離中心越遠的照片，Z軸層級越低，這樣交疊時才不會穿幫
+            p.style.zIndex = 50 - Math.abs(i - index); 
+        }
     });
 
+    // --- 處理文字切換 (維持不變) ---
     let dateItem = container.querySelector('.date-item');
     if (dateItem) {
         dateItem.style.opacity = '0';
@@ -33,7 +55,7 @@ window.focusItem = function(el) {
     let allTexts = container.querySelectorAll('.text-item');
     allTexts.forEach(t => {
         let matchIdx = t.getAttribute('data-match');
-        if (matchIdx === index || matchIdx === "-1") {
+        if (matchIdx == index || matchIdx === "-1") { // 注意這裡用 == 自動轉型比對
             t.style.opacity = '1';
             t.style.visibility = 'visible';
             t.style.position = 'relative';
@@ -49,8 +71,10 @@ window.focusItem = function(el) {
 
 window.collapseFan = function(el) {
     let items = el.querySelectorAll('.fan-item');
+    // 滑鼠離開時，全部收合回原本的狀態
     items.forEach((item, i) => {
         let angle = (i - (items.length - 1) / 2) * 10; 
+        // 這裡隱含了 translateX(0%)，所以照片會自動回歸原位
         item.style.transform = `rotate(${angle}deg)`;
         item.style.zIndex = i; 
         item.style.filter = 'blur(0px) brightness(1)'; 
@@ -359,16 +383,32 @@ window.initMapApp = function(config) {
         function updateEventList(cityObj) {
             const container = document.getElementById('event-container');
             container.innerHTML = ''; 
-            if (!cityObj) {
-                container.innerHTML = '<p style="color:#ccc; font-size:12px; text-align:center; margin-top:20px;">Select a specific city to see timeline events.</p>';
-                return;
-            }
             const allTimelineEntries = [];
 
+            // 【新增邏輯】決定要比對的城市名單
+            // 如果有點擊特定城市，就只找該城市；如果是 Overview 模式，就抓取當前國家的「所有城市」
+            let targetCities = [];
+            if (cityObj) {
+                targetCities.push(cityObj.name.toLowerCase());
+            } else {
+                targetCities = Object.values(cityData).map(c => c.name.toLowerCase());
+            }
+
+            if (targetCities.length === 0) {
+                container.innerHTML = '<p style="color:#ccc; font-size:12px; text-align:center; margin-top:20px;">No records found.</p>';
+                return;
+            }
+
+            // 1. 載入 Events (大型旅遊事件)
             window.DATA.events.forEach(event => {
                 if (!event.eventMarkers) return;
-                const hasCity = event.eventMarkers.some(m => m.city.toLowerCase().includes(cityObj.name.toLowerCase()));
-                if (hasCity) {
+                
+                // 檢查這個 event 的 markers 裡，有沒有包含 targetCities 中的任何一個城市
+                const hasMatchingCity = event.eventMarkers.some(m => 
+                    targetCities.some(tc => m.city.toLowerCase().includes(tc))
+                );
+
+                if (hasMatchingCity) {
                     const timestamps = event.eventMarkers.map(m => new Date(m.date.replace(/<[^>]+>/g, '')).getTime()).filter(t => !isNaN(t));
                     if(timestamps.length > 0) {
                         const minDate = new Date(Math.min(...timestamps)).toISOString().split('T')[0];
@@ -383,12 +423,26 @@ window.initMapApp = function(config) {
                 }
             });
 
-            cityObj.pins.forEach(pin => {
-                if (pin.trip && pin.date) {
-                    allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
-                }
-            });
+            // 2. 載入 Pins 中的單獨景點一日遊 (Day Trips)
+            if (cityObj) {
+                // 單一城市模式：只抓該城市的 pins
+                cityObj.pins.forEach(pin => {
+                    if (pin.trip && pin.date) {
+                        allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
+                    }
+                });
+            } else {
+                // 全覽模式：遍歷所有城市的 pins
+                Object.values(cityData).forEach(city => {
+                    city.pins.forEach(pin => {
+                        if (pin.trip && pin.date) {
+                            allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
+                        }
+                    });
+                });
+            }
 
+            // 依日期排序並去重
             allTimelineEntries.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
             const uniqueEntries = allTimelineEntries.filter((v, i, a) => a.findIndex(t => t.title === v.title && t.dateDisplay === v.dateDisplay) === i);
 
