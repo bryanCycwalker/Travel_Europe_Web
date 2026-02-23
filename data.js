@@ -28,7 +28,7 @@ window.DATA = {
                     desc: "Solo Day Trip", 
                     notes: [
                         { 
-                            title: "Cathedral of <br>St. Michael and St. Gudula</br>", 
+                            title: "Cathedral of St. Michael and St. Gudula", 
                             photo: "Photos/Belgium/Brussels/Belgium_Trip/bru3 (Small).JPEG", text: "a supreme place I later learned the Kings and Queens of Belgium are crowned." 
                         },
                         { 
@@ -63,14 +63,14 @@ window.DATA = {
                             photo2: "Photos/Belgium/Brussels/Belgium_Trip/bru16 (Small).jpg", text2: "Some charmingly quirky old buildings" 
                         },
                         { 
-                            title:"Royal Museums of <br>Fine Arts of Belgium</br>", 
+                            title:"Royal Museums of Fine Arts of Belgium", 
                             photo1: "Photos/Belgium/Brussels/Belgium_Trip/bru17 (Small).jpg", text1: "An allegedly world-famous Gallery.",
                             photo2: "Photos/Belgium/Brussels/Belgium_Trip/bru18 (Small).jpg", 
                             photo3: "Photos/Belgium/Brussels/Belgium_Trip/bru19 (Small).jpg", text3: "First I thought it was the renownd 'De Toren van Babel'. <br>I was wrong. But I would soon admire it in half a year!</br>",
                             photo4: "Photos/Belgium/Brussels/Belgium_Trip/bru20 (Small).jpg", text4: "And I <span style='font-size:1.5em; font-weight:bold; color: #A32020;'>love the the use of light, shadow, and spatial variation</span> in the paintings." 
                         },
                         { 
-                            title:"Church of Our Lady of <br>Victories at the Sablon</br>", 
+                            title:"Church of Our Lady of Victories at the Sablon", 
                             photo: "Photos/Belgium/Brussels/Belgium_Trip/bru21 (Small).jpg", text: "I found the nave magnificently high up!" 
                         },
                         { 
