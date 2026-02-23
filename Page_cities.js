@@ -2,17 +2,20 @@
 gsap.registerPlugin(ScrollTrigger);
 
 // --- 畫廊互動輔助函式 (全域) ---
-// --- 畫廊互動輔助函式 (全域) ---
+
+// 【新增】偵測是否為「純觸控設備 (如手機、平板)」
+function isTouchDevice() {
+    return window.matchMedia("(hover: none)").matches;
+}
+
 window.expandFan = function(el) {
     let items = el.querySelectorAll('.fan-item');
     if(items.length <= 1) return;
-    
-    // 剛展開時，以整副牌的「正中央」為基準對稱展開
     items.forEach((item, i) => {
         let offset = (i - (items.length - 1) / 2) * 110; 
         let rotate = (i - (items.length - 1) / 2) * 6;  
         item.style.transform = `translateX(${offset}%) scale(1.2) rotate(${rotate}deg)`;
-        item.style.zIndex = i; // 確保展開時的堆疊順序正常
+        item.style.zIndex = i; 
     });
 }
 
@@ -20,31 +23,29 @@ window.focusItem = function(el) {
     let container = el.closest('.note-card-fly');
     if (!container) return;
     
-    // 取得目前 Hover 照片的索引值，並轉換為數字
     let index = parseInt(el.getAttribute('data-index')); 
+    
+    // 【新增】記錄目前正在展示哪一張照片 (供手機版點擊判斷用)
+    let fanContainer = container.querySelector('.photo-fan');
+    if (fanContainer) fanContainer.setAttribute('data-active-index', index);
+
     let allPhotos = container.querySelectorAll('.fan-item');
 
-    // 【動態位移魔法】讓被選中的照片變成座標系的「中心點 (0)」
     allPhotos.forEach((p, i) => {
-        // 新的偏移量：只看該照片與「被選中照片」的距離
         let offset = (i - index) * 110; 
         let rotate = (i - index) * 6;
 
         if (p === el) {
-            // Hover 的照片：回到中心(translateX=0)，立正(rotate=0)，放大且變亮
             p.style.filter = 'blur(0px) brightness(1)';
             p.style.transform = `translateX(${offset}%) scale(1.2) rotate(${rotate}deg)`;
-            p.style.zIndex = 100; // 絕對在最上層
+            p.style.zIndex = 100; 
         } else {
-            // 其他照片：退居兩側，縮小並變暗模糊
             p.style.filter = 'blur(6px) brightness(0.4)';
             p.style.transform = `translateX(${offset}%) scale(1.1) rotate(${rotate}deg)`;
-            // 讓距離中心越遠的照片，Z軸層級越低，這樣交疊時才不會穿幫
             p.style.zIndex = 50 - Math.abs(i - index); 
         }
     });
 
-    // --- 處理文字切換 (維持不變) ---
     let dateItem = container.querySelector('.date-item');
     if (dateItem) {
         dateItem.style.opacity = '0';
@@ -55,7 +56,7 @@ window.focusItem = function(el) {
     let allTexts = container.querySelectorAll('.text-item');
     allTexts.forEach(t => {
         let matchIdx = t.getAttribute('data-match');
-        if (matchIdx == index || matchIdx === "-1") { // 注意這裡用 == 自動轉型比對
+        if (matchIdx == index || matchIdx === "-1") { 
             t.style.opacity = '1';
             t.style.visibility = 'visible';
             t.style.position = 'relative';
@@ -70,17 +71,22 @@ window.focusItem = function(el) {
 }
 
 window.collapseFan = function(el) {
-    let items = el.querySelectorAll('.fan-item');
-    // 滑鼠離開時，全部收合回原本的狀態
+    // 確保抓到正確的外框
+    let fanContainer = el.classList.contains('photo-fan') ? el : el.querySelector('.photo-fan');
+    if (!fanContainer) return;
+    
+    // 【新增】清除已選擇的標記
+    fanContainer.removeAttribute('data-active-index');
+
+    let items = fanContainer.querySelectorAll('.fan-item');
     items.forEach((item, i) => {
         let angle = (i - (items.length - 1) / 2) * 10; 
-        // 這裡隱含了 translateX(0%)，所以照片會自動回歸原位
         item.style.transform = `rotate(${angle}deg)`;
         item.style.zIndex = i; 
         item.style.filter = 'blur(0px) brightness(1)'; 
     });
 
-    let container = el.closest('.note-card-fly');
+    let container = fanContainer.closest('.note-card-fly');
     if (container) {
         let dateItem = container.querySelector('.date-item');
         if (dateItem) {
@@ -98,21 +104,57 @@ window.collapseFan = function(el) {
     }
 }
 
+// ==========================================
+// 【全新】事件分流控制器 (隔離手機與電腦的操作)
+// ==========================================
+window.onFanEnter = function(el) {
+    if(isTouchDevice()) return; // 手機忽略滑鼠進入
+    expandFan(el);
+}
+
+window.onFanLeave = function(el) {
+    if(isTouchDevice()) return; // 手機忽略滑鼠移出
+    collapseFan(el);
+}
+
+window.onItemEnter = function(el) {
+    if(isTouchDevice()) return; // 手機忽略滑鼠懸停
+    focusItem(el);
+}
+
+window.handleItemTap = function(event, el) {
+    if (!isTouchDevice()) return; // 電腦版交給滑鼠處理，忽略點擊
+    event.stopPropagation(); // 防止點擊穿透
+
+    let container = el.closest('.photo-fan');
+    let currentIndex = el.getAttribute('data-index');
+    let activeIndex = container.getAttribute('data-active-index');
+
+    if (activeIndex === currentIndex) {
+        // 如果點擊的是「已經在正中央」的照片，就將整組牌收合
+        collapseFan(container);
+    } else {
+        // 如果點擊的是兩側的其他照片，就將它展開並置中
+        focusItem(el);
+    }
+}
+
 function createFanHTML(mediaArray) {
     if(mediaArray.length === 0) return '';
-    let html = `<div class="photo-fan" onmouseenter="expandFan(this)" onmouseleave="collapseFan(this)">`;
+    // 將原本的 onmouseenter 等事件替換為新的控制器
+    let html = `<div class="photo-fan" onmouseenter="onFanEnter(this)" onmouseleave="onFanLeave(this)">`;
     let n = mediaArray.length;
     
     mediaArray.forEach((media, i) => {
         let isVideo = media.toLowerCase().endsWith('.mov') || media.toLowerCase().endsWith('.mp4');
         let angle = (i - (n - 1) / 2) * 10;
         
-        // 直接使用 media 原檔名，不自動加 _low 了
         let content = isVideo 
             ? `<video src="${media}" autoplay loop muted playsinline></video>` 
             : `<img src="${media}" decoding="async" loading="eager">`; 
             
-        html += `<div class="fan-item" data-index="${i}" onmouseenter="focusItem(this)" style="transform: rotate(${angle}deg); z-index: ${i};">${content}</div>`;
+        // 加上 onclick 觸發手機的點擊事件
+        html += `<div class="fan-item" data-index="${i}" onmouseenter="onItemEnter(this)" onclick="handleItemTap(event, this)" style="transform: rotate(${angle}deg); z-index: ${i};">${content}</div>`;
     });
     
     html += `</div>`;
