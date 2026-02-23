@@ -6,7 +6,7 @@
     <title>Belgium Trip - Perfect Layout & Fan Hover</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
-        /* --- 基礎設定 (比利時雜誌風配色) --- */
+        /* --- 基礎設定 --- */
         body, html {
             margin: 0; padding: 0;
             overflow-x: hidden; overflow-y: auto; 
@@ -79,7 +79,6 @@
         #story-content-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
         .story-element { position: absolute; left: 50%; width: 80%; max-width: 600px; opacity: 0; visibility: hidden; pointer-events: auto; }
 
-        /* --- 黑底卡片放大與按鈕靠右下角 --- */
         .card-type-title {
             top: 50%; transform: translate(-150%, -50%) translateY(120vh); 
             background: #2C2A29; color: #F9F6F0; 
@@ -102,9 +101,6 @@
         }
         .title-explore-btn:hover { transform: translateY(-2px); background-color: #C19A2B; }
 
-        /* =========================================================
-           【佈局防溢出修正】
-           ========================================================= */
         .article-container {
             top: 50%; left: 50%; transform: translate(-50%, 0) translateY(120vh);
             width: 95%; max-width: 1400px; display: flex; flex-direction: column; z-index: 60;
@@ -173,7 +169,6 @@
         #scroll-flow-container { position: relative; top: 0; left: 0; width: 100%; z-index: -1; }
         .ghost-step { width: 100%; height: 200vh; }
 
-        /* --- 新增功能專屬 CSS 區塊 --- */
         #cover-city-list {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 40px; pointer-events: auto; z-index: 25;
         }
@@ -196,7 +191,6 @@
         }
         .cover-city-chip:hover::before, .cover-city-chip:hover::after { opacity: 1; }
 
-        /* 首頁滾動提示 */
         #scroll-hint {
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
             color: white; font-size: 1.2rem; opacity: 0.8; z-index: 25; font-weight: bold;
@@ -210,7 +204,6 @@
             60% { transform: translate(-50%, -5px); }
         }
 
-        /* 城市便條左下角的景點下拉選單 */
         .card-bottom-actions { 
             display: flex; width: 100%; justify-content: space-between; align-items: flex-end; 
             margin-top: auto; padding-top: 20px; 
@@ -248,7 +241,7 @@
         #back-to-top:hover { background-color: #A62626; box-shadow: 0 6px 16px rgba(0,0,0,0.3); transform: translateY(-3px); }
 
         /* =========================================================
-           📱 【手機響應式設計 RWD：精準修復照片蓋字與點擊邏輯】
+           📱 【手機響應式設計 RWD：精準修正垂直排列】
            ========================================================= */
         @media (max-width: 768px) {
             .card-type-title {
@@ -280,7 +273,6 @@
                 justify-content: center !important;
                 padding: 0 5% !important;
             }
-            /* 💡 極致修復 1：明確將照片區塊壓在標題區塊之下 */
             .img-wrapper {
                 width: 100% !important;
                 height: 40vh !important;
@@ -293,7 +285,6 @@
                 max-width: 85vw !important;
                 max-height: 35vh !important; 
             }
-            /* 💡 極致修復 1：標題區塊拉升至 1000，絕對蓋在照片上方 */
             .text-content-wrapper {
                 align-items: center !important;
                 text-align: center !important;
@@ -306,10 +297,13 @@
             .text-wrapper, .reverse .text-wrapper {
                 display: none !important;
             }
+            /* 💡 修正1：強制改為 column 排列，確保文字上下斷行不並排 */
             .section-subtitle {
                 display: flex !important;
+                flex-direction: column !important;
                 align-items: center !important;
                 justify-content: center !important;
+                gap: 10px !important; 
                 min-height: 4em; 
                 margin: 0 !important;
                 font-size: 1.1rem !important;
@@ -367,7 +361,6 @@
         let CITY_DATE_RANGES = {}; 
         const frameBaseTransforms = new Map();
 
-        // 💡 3. 極致修復：點擊任何外部空白處，收合所有狀態
         window.addEventListener('click', (e) => {
             document.querySelectorAll('.dropdown-content.show').forEach(el => el.classList.remove('show'));
 
@@ -375,12 +368,11 @@
                 let clickedWrapper = e.target.closest('.img-wrapper');
                 
                 document.querySelectorAll('.img-wrapper.interactive-ready').forEach(wrapper => {
-                    // 如果點擊的地方不在這個相片區塊內，且這個區塊正在展開中 -> 將其還原
                     if (wrapper.isHovered && wrapper !== clickedWrapper) {
                         wrapper.isHovered = false;
                         wrapper.activeFrame = -1;
                         
-                        let parts = wrapper.id.split('-'); // e.g., wrapper-1-0
+                        let parts = wrapper.id.split('-'); 
                         let idx = parts[1];
                         let nIdx = parts[2];
                         
@@ -795,7 +787,6 @@
                 }
             });
 
-            // 💡 2. 極致修復：手機版點擊邏輯 (完全由 frame 內部控制，精準判斷單圖或多圖)
             for (let i = 0; i < totalImages; i++) {
                 let frameEl = document.getElementById(`frame-${index}-${noteIndex}-${i}`);
                 let txtEl = document.getElementById(`txt-${index}-${noteIndex}-${i}`);
@@ -834,26 +825,22 @@
                         }
                     });
 
-                    // 💡 手機專用點擊邏輯
                     frameEl.addEventListener('click', (e) => {
                         if (window.innerWidth > 768) return;
-                        e.stopPropagation(); // 阻止事件冒泡到 window，避免觸發「點擊外部收合」
+                        e.stopPropagation(); 
                         if (!wrapper.classList.contains("interactive-ready")) return;
                         
                         let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
 
-                        // 💡 如果是多張照片，第一次點擊先做「扇形展開」
                         if (totalImages > 1 && !wrapper.isHovered) {
                             wrapper.isHovered = true;
                             applyDynamicFanEffect(wrapper, index, noteIndex, totalImages);
                             return;
                         }
 
-                        // 💡 如果已經展開，或是只有 1 張照片 -> 執行放大並切換文字
-                        wrapper.isHovered = true; // 確保單張照片也被標記為活動狀態
+                        wrapper.isHovered = true; 
 
                         if (wrapper.activeFrame === i) {
-                            // 點擊已經放大的照片 -> 收合
                             wrapper.activeFrame = -1;
                             if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
                                 subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
@@ -865,7 +852,6 @@
                                 if (fEl) gsap.to(fEl, { scale: returnScale, zIndex: j + 1, opacity: 1, duration: 0.2, overwrite: "auto" });
                             }
                         } else {
-                            // 點擊新照片 -> 放大並顯示文字
                             wrapper.activeFrame = i;
                             gsap.to(frameEl, { scale: 1.15, zIndex: 100, opacity: 1, duration: 0.2, overwrite: "auto" });
                             
@@ -995,7 +981,6 @@
                                     tl.fromTo(imgId, { y: 0 }, { y: -moveDist, duration: parallaxDuration, ease: "none" }, `${itemLabel}+=0.5`);
                                 }
                                 
-                                // 💡 確保無標題時，底層的副標題區塊依然能透明度受控，供 JS 注入文字
                                 if (i === 0) {
                                     let subId = `#subtitle-${index}-${noteIndex}`;
                                     tl.fromTo(subId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
@@ -1070,7 +1055,10 @@
                                 }
                             });
                             
-                            timeOffset += slideDur; 
+                            // 💡 3. 極致修復：為單張照片加入「強制停留時間」，讓滑動不再跳躍
+                            let holdDur = 3;
+                            tl.to({}, { duration: holdDur });
+                            timeOffset += slideDur + holdDur; 
                         }
                     });
 
@@ -1111,13 +1099,15 @@
                 }
             });
 
+            // 💡 2. 極致修復：放寬地圖最終縮放的邊距 (padding)，確保標籤不被切斷
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 
             STORY_DATA.forEach(item => {
                 if (item.coords.x < minX) minX = item.coords.x; if (item.coords.x > maxX) maxX = item.coords.x;
                 if (item.coords.y < minY) minY = item.coords.y; if (item.coords.y > maxY) maxY = item.coords.y;
             });
-            const padding = 50; const bbWidth = (maxX - minX) + padding * 2; const bbHeight = (maxY - minY) + padding * 2;
+            const padding = 100; // 將邊緣留白從 50 加大到 100
+            const bbWidth = (maxX - minX) + padding * 2; const bbHeight = (maxY - minY) + padding * 2;
             const centerX = (minX + maxX) / 2; const centerY = (minY + maxY) / 2;
             let finalScale = Math.max(1, Math.min(Math.min(1000 / bbWidth, 1000 / bbHeight), 4)); 
             const finalPos = getFixedPosition(centerX, centerY, finalScale);
