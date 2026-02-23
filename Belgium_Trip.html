@@ -98,7 +98,7 @@
             background-color: #A62626; color: white; text-decoration: none; font-weight: bold;
             font-size: 1rem; 
             border-radius: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s, background-color 0.2s; 
-            margin-left: auto; /* 💡 確保按鈕永遠靠右 */
+            margin-left: auto; 
         }
         .title-explore-btn:hover { transform: translateY(-2px); background-color: #C19A2B; }
 
@@ -210,7 +210,7 @@
             60% { transform: translate(-50%, -5px); }
         }
 
-        /* 💡 新增：城市便條左下角的景點下拉選單 */
+        /* 城市便條左下角的景點下拉選單 */
         .card-bottom-actions { 
             display: flex; width: 100%; justify-content: space-between; align-items: flex-end; 
             margin-top: auto; padding-top: 20px; 
@@ -248,11 +248,11 @@
         #back-to-top:hover { background-color: #A62626; box-shadow: 0 6px 16px rgba(0,0,0,0.3); transform: translateY(-3px); }
 
         /* =========================================================
-           📱 【手機響應式設計 RWD：精準修復】
+           📱 【手機響應式設計 RWD：精準修復照片蓋字與點擊邏輯】
            ========================================================= */
         @media (max-width: 768px) {
             .card-type-title {
-                top: 15% !important;
+                top: 60% !important;
                 left: 5% !important;
                 width: 90% !important;
                 max-width: none !important;
@@ -265,9 +265,14 @@
                 flex-direction: column; align-items: center; gap: 15px; justify-content: center;
             }
             .title-explore-btn { margin-left: 0; }
-            .dropdown-content { left: 50%; transform: translateX(-50%); text-align: center; }
+            .dropdown-content { 
+                top: auto !important; 
+                bottom: calc(100% + 10px) !important; 
+                left: 50% !important; 
+                transform: translateX(-50%) !important; 
+                text-align: center; 
+            }
             
-            /* 💡 確保手機版高度精確為 80vh，解決跳轉誤差與偏移問題 */
             .article-section, .article-section.reverse {
                 flex-direction: column !important;
                 min-height: 80vh !important;
@@ -275,24 +280,28 @@
                 justify-content: center !important;
                 padding: 0 5% !important;
             }
+            /* 💡 極致修復 1：明確將照片區塊壓在標題區塊之下 */
             .img-wrapper {
                 width: 100% !important;
                 height: 40vh !important;
                 max-height: 40vh !important;
                 margin-bottom: 10px !important;
+                position: relative !important;
+                z-index: 10 !important; 
             }
             .collage-img {
                 max-width: 85vw !important;
                 max-height: 35vh !important; 
             }
+            /* 💡 極致修復 1：標題區塊拉升至 1000，絕對蓋在照片上方 */
             .text-content-wrapper {
                 align-items: center !important;
                 text-align: center !important;
                 margin-top: 0 !important;
                 width: 100% !important;
                 flex: 0 0 auto !important;
-                z-index: 70 !important; 
                 position: relative !important;
+                z-index: 1000 !important; 
             }
             .text-wrapper, .reverse .text-wrapper {
                 display: none !important;
@@ -347,14 +356,50 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
         const TRANSFORM_PARAMS = { scaleX: 1.5, scaleY: 1.5, offsetX: -8, offsetY: 93 };
+        
         function transformCoords(homeX, homeY) { return { x: (homeX * TRANSFORM_PARAMS.scaleX) + TRANSFORM_PARAMS.offsetX, y: (homeY * TRANSFORM_PARAMS.scaleY) + TRANSFORM_PARAMS.offsetY }; }
+        function getFixedPosition(targetX, targetY, zoomLevel) { 
+            let isMobile = window.innerWidth <= 768;
+            let centerY = isMobile ? 333 : 500; 
+            return { x: 500 - (targetX * zoomLevel), y: centerY - (targetY * zoomLevel) }; 
+        }
 
         let CITY_DATE_RANGES = {}; 
         const frameBaseTransforms = new Map();
 
-        // 💡 全域關閉下拉選單
-        window.addEventListener('click', () => {
+        // 💡 3. 極致修復：點擊任何外部空白處，收合所有狀態
+        window.addEventListener('click', (e) => {
             document.querySelectorAll('.dropdown-content.show').forEach(el => el.classList.remove('show'));
+
+            if (window.innerWidth <= 768) {
+                let clickedWrapper = e.target.closest('.img-wrapper');
+                
+                document.querySelectorAll('.img-wrapper.interactive-ready').forEach(wrapper => {
+                    // 如果點擊的地方不在這個相片區塊內，且這個區塊正在展開中 -> 將其還原
+                    if (wrapper.isHovered && wrapper !== clickedWrapper) {
+                        wrapper.isHovered = false;
+                        wrapper.activeFrame = -1;
+                        
+                        let parts = wrapper.id.split('-'); // e.g., wrapper-1-0
+                        let idx = parts[1];
+                        let nIdx = parts[2];
+                        
+                        let subTitleEl = document.getElementById(`subtitle-${idx}-${nIdx}`);
+                        if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
+                            subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
+                            subTitleEl.style.color = "";
+                        }
+                        
+                        let frames = wrapper.querySelectorAll('.img-frame');
+                        frames.forEach((frameEl, fIdx) => {
+                            let base = frameBaseTransforms.get(frameEl.id);
+                            if (base) {
+                                gsap.to(frameEl, { x: base.x, y: base.y, rotation: base.rotation, scale: 1, zIndex: fIdx + 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)", overwrite: "auto" });
+                            }
+                        });
+                    }
+                });
+            }
         });
 
         window.scrollToLabel = function(labelName) {
@@ -460,7 +505,6 @@
             document.getElementById("responsive-stage").style.transform = `scale(${scale})`;
         }
         window.addEventListener('resize', updateStage);
-        function getFixedPosition(targetX, targetY, zoomLevel) { return { x: 500 - (targetX * zoomLevel), y: 500 - (targetY * zoomLevel) }; }
 
         function initStory() {
             updateStage();
@@ -588,7 +632,6 @@
                 if (item.stay) {
                     titleCard.style.display = 'none'; titleSpacer.style.height = '10vh'; articleContainer.classList.add('stay-mode');
                 } else {
-                    // 💡 建構城市黑卡，加入景點下拉按鈕
                     titleCard.innerHTML = `<h2>${item.city}</h2><p>${item.date}</p>`;
                     let bottomActions = document.createElement('div');
                     bottomActions.className = 'card-bottom-actions';
@@ -729,14 +772,17 @@
         function initDynamicHover(wrapperId, index, noteIndex, totalImages) {
             const wrapper = document.getElementById(wrapperId);
             if (!wrapper) return;
+            wrapper.activeFrame = -1;
 
             wrapper.addEventListener("mouseenter", () => {
+                if (window.innerWidth <= 768) return;
                 if (!wrapper.classList.contains("interactive-ready")) return;
                 wrapper.isHovered = true; 
                 applyDynamicFanEffect(wrapper, index, noteIndex, totalImages);
             });
 
             wrapper.addEventListener("mouseleave", () => {
+                if (window.innerWidth <= 768) return;
                 if (!wrapper.classList.contains("interactive-ready")) return;
                 wrapper.isHovered = false; 
                 for (let i = 0; i < totalImages; i++) {
@@ -749,24 +795,18 @@
                 }
             });
 
+            // 💡 2. 極致修復：手機版點擊邏輯 (完全由 frame 內部控制，精準判斷單圖或多圖)
             for (let i = 0; i < totalImages; i++) {
                 let frameEl = document.getElementById(`frame-${index}-${noteIndex}-${i}`);
                 let txtEl = document.getElementById(`txt-${index}-${noteIndex}-${i}`);
                 
                 if (frameEl) {
-                    const handleEnter = () => {
+                    frameEl.addEventListener('mouseenter', () => {
+                        if (window.innerWidth <= 768) return;
                         if (!wrapper.classList.contains("interactive-ready")) return;
-                        gsap.to(frameEl, { scale: 1.15, zIndex: 50, duration: 0.2, overwrite: "auto" });
                         
-                        if (window.innerWidth <= 768) {
-                            let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
-                            if (subTitleEl && txtEl) {
-                                subTitleEl.innerHTML = txtEl.innerHTML;
-                                subTitleEl.style.color = "#A62626";
-                            }
-                        } else {
-                            if (txtEl) gsap.to(txtEl, { color: "#A62626", x: 10, duration: 0.2, overwrite: "auto" });
-                        }
+                        gsap.to(frameEl, { scale: 1.15, zIndex: 50, duration: 0.2, overwrite: "auto" });
+                        if (txtEl) gsap.to(txtEl, { color: "#A62626", x: 10, duration: 0.2, overwrite: "auto" });
                         
                         for (let j = 0; j < totalImages; j++) {
                             if (j !== i) {
@@ -775,22 +815,15 @@
                                 if (otherTxt) gsap.to(otherTxt, { opacity: 0.2, duration: 0.2, overwrite: "auto" });
                             }
                         }
-                    };
+                    });
 
-                    const handleLeave = () => {
+                    frameEl.addEventListener('mouseleave', () => {
+                        if (window.innerWidth <= 768) return;
                         if (!wrapper.classList.contains("interactive-ready")) return;
+                        
                         let returnScale = wrapper.isHovered ? 1.05 : 1; 
                         gsap.to(frameEl, { scale: returnScale, zIndex: i + 1, duration: 0.2, overwrite: "auto" });
-                        
-                        if (window.innerWidth <= 768) {
-                            let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
-                            if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
-                                subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
-                                subTitleEl.style.color = "";
-                            }
-                        } else {
-                            if (txtEl) gsap.to(txtEl, { color: "#2C2A29", x: 0, duration: 0.2, overwrite: "auto" });
-                        }
+                        if (txtEl) gsap.to(txtEl, { color: "#2C2A29", x: 0, duration: 0.2, overwrite: "auto" });
                         
                         for (let j = 0; j < totalImages; j++) {
                             if (j !== i) {
@@ -799,13 +832,56 @@
                                 if (otherTxt) gsap.to(otherTxt, { opacity: 1, duration: 0.2, overwrite: "auto" });
                             }
                         }
-                    };
+                    });
 
-                    frameEl.addEventListener('mouseenter', handleEnter, {passive: true});
-                    frameEl.addEventListener('mouseleave', handleLeave, {passive: true});
-                    frameEl.addEventListener('touchstart', handleEnter, {passive: true});
-                    frameEl.addEventListener('touchend', handleLeave, {passive: true});
-                    frameEl.addEventListener('touchcancel', handleLeave, {passive: true});
+                    // 💡 手機專用點擊邏輯
+                    frameEl.addEventListener('click', (e) => {
+                        if (window.innerWidth > 768) return;
+                        e.stopPropagation(); // 阻止事件冒泡到 window，避免觸發「點擊外部收合」
+                        if (!wrapper.classList.contains("interactive-ready")) return;
+                        
+                        let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
+
+                        // 💡 如果是多張照片，第一次點擊先做「扇形展開」
+                        if (totalImages > 1 && !wrapper.isHovered) {
+                            wrapper.isHovered = true;
+                            applyDynamicFanEffect(wrapper, index, noteIndex, totalImages);
+                            return;
+                        }
+
+                        // 💡 如果已經展開，或是只有 1 張照片 -> 執行放大並切換文字
+                        wrapper.isHovered = true; // 確保單張照片也被標記為活動狀態
+
+                        if (wrapper.activeFrame === i) {
+                            // 點擊已經放大的照片 -> 收合
+                            wrapper.activeFrame = -1;
+                            if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
+                                subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
+                                subTitleEl.style.color = "";
+                            }
+                            for (let j = 0; j < totalImages; j++) {
+                                let fEl = document.getElementById(`frame-${index}-${noteIndex}-${j}`);
+                                let returnScale = (totalImages > 1) ? 1.05 : 1;
+                                if (fEl) gsap.to(fEl, { scale: returnScale, zIndex: j + 1, opacity: 1, duration: 0.2, overwrite: "auto" });
+                            }
+                        } else {
+                            // 點擊新照片 -> 放大並顯示文字
+                            wrapper.activeFrame = i;
+                            gsap.to(frameEl, { scale: 1.15, zIndex: 100, opacity: 1, duration: 0.2, overwrite: "auto" });
+                            
+                            if (subTitleEl && txtEl) {
+                                subTitleEl.innerHTML = txtEl.innerHTML;
+                                subTitleEl.style.color = "#A62626";
+                            }
+                            for (let j = 0; j < totalImages; j++) {
+                                if (j !== i) {
+                                    let fEl = document.getElementById(`frame-${index}-${noteIndex}-${j}`);
+                                    let returnScale = (totalImages > 1) ? 1.05 : 1;
+                                    if (fEl) gsap.to(fEl, { opacity: 0.2, scale: returnScale, zIndex: j + 1, duration: 0.2, overwrite: "auto" });
+                                }
+                            }
+                        }
+                    });
                 }
             }
         }
@@ -875,18 +951,17 @@
                             if (noteIndex > 0) {
                                 let nextY = currentY - SECTION_VH; 
                                 tl.to(articleId, { y: `${nextY}vh`, duration: moveDur, ease: "power2.inOut" }, `${flowStart}+=${timeOffset}`);
-                                centerTime = timeOffset + moveDur; // 💡 精確計算：抵達該區塊的結束瞬間
+                                centerTime = timeOffset + moveDur; 
                                 currentY = nextY;
                                 timeOffset += moveDur; 
                             } else {
-                                centerTime = 2; // 💡 第一區塊
+                                centerTime = 2; 
                             }
                             
                             let holdTime = 4; 
                             let staggerGap = 1.8; 
                             let appearTime = timeOffset; 
 
-                            // 💡 點擊跳轉的完美落點
                             tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime}`);
 
                             note.subNotes.forEach((sn, i) => {
@@ -911,7 +986,7 @@
                                               let wrapper = document.getElementById(wrapperId);
                                               if (wrapper) {
                                                   wrapper.classList.add("interactive-ready");
-                                                  if (wrapper.isHovered) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, numImages), 50);
+                                                  if (wrapper.isHovered && window.innerWidth > 768) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, numImages), 50);
                                               }
                                           } 
                                         }, itemLabel
@@ -920,7 +995,8 @@
                                     tl.fromTo(imgId, { y: 0 }, { y: -moveDist, duration: parallaxDuration, ease: "none" }, `${itemLabel}+=0.5`);
                                 }
                                 
-                                if (i === 0 && note.title) {
+                                // 💡 確保無標題時，底層的副標題區塊依然能透明度受控，供 JS 注入文字
+                                if (i === 0) {
                                     let subId = `#subtitle-${index}-${noteIndex}`;
                                     tl.fromTo(subId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
                                     tl.to(subId, { y: -moveDist, duration: parallaxDuration, ease: "none" }, `${itemLabel}+=0.5`);
@@ -939,17 +1015,16 @@
                             if (noteIndex > 0) {
                                 let nextY = currentY - SECTION_VH; 
                                 tl.to(articleId, { y: `${nextY}vh`, duration: slideDur, ease: "none" }, `${flowStart}+=${timeOffset}`);
-                                centerTime = timeOffset + slideDur; // 💡 精確計算：單一景點滑入結束的瞬間
+                                centerTime = timeOffset + slideDur; 
                                 currentY = nextY;
                                 lastMoveStart = timeOffset;
                             } else {
                                 lastMoveStart = 0; 
-                                centerTime = 2; // 💡 第一區塊
+                                centerTime = 2; 
                             }
 
                             let appearTime = (noteIndex === 0) ? 0.5 : lastMoveStart + (slideDur * 0.25);
                             
-                            // 💡 點擊跳轉的完美落點
                             tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime}`);
                             
                             let itemLabel = `${flowStart}+=${appearTime}`;
@@ -974,7 +1049,7 @@
                                               let wrapper = document.getElementById(wrapperId);
                                               if (wrapper) {
                                                   wrapper.classList.add("interactive-ready");
-                                                  if (wrapper.isHovered) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, 1), 50);
+                                                  if (wrapper.isHovered && window.innerWidth > 768) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, 1), 50);
                                               }
                                           } 
                                         }, itemLabel
@@ -983,7 +1058,7 @@
                                     tl.fromTo(imgId, { y: 0 }, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
                                 }
                                 
-                                if (i === 0 && note.title) {
+                                if (i === 0) {
                                     let subId = `#subtitle-${index}-${noteIndex}`;
                                     tl.fromTo(subId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
                                     tl.to(subId, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
