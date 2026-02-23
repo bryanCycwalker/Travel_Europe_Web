@@ -6,7 +6,7 @@
     <title>Belgium Trip - Perfect Layout & Fan Hover</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
-        /* --- 基礎設定 --- */
+        /* --- 基礎設定 (比利時雜誌風配色) --- */
         body, html {
             margin: 0; padding: 0;
             overflow-x: hidden; overflow-y: auto; 
@@ -79,6 +79,7 @@
         #story-content-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
         .story-element { position: absolute; left: 50%; width: 80%; max-width: 600px; opacity: 0; visibility: hidden; pointer-events: auto; }
 
+        /* --- 黑底卡片放大與按鈕靠右下角 --- */
         .card-type-title {
             top: 50%; transform: translate(-150%, -50%) translateY(120vh); 
             background: #2C2A29; color: #F9F6F0; 
@@ -101,6 +102,9 @@
         }
         .title-explore-btn:hover { transform: translateY(-2px); background-color: #C19A2B; }
 
+        /* =========================================================
+           【佈局防溢出修正】
+           ========================================================= */
         .article-container {
             top: 50%; left: 50%; transform: translate(-50%, 0) translateY(120vh);
             width: 95%; max-width: 1400px; display: flex; flex-direction: column; z-index: 60;
@@ -169,6 +173,7 @@
         #scroll-flow-container { position: relative; top: 0; left: 0; width: 100%; z-index: -1; }
         .ghost-step { width: 100%; height: 200vh; }
 
+        /* --- 新增功能專屬 CSS 區塊 --- */
         #cover-city-list {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 40px; pointer-events: auto; z-index: 25;
         }
@@ -191,6 +196,7 @@
         }
         .cover-city-chip:hover::before, .cover-city-chip:hover::after { opacity: 1; }
 
+        /* 首頁滾動提示 */
         #scroll-hint {
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
             color: white; font-size: 1.2rem; opacity: 0.8; z-index: 25; font-weight: bold;
@@ -204,17 +210,21 @@
             60% { transform: translate(-50%, -5px); }
         }
 
+        /* 城市便條左下角的景點下拉選單 */
         .card-bottom-actions { 
             display: flex; width: 100%; justify-content: space-between; align-items: flex-end; 
             margin-top: auto; padding-top: 20px; 
         }
         .attraction-dropdown { position: relative; z-index: 100; pointer-events: auto; }
+        
         .dropdown-btn { 
             background-color: transparent; border: 2px solid #C19A2B; color: #C19A2B; 
             padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; 
             transition: all 0.3s ease; font-family: 'Noto Sans TC', sans-serif; font-size: 0.9rem; outline: none; 
         }
         .dropdown-btn:hover { background-color: #C19A2B; color: #2C2A29; }
+        /* 💡 電腦版顯示向下箭頭 */
+        .dropdown-btn span::after { content: ' ↓'; }
         
         .dropdown-content { 
             display: none; position: absolute; top: calc(100% + 10px); left: 0; 
@@ -241,11 +251,12 @@
         #back-to-top:hover { background-color: #A62626; box-shadow: 0 6px 16px rgba(0,0,0,0.3); transform: translateY(-3px); }
 
         /* =========================================================
-           📱 【手機響應式設計 RWD：精準修正垂直排列】
+           📱 【手機響應式設計 RWD：極致修復】
            ========================================================= */
         @media (max-width: 768px) {
+            /* 💡 1. 城市便條下移至 75%，完美讓出上方 1/3 給地圖 */
             .card-type-title {
-                top: 60% !important;
+                top: 75% !important;
                 left: 5% !important;
                 width: 90% !important;
                 max-width: none !important;
@@ -258,6 +269,9 @@
                 flex-direction: column; align-items: center; gap: 15px; justify-content: center;
             }
             .title-explore-btn { margin-left: 0; }
+            
+            /* 💡 手機版按鈕顯示向上箭頭，並向上展開 */
+            .dropdown-btn span::after { content: ' ↑'; }
             .dropdown-content { 
                 top: auto !important; 
                 bottom: calc(100% + 10px) !important; 
@@ -297,17 +311,22 @@
             .text-wrapper, .reverse .text-wrapper {
                 display: none !important;
             }
-            /* 💡 修正1：強制改為 column 排列，確保文字上下斷行不並排 */
+            
+            /* 💡 2. 修正文字排列：強制區塊置中且垂直排列，避免左右並排 */
             .section-subtitle {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-                gap: 10px !important; 
+                display: block !important;
+                text-align: center !important;
                 min-height: 4em; 
                 margin: 0 !important;
                 font-size: 1.1rem !important;
                 padding: 0 10px !important;
+                line-height: 1.4 !important;
+            }
+            /* 將內部被加入的 <span> 強制換行 */
+            .section-subtitle span {
+                display: block !important;
+                margin-top: 5px;
+                font-size: 0.85em;
             }
         }
     </style>
@@ -351,6 +370,7 @@
         gsap.registerPlugin(ScrollTrigger);
         const TRANSFORM_PARAMS = { scaleX: 1.5, scaleY: 1.5, offsetX: -8, offsetY: 93 };
         
+        // 💡 手機版時，地圖焦點完美置於上方 1/3
         function transformCoords(homeX, homeY) { return { x: (homeX * TRANSFORM_PARAMS.scaleX) + TRANSFORM_PARAMS.offsetX, y: (homeY * TRANSFORM_PARAMS.scaleY) + TRANSFORM_PARAMS.offsetY }; }
         function getFixedPosition(targetX, targetY, zoomLevel) { 
             let isMobile = window.innerWidth <= 768;
@@ -361,6 +381,7 @@
         let CITY_DATE_RANGES = {}; 
         const frameBaseTransforms = new Map();
 
+        // 💡 3. 全域點擊偵測：點擊任何外部空白處，收合所有狀態並還原標題
         window.addEventListener('click', (e) => {
             document.querySelectorAll('.dropdown-content.show').forEach(el => el.classList.remove('show'));
 
@@ -368,6 +389,7 @@
                 let clickedWrapper = e.target.closest('.img-wrapper');
                 
                 document.querySelectorAll('.img-wrapper.interactive-ready').forEach(wrapper => {
+                    // 如果點擊的地方不在這個相片區塊內，且這個區塊正在展開中 -> 將其還原
                     if (wrapper.isHovered && wrapper !== clickedWrapper) {
                         wrapper.isHovered = false;
                         wrapper.activeFrame = -1;
@@ -640,7 +662,7 @@
                             
                             let btn = document.createElement('button');
                             btn.className = 'dropdown-btn';
-                            btn.innerHTML = 'Attraction List ↓';
+                            btn.innerHTML = '<span>Attraction List</span>';
                             
                             let content = document.createElement('div');
                             content.className = 'dropdown-content';
@@ -708,8 +730,12 @@
                             let origTitle = note.title ? note.title : '';
                             textHTML += `<h3 class="section-subtitle" id="subtitle-${index}-${noteIndex}" data-orig="${origTitle.replace(/"/g, '&quot;')}">${origTitle}</h3>`;
                             
+                            // 💡 4. 修復：無論有無文字，都強制生成對應的 text-item，以便稍後由 JS 替換進副標題
                             textHTML += `<div class="text-wrapper">`;
-                            note.subNotes.forEach((sn, i) => { if(sn.text) textHTML += `<div class="text-item" id="txt-${index}-${noteIndex}-${i}">${sn.text}</div>`; });
+                            note.subNotes.forEach((sn, i) => { 
+                                let textContent = sn.text ? sn.text : '';
+                                textHTML += `<div class="text-item" id="txt-${index}-${noteIndex}-${i}">${textContent}</div>`; 
+                            });
                             textHTML += `</div></div>`;
 
                             section.innerHTML = imgHTML + textHTML; articleContainer.appendChild(section);
@@ -825,6 +851,7 @@
                         }
                     });
 
+                    // 💡 手機專用點擊邏輯 (修正：單圖直接展開文字)
                     frameEl.addEventListener('click', (e) => {
                         if (window.innerWidth > 768) return;
                         e.stopPropagation(); 
@@ -832,6 +859,7 @@
                         
                         let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
 
+                        // 若為多圖，第一次點擊做扇形展開；單圖則直接視為 hovered 並顯示文字
                         if (totalImages > 1 && !wrapper.isHovered) {
                             wrapper.isHovered = true;
                             applyDynamicFanEffect(wrapper, index, noteIndex, totalImages);
@@ -853,7 +881,8 @@
                             }
                         } else {
                             wrapper.activeFrame = i;
-                            gsap.to(frameEl, { scale: 1.15, zIndex: 100, opacity: 1, duration: 0.2, overwrite: "auto" });
+                            let activeScale = (totalImages > 1) ? 1.15 : 1.05;
+                            gsap.to(frameEl, { scale: activeScale, zIndex: 100, opacity: 1, duration: 0.2, overwrite: "auto" });
                             
                             if (subTitleEl && txtEl) {
                                 subTitleEl.innerHTML = txtEl.innerHTML;
@@ -933,22 +962,21 @@
                         }
 
                         if (isMulti) {
+                            // 💡 多圖區塊：完美置中計算
                             let moveDur = 2.5;
                             if (noteIndex > 0) {
                                 let nextY = currentY - SECTION_VH; 
                                 tl.to(articleId, { y: `${nextY}vh`, duration: moveDur, ease: "power2.inOut" }, `${flowStart}+=${timeOffset}`);
-                                centerTime = timeOffset + moveDur; 
                                 currentY = nextY;
                                 timeOffset += moveDur; 
-                            } else {
-                                centerTime = 2; 
                             }
                             
                             let holdTime = 4; 
                             let staggerGap = 1.8; 
                             let appearTime = timeOffset; 
 
-                            tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime}`);
+                            // 確保跳轉錨點是第一張照片完全展開的時刻
+                            tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${appearTime + 1.2}`);
 
                             note.subNotes.forEach((sn, i) => {
                                 let itemLabel = `${flowStart}+=${appearTime + (i * staggerGap)}`;
@@ -996,29 +1024,28 @@
                             timeOffset += (numImages * staggerGap) + 3; 
 
                         } else {
-                            let slideDur = 4; 
+                            // 💡 2. 極致修復：單圖區塊滑動不連貫問題。加入 Hold 時間與緩入緩出。
+                            let slideDur = 3; 
+                            let holdDur = 3; // 強制在螢幕正中間停留 3 秒
+                            
                             if (noteIndex > 0) {
                                 let nextY = currentY - SECTION_VH; 
-                                tl.to(articleId, { y: `${nextY}vh`, duration: slideDur, ease: "none" }, `${flowStart}+=${timeOffset}`);
-                                centerTime = timeOffset + slideDur; 
+                                tl.to(articleId, { y: `${nextY}vh`, duration: slideDur, ease: "power2.inOut" }, `${flowStart}+=${timeOffset}`);
                                 currentY = nextY;
                                 lastMoveStart = timeOffset;
                             } else {
                                 lastMoveStart = 0; 
-                                centerTime = 2; 
                             }
 
-                            let appearTime = (noteIndex === 0) ? 0.5 : lastMoveStart + (slideDur * 0.25);
+                            centerTime = (noteIndex === 0) ? 2 : lastMoveStart + slideDur; 
+                            let appearTime = (noteIndex === 0) ? 0.5 : lastMoveStart + (slideDur * 0.4);
                             
-                            tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime}`);
+                            // 將跳轉點精準設置在停留時間的中間
+                            tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime + (holdDur / 2)}`);
                             
                             let itemLabel = `${flowStart}+=${appearTime}`;
                             
                             note.subNotes.forEach((sn, i) => { 
-                                let parallaxDuration = slideDur; 
-                                let parallaxSpeed = 1; 
-                                let moveDist = parallaxDuration * parallaxSpeed; 
-                                
                                 if (sn.photo) {
                                     let frameId = `frame-${index}-${noteIndex}-${i}`; let imgId = `#img-${index}-${noteIndex}-${i}`;
                                     let wrapperId = `wrapper-${index}-${noteIndex}`;
@@ -1040,25 +1067,22 @@
                                         }, itemLabel
                                     );
                                     
-                                    tl.fromTo(imgId, { y: 0 }, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
+                                    tl.fromTo(imgId, { y: 0 }, { y: -10, duration: slideDur + holdDur, ease: "none" }, `${itemLabel}+=0.5`);
                                 }
                                 
                                 if (i === 0) {
                                     let subId = `#subtitle-${index}-${noteIndex}`;
                                     tl.fromTo(subId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
-                                    tl.to(subId, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
                                 }
                                 if (sn.text) {
                                     let txtId = `#txt-${index}-${noteIndex}-${i}`;
                                     tl.fromTo(txtId, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, itemLabel);
-                                    tl.to(txtId, { y: -moveDist, duration: slideDur, ease: "none" }, `${itemLabel}+=0.5`);
                                 }
                             });
                             
-                            // 💡 3. 極致修復：為單張照片加入「強制停留時間」，讓滑動不再跳躍
-                            let holdDur = 3;
-                            tl.to({}, { duration: holdDur });
-                            timeOffset += slideDur + holdDur; 
+                            // 延遲下一段動畫的開始時間，製造停留感
+                            tl.to({}, { duration: holdDur }, `${flowStart}+=${centerTime}`);
+                            timeOffset = centerTime + holdDur; 
                         }
                     });
 
@@ -1099,14 +1123,14 @@
                 }
             });
 
-            // 💡 2. 極致修復：放寬地圖最終縮放的邊距 (padding)，確保標籤不被切斷
+            // 💡 4. 極致修復：放寬地圖最終縮放的邊距，確保所有城市標籤都不被切掉
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 
             STORY_DATA.forEach(item => {
                 if (item.coords.x < minX) minX = item.coords.x; if (item.coords.x > maxX) maxX = item.coords.x;
                 if (item.coords.y < minY) minY = item.coords.y; if (item.coords.y > maxY) maxY = item.coords.y;
             });
-            const padding = 100; // 將邊緣留白從 50 加大到 100
+            const padding = 100; 
             const bbWidth = (maxX - minX) + padding * 2; const bbHeight = (maxY - minY) + padding * 2;
             const centerX = (minX + maxX) / 2; const centerY = (minY + maxY) / 2;
             let finalScale = Math.max(1, Math.min(Math.min(1000 / bbWidth, 1000 / bbHeight), 4)); 
