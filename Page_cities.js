@@ -1,9 +1,9 @@
 // 註冊 GSAP 套件
 gsap.registerPlugin(ScrollTrigger);
 
-// --- 畫廊互動輔助函式 (全域) ---
-
-// 【新增】偵測是否為「純觸控設備 (如手機、平板)」
+// ==========================================
+// 畫廊互動輔助函式 (分流手機點擊與電腦Hover)
+// ==========================================
 function isTouchDevice() {
     return window.matchMedia("(hover: none)").matches;
 }
@@ -24,17 +24,13 @@ window.focusItem = function(el) {
     if (!container) return;
     
     let index = parseInt(el.getAttribute('data-index')); 
-    
-    // 【新增】記錄目前正在展示哪一張照片 (供手機版點擊判斷用)
     let fanContainer = container.querySelector('.photo-fan');
     if (fanContainer) fanContainer.setAttribute('data-active-index', index);
 
     let allPhotos = container.querySelectorAll('.fan-item');
-
     allPhotos.forEach((p, i) => {
         let offset = (i - index) * 110; 
         let rotate = (i - index) * 6;
-
         if (p === el) {
             p.style.filter = 'blur(0px) brightness(1)';
             p.style.transform = `translateX(${offset}%) scale(1.2) rotate(${rotate}deg)`;
@@ -71,11 +67,8 @@ window.focusItem = function(el) {
 }
 
 window.collapseFan = function(el) {
-    // 確保抓到正確的外框
     let fanContainer = el.classList.contains('photo-fan') ? el : el.querySelector('.photo-fan');
     if (!fanContainer) return;
-    
-    // 【新增】清除已選擇的標記
     fanContainer.removeAttribute('data-active-index');
 
     let items = fanContainer.querySelectorAll('.fan-item');
@@ -104,63 +97,38 @@ window.collapseFan = function(el) {
     }
 }
 
-// ==========================================
-// 【全新】事件分流控制器 (隔離手機與電腦的操作)
-// ==========================================
-window.onFanEnter = function(el) {
-    if(isTouchDevice()) return; // 手機忽略滑鼠進入
-    expandFan(el);
-}
-
-window.onFanLeave = function(el) {
-    if(isTouchDevice()) return; // 手機忽略滑鼠移出
-    collapseFan(el);
-}
-
-window.onItemEnter = function(el) {
-    if(isTouchDevice()) return; // 手機忽略滑鼠懸停
-    focusItem(el);
-}
-
+window.onFanEnter = function(el) { if(!isTouchDevice()) expandFan(el); }
+window.onFanLeave = function(el) { if(!isTouchDevice()) collapseFan(el); }
+window.onItemEnter = function(el) { if(!isTouchDevice()) focusItem(el); }
 window.handleItemTap = function(event, el) {
-    if (!isTouchDevice()) return; // 電腦版交給滑鼠處理，忽略點擊
-    event.stopPropagation(); // 防止點擊穿透
-
+    if (!isTouchDevice()) return; 
+    event.stopPropagation(); 
     let container = el.closest('.photo-fan');
     let currentIndex = el.getAttribute('data-index');
     let activeIndex = container.getAttribute('data-active-index');
-
-    if (activeIndex === currentIndex) {
-        // 如果點擊的是「已經在正中央」的照片，就將整組牌收合
-        collapseFan(container);
-    } else {
-        // 如果點擊的是兩側的其他照片，就將它展開並置中
-        focusItem(el);
-    }
+    if (activeIndex === currentIndex) collapseFan(container);
+    else focusItem(el);
 }
 
 function createFanHTML(mediaArray) {
     if(mediaArray.length === 0) return '';
-    // 將原本的 onmouseenter 等事件替換為新的控制器
     let html = `<div class="photo-fan" onmouseenter="onFanEnter(this)" onmouseleave="onFanLeave(this)">`;
     let n = mediaArray.length;
-    
     mediaArray.forEach((media, i) => {
         let isVideo = media.toLowerCase().endsWith('.mov') || media.toLowerCase().endsWith('.mp4');
         let angle = (i - (n - 1) / 2) * 10;
-        
         let content = isVideo 
             ? `<video src="${media}" autoplay loop muted playsinline></video>` 
             : `<img src="${media}" decoding="async" loading="eager">`; 
-            
-        // 加上 onclick 觸發手機的點擊事件
         html += `<div class="fan-item" data-index="${i}" onmouseenter="onItemEnter(this)" onclick="handleItemTap(event, this)" style="transform: rotate(${angle}deg); z-index: ${i};">${content}</div>`;
     });
-    
     html += `</div>`;
     return html;
 }
 
+// ==========================================
+// 地圖氣泡框 Pop-up 產生器
+// ==========================================
 function createPopupHTML(pin, cityName) {
     const wikiUrl = pin.wiki || `https://en.wikipedia.org/wiki/${encodeURIComponent(pin.t)}`;
     const titleText = cityName ? `${cityName} - ${pin.t}` : pin.t;
@@ -232,7 +200,6 @@ function createPopupHTML(pin, cityName) {
     }
     
     if (pin.note) {
-        // 使用 💡 圖示，並加上一點斜體與強調色讓它跟一般資訊區隔開來
         html += `<div class="popup-detail" style="align-items: flex-start; color: #b16837; font-weight: bold;">
                     💡 <span>${pin.note}</span>
                  </div>`;
@@ -244,7 +211,7 @@ function createPopupHTML(pin, cityName) {
 }
 
 // ==========================================
-// 核心初始化函式 (由各國的 HTML 呼叫並傳入設定)
+// 核心初始化函式
 // ==========================================
 window.initMapApp = function(config) {
     try {
@@ -253,18 +220,107 @@ window.initMapApp = function(config) {
         let cityData = {}; 
         let masterTl = null; 
         let pinTrigger = null;
+        let currentMode = 'overview'; // 【新增】追蹤目前是總覽還是單一城市
 
-        // 設定標題
         document.getElementById('header-title').innerText = config.countryName.toUpperCase();
         
         let map = L.map('map', { preferCanvas: true }).setView(config.defaultCenter, config.defaultZoom);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
             attribution: '&copy; CARTO', updateWhenIdle: true, keepBuffer: 2 
         }).addTo(map);
-        let markerClusterGroup = L.markerClusterGroup({ maxClusterRadius: 50 });
+
+        // 【修改】關閉原生的叢集點擊自動放大，改由我們手動控制
+        let markerClusterGroup = L.markerClusterGroup({ 
+            maxClusterRadius: 50,
+            zoomToBoundsOnClick: false 
+        });
+
+        // 【新增】叢集智慧點擊跳轉機制
+        markerClusterGroup.on('clusterclick', function (a) {
+            if (currentMode === 'overview') {
+                const markers = a.layer.getAllChildMarkers();
+                const uniqueCities = new Set(markers.map(m => m.cityId));
+                
+                if (uniqueCities.size === 1) {
+                    // 若叢集裡所有的點都屬於同一個城市，直接跳進該城市
+                    const targetCityId = Array.from(uniqueCities)[0];
+                    showCity(targetCityId);
+                } else {
+                    // 若包含多個不同城市的點，則乖乖放大地圖，停留在總覽頁面
+                    a.layer.zoomToBounds({padding: [20, 20]});
+                }
+            } else {
+                // 如果已經在單一城市模式，一律執行普通的放大
+                a.layer.zoomToBounds({padding: [20, 20]});
+            }
+        });
+
         map.addLayer(markerClusterGroup);
 
         document.getElementById('header-title').onclick = function() { showOverview(); };
+
+        // ===============================================
+        // 動態建立全域懸浮 UI
+        // ===============================================
+        if (!document.getElementById('global-floating-ui')) {
+            const floatingUI = document.createElement('div');
+            floatingUI.id = 'global-floating-ui';
+            
+            floatingUI.innerHTML = `
+                <div id="scroll-percentage">0%</div>
+                <div id="location-indicator">
+                    <div id="loc-country">${config.countryName}</div>
+                    <div id="loc-city">Overview</div>
+                </div>
+                <button id="scroll-to-top">↑</button>
+                <button id="attraction-list-btn">Attraction List</button>
+                <div id="attraction-list-panel"></div>
+            `;
+            document.body.appendChild(floatingUI);
+
+            const homeBtn = document.querySelector('.home-btn');
+            if (homeBtn) floatingUI.appendChild(homeBtn);
+
+            document.getElementById('scroll-to-top').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('attraction-list-btn').addEventListener('click', () => {
+                document.getElementById('attraction-list-panel').classList.toggle('open');
+            });
+
+            window.addEventListener('scroll', () => {
+                let scrollTop = window.scrollY || document.documentElement.scrollTop;
+                let docHeight = document.body.scrollHeight - window.innerHeight;
+                let pct = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+                pct = Math.max(0, Math.min(100, pct)); 
+                
+                const pctInd = document.getElementById('scroll-percentage');
+                if(pctInd) pctInd.innerText = `${pct}%`;
+
+                const topBtn = document.getElementById('scroll-to-top');
+                const locInd = document.getElementById('location-indicator');
+                const listBtn = document.getElementById('attraction-list-btn');
+                
+                const triggerPoint = window.innerHeight * 0.6;
+
+                if (scrollTop > triggerPoint) {
+                    if(topBtn) topBtn.classList.add('show');
+                    if(pctInd) pctInd.classList.add('show');
+                    if(locInd) locInd.classList.add('show');
+                    if(listBtn && document.getElementById('attraction-list-panel').innerHTML.trim() !== '') {
+                        listBtn.classList.add('show');
+                    }
+                } else {
+                    if(topBtn) topBtn.classList.remove('show');
+                    if(pctInd) pctInd.classList.remove('show');
+                    if(locInd) locInd.classList.remove('show');
+                    if(listBtn) listBtn.classList.remove('show');
+                    const panel = document.getElementById('attraction-list-panel');
+                    if(panel) panel.classList.remove('open');
+                }
+            });
+        }
 
         function getCustomIcon(vValue) {
             const v = typeof vValue !== 'undefined' ? parseInt(vValue) : 0; 
@@ -276,7 +332,6 @@ window.initMapApp = function(config) {
             config.countryKeys.forEach(key => {
                 const citiesInKey = window.DATA.markers[key] || [];
                 citiesInKey.forEach(item => {
-                    // 利用 config 傳進來的 filter 判斷這座城市是否屬於這個國家
                     if (!config.cityFilter || config.cityFilter(key, item)) {
                         const id = item.city.toLowerCase().replace(/\s+/g, '-');
                         cityData[id] = {
@@ -295,6 +350,7 @@ window.initMapApp = function(config) {
             const wrapper = document.getElementById('trip-notes-wrapper');
             const container = document.getElementById('trip-notes-container');
             const blurBgContainer = document.getElementById('dynamic-blur-bg');
+            const listPanel = document.getElementById('attraction-list-panel');
             
             ScrollTrigger.getAll().forEach(t => t.kill());
             if (masterTl) { masterTl.kill(); masterTl = null; }
@@ -303,6 +359,7 @@ window.initMapApp = function(config) {
             gsap.set(["#dark-mode-overlay", ".note-card-fly", ".blur-bg-item", "#trip-notes-pinned"], { clearProps: "all" });
             container.innerHTML = '';
             blurBgContainer.innerHTML = ''; 
+            if(listPanel) listPanel.innerHTML = ''; 
 
             if (!cityObj) {
                 wrapper.style.display = 'none'; return;
@@ -310,9 +367,10 @@ window.initMapApp = function(config) {
 
             let notesData = [];
 
-            function extractMedia(obj, fallbackDate) {
-                let title = obj.title || obj.t; 
+            function extractMedia(obj, fallbackDate, fallbackTitle) {
+                let title = obj.title || obj.t || fallbackTitle; 
                 if (!title) return null;
+                
                 let rawDate = obj.date || fallbackDate || "";
                 let displayDate = rawDate.replace(/<br>/g, ' - ');
                 let photos = [], textsObj = []; 
@@ -332,6 +390,10 @@ window.initMapApp = function(config) {
                             photoCounter++;
                         }
                     }
+                } else if (obj.photo) { 
+                    photos.push(obj.photo);
+                    let fallbackText = obj.text || obj.d;
+                    if (fallbackText) textsObj.push({ idx: 0, text: fallbackText }); 
                 } else if (obj.photos && obj.photos.length > 0) {
                     photos = obj.photos;
                     let fallbackText = obj.text || obj.d;
@@ -347,14 +409,15 @@ window.initMapApp = function(config) {
                 let markers = event.eventMarkers.filter(m => m.city.toLowerCase().includes(cityObj.name.toLowerCase()));
                 markers.forEach(m => {
                     if(m.notes) m.notes.forEach(note => {
-                        let data = extractMedia(note, m.date);
+                        let fallbackTitle = m.city + (m.desc ? ` - ${m.desc}` : '');
+                        let data = extractMedia(note, m.date, fallbackTitle);
                         if(data) notesData.push(data);
                     });
                 });
             });
 
             cityObj.pins.forEach(pin => {
-                let data = extractMedia(pin, pin.date || cityObj.date);
+                let data = extractMedia(pin, pin.date || cityObj.date, pin.t);
                 if(data) notesData.push(data);
             });
 
@@ -392,6 +455,24 @@ window.initMapApp = function(config) {
                 } else {
                     blurBgContainer.innerHTML += `<div class="blur-bg-item" id="blur-bg-${index}"></div>`;
                 }
+
+                if (listPanel) {
+                    let listItem = document.createElement('div');
+                    listItem.className = 'attraction-item';
+                    listItem.innerText = note.title;
+                    listItem.onclick = () => {
+                        listPanel.classList.remove('open');
+                        if (masterTl && masterTl.scrollTrigger) {
+                            let st = masterTl.scrollTrigger;
+                            let targetTime = (index === uniqueNotes.length - 1) ? (index * 6 + 8) : (index * 6 + 7.4);
+                            targetTime = Math.min(targetTime, masterTl.duration()); 
+                            let progress = targetTime / masterTl.duration();
+                            let targetScroll = st.start + (st.end - st.start) * progress;
+                            window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                        }
+                    };
+                    listPanel.appendChild(listItem);
+                }
             });
 
             setTimeout(() => {
@@ -405,7 +486,7 @@ window.initMapApp = function(config) {
 
                 cards.forEach((card, i) => {
                     let bgItem = bgItems[i]; 
-                    gsap.set(card, { x: (i % 2 === 0) ? "-15vw" : "15vw", yPercent: -50, xPercent: -50, z: -4000, autoAlpha: 0 });
+                    gsap.set(card, { x: (i % 2 === 0) ? "-15vw" : "15vw", yPercent: -50, xPercent: -50, z: -6000, autoAlpha: 0 });
                     if(bgItem) gsap.set(bgItem, { autoAlpha: 0 });
 
                     let cardTl = gsap.timeline();
@@ -427,29 +508,18 @@ window.initMapApp = function(config) {
             container.innerHTML = ''; 
             const allTimelineEntries = [];
 
-            // 【新增邏輯】決定要比對的城市名單
-            // 如果有點擊特定城市，就只找該城市；如果是 Overview 模式，就抓取當前國家的「所有城市」
-            let targetCities = [];
-            if (cityObj) {
-                targetCities.push(cityObj.name.toLowerCase());
-            } else {
-                targetCities = Object.values(cityData).map(c => c.name.toLowerCase());
-            }
+            let targetCities = cityObj 
+                ? [cityObj.name.toLowerCase()] 
+                : Object.values(cityData).map(c => c.name.toLowerCase());
 
             if (targetCities.length === 0) {
                 container.innerHTML = '<p style="color:#ccc; font-size:12px; text-align:center; margin-top:20px;">No records found.</p>';
                 return;
             }
 
-            // 1. 載入 Events (大型旅遊事件)
             window.DATA.events.forEach(event => {
                 if (!event.eventMarkers) return;
-                
-                // 檢查這個 event 的 markers 裡，有沒有包含 targetCities 中的任何一個城市
-                const hasMatchingCity = event.eventMarkers.some(m => 
-                    targetCities.some(tc => m.city.toLowerCase().includes(tc))
-                );
-
+                const hasMatchingCity = event.eventMarkers.some(m => targetCities.some(tc => m.city.toLowerCase().includes(tc)));
                 if (hasMatchingCity) {
                     const timestamps = event.eventMarkers.map(m => new Date(m.date.replace(/<[^>]+>/g, '')).getTime()).filter(t => !isNaN(t));
                     if(timestamps.length > 0) {
@@ -465,26 +535,18 @@ window.initMapApp = function(config) {
                 }
             });
 
-            // 2. 載入 Pins 中的單獨景點一日遊 (Day Trips)
             if (cityObj) {
-                // 單一城市模式：只抓該城市的 pins
                 cityObj.pins.forEach(pin => {
-                    if (pin.trip && pin.date) {
-                        allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
-                    }
+                    if (pin.trip && pin.date) allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
                 });
             } else {
-                // 全覽模式：遍歷所有城市的 pins
                 Object.values(cityData).forEach(city => {
                     city.pins.forEach(pin => {
-                        if (pin.trip && pin.date) {
-                            allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
-                        }
+                        if (pin.trip && pin.date) allTimelineEntries.push({ title: pin.trip, dateDisplay: pin.date, sortDate: pin.date, link: null });
                     });
                 });
             }
 
-            // 依日期排序並去重
             allTimelineEntries.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
             const uniqueEntries = allTimelineEntries.filter((v, i, a) => a.findIndex(t => t.title === v.title && t.dateDisplay === v.dateDisplay) === i);
 
@@ -502,17 +564,32 @@ window.initMapApp = function(config) {
         }
 
         function showOverview() {
+            currentMode = 'overview'; // 更新狀態為總覽
             document.getElementById('city-title').innerText = config.overviewTitle;
             document.getElementById('city-desc').innerText = config.overviewDesc;
+            document.getElementById('loc-city').innerText = "Overview";
+            
             updateEventList(null);
             buildFlythroughNotes(null); 
             
             map.setView(config.defaultCenter, config.defaultZoom);
             markerClusterGroup.clearLayers();
 
-            Object.values(cityData).forEach(city => {
+            Object.keys(cityData).forEach(cityId => {
+                const city = cityData[cityId];
                 city.pins.forEach(pin => {
-                    const m = L.marker(pin.loc, { icon: getCustomIcon(pin.v) }).bindPopup(createPopupHTML(pin, city.name), { maxWidth: 360, minWidth: 320 });
+                    const m = L.marker(pin.loc, { icon: getCustomIcon(pin.v) });
+                    m.cityId = cityId; // 綁定該地標所屬的城市 ID
+                    
+                    // 【新增】總覽頁面不顯示 Popup，改顯示 Hover 提示框，點擊直接進入城市
+                    m.bindTooltip(`<b>${city.name}</b><br>${pin.t}`, { direction: 'top', offset: [0, -10], opacity: 0.95 });
+                    
+                    m.on('click', () => {
+                        if (currentMode === 'overview') {
+                            showCity(cityId); // 點擊單一點直接跳進該城市
+                        }
+                    });
+                    
                     markerClusterGroup.addLayer(m);
                 });
             });
@@ -523,15 +600,19 @@ window.initMapApp = function(config) {
         }
 
         function showCity(cityId) {
+            currentMode = cityId; // 更新狀態為單一城市
             const data = cityData[cityId];
             if (!data) return;
             document.getElementById('city-title').innerText = data.name;
             document.getElementById('city-desc').innerText = data.desc;
+            document.getElementById('loc-city').innerText = data.name;
             map.setView(data.center, 12);
             
             markerClusterGroup.clearLayers();
             data.pins.forEach(pin => {
+                // 單一城市模式下，點擊地標才會開啟詳細資訊的 Popup
                 const m = L.marker(pin.loc, { icon: getCustomIcon(pin.v) }).bindPopup(createPopupHTML(pin, ""), { maxWidth: 360, minWidth: 320 });
+                m.cityId = cityId;
                 markerClusterGroup.addLayer(m);
             });
             
