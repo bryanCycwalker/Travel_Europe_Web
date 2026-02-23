@@ -79,14 +79,14 @@
         #story-content-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
         .story-element { position: absolute; left: 50%; width: 80%; max-width: 600px; opacity: 0; visibility: hidden; pointer-events: auto; }
 
-        /* --- 【修改】：黑底卡片放大與按鈕靠右下角 --- */
+        /* --- 黑底卡片放大與按鈕靠右下角 --- */
         .card-type-title {
             top: 50%; transform: translate(-150%, -50%) translateY(120vh); 
             background: #2C2A29; color: #F9F6F0; 
             padding: 30px 40px; 
             box-shadow: 10px 10px 0px rgba(0,0,0,0.1); text-align: left;
             width: 80%; 
-            max-width: 400px; 
+            max-width: 450px; 
             left: 5%; z-index: 50; display: flex; flex-direction: column; align-items: flex-start;
         }
         .card-type-title h2 { font-size: 3rem; margin: 0 0 10px 0; color: #C19A2B; font-family: 'Playfair Display', serif; }
@@ -94,15 +94,13 @@
 
         .title-explore-btn {
             display: inline-block; 
-            margin-top: auto; 
             padding: 10px 24px; 
             background-color: #A62626; color: white; text-decoration: none; font-weight: bold;
             font-size: 1rem; 
             border-radius: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s, background-color 0.2s; 
-            align-self: flex-end; 
+            margin-left: auto; /* 💡 確保按鈕永遠靠右 */
         }
         .title-explore-btn:hover { transform: translateY(-2px); background-color: #C19A2B; }
-        /* ------------------------------------------- */
 
         /* =========================================================
            【佈局防溢出修正】
@@ -114,6 +112,7 @@
             background-blend-mode: multiply; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .article-container.stay-mode { background: transparent !important; box-shadow: none !important; border: none !important; }
+        .article-container.transparent-bg { background: transparent !important; box-shadow: none !important; border: none !important; }
 
         .article-section {
             height: 80vh; min-height: 80vh; max-height: 80vh; 
@@ -143,7 +142,7 @@
             background-color: white; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
             overflow: hidden; opacity: 0; 
             transition: box-shadow 0.3s ease;
-            display: flex; justify-content: center; align-items: center;
+            display: block; 
         }
 
         .img-wrapper.interactive-ready:hover .img-frame {
@@ -152,13 +151,9 @@
 
         .collage-img {
             display: block; 
-            /* 👈 橫向變寬核心：回歸自動比例，放寬橫向限制，維持直向限制 */
-            width: auto; 
-            height: auto; 
-            max-width: 35vw; /* 橫向照片生長上限 */
-            max-height: 60vh; /* 直向照片生長上限 (維持不變) */
-            object-fit: contain; 
-            transform: scale(1.15); 
+            width: auto; height: auto; 
+            max-width: 35vw; max-height: 60vh; 
+            object-fit: contain; transform: scale(1.15); 
         }
 
         .text-content-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; }
@@ -171,17 +166,153 @@
         .text-content-wrapper.full-width { align-items: center; text-align: center; }
         .text-content-wrapper.full-width .text-wrapper { border: none; padding: 0; }
         
-        .text-item { font-size: 1.2rem; line-height: 1.8; opacity: 0; }
+        .text-item { font-size: 1.2rem; line-height: 1.8; opacity: 0; transition: all 0.3s ease; }
         .text-item span { display: inline-block; transform-origin: left center; }
         .highlight { font-size: 1.35em; font-weight: 900; color: #A62626; font-family: 'Playfair Display', serif; }
 
         #scroll-flow-container { position: relative; top: 0; left: 0; width: 100%; z-index: -1; }
         .ghost-step { width: 100%; height: 200vh; }
+
+        /* --- 新增功能專屬 CSS 區塊 --- */
+        #cover-city-list {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 40px; pointer-events: auto; z-index: 25;
+        }
+        .cover-city-chip {
+            position: relative; padding: 12px 25px; background: rgba(249, 246, 240, 0.9); color: #2C2A29; 
+            font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; 
+            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); font-family: 'Playfair Display', serif; font-size: 1.2rem;
+            border: 2px solid transparent; 
+        }
+        .cover-city-chip::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg-img) center/cover; opacity: 0; z-index: -2; transition: opacity 0.4s ease;
+        }
+        .cover-city-chip::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); opacity: 0; z-index: -1; transition: opacity 0.4s ease;
+        }
+        .cover-city-chip:hover { 
+            color: #F9F6F0; transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 2px solid #C19A2B; 
+        }
+        .cover-city-chip:hover::before, .cover-city-chip:hover::after { opacity: 1; }
+
+        /* 首頁滾動提示 */
+        #scroll-hint {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: white; font-size: 1.2rem; opacity: 0.8; z-index: 25; font-weight: bold;
+            pointer-events: none; transition: opacity 0.5s ease;
+            font-family: 'Playfair Display', serif; letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -10px); }
+            60% { transform: translate(-50%, -5px); }
+        }
+
+        /* 💡 新增：城市便條左下角的景點下拉選單 */
+        .card-bottom-actions { 
+            display: flex; width: 100%; justify-content: space-between; align-items: flex-end; 
+            margin-top: auto; padding-top: 20px; 
+        }
+        .attraction-dropdown { position: relative; z-index: 100; pointer-events: auto; }
+        .dropdown-btn { 
+            background-color: transparent; border: 2px solid #C19A2B; color: #C19A2B; 
+            padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; 
+            transition: all 0.3s ease; font-family: 'Noto Sans TC', sans-serif; font-size: 0.9rem; outline: none; 
+        }
+        .dropdown-btn:hover { background-color: #C19A2B; color: #2C2A29; }
+        
+        .dropdown-content { 
+            display: none; position: absolute; top: calc(100% + 10px); left: 0; 
+            background: rgba(249, 246, 240, 0.98); min-width: 220px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); border-radius: 8px; 
+            padding: 10px 0; max-height: 40vh; overflow-y: auto; pointer-events: auto; text-align: left; 
+        }
+        .dropdown-content.show { display: block; animation: fadeIn 0.2s ease; }
+        .dropdown-content .attraction-item { 
+            padding: 12px 18px; color: #2C2A29; cursor: pointer; font-size: 0.9rem; font-weight: bold; 
+            border-left: 4px solid transparent; transition: all 0.2s ease; font-family: 'Noto Sans TC', sans-serif; 
+        }
+        .dropdown-content .attraction-item:hover { background: #e0e0e0; border-left: 4px solid #A62626; color: #A62626; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #back-to-top {
+            position: fixed; bottom: 30px; right: 30px; z-index: 100;
+            background-color: #C19A2B; color: white; width: 50px; height: 50px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: translateY(20px);
+        }
+        #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        #back-to-top:hover { background-color: #A62626; box-shadow: 0 6px 16px rgba(0,0,0,0.3); transform: translateY(-3px); }
+
+        /* =========================================================
+           📱 【手機響應式設計 RWD：精準修復】
+           ========================================================= */
+        @media (max-width: 768px) {
+            .card-type-title {
+                top: 15% !important;
+                left: 5% !important;
+                width: 90% !important;
+                max-width: none !important;
+                align-items: center !important;
+                text-align: center !important;
+                padding: 20px !important;
+                box-sizing: border-box;
+            }
+            .card-bottom-actions {
+                flex-direction: column; align-items: center; gap: 15px; justify-content: center;
+            }
+            .title-explore-btn { margin-left: 0; }
+            .dropdown-content { left: 50%; transform: translateX(-50%); text-align: center; }
+            
+            /* 💡 確保手機版高度精確為 80vh，解決跳轉誤差與偏移問題 */
+            .article-section, .article-section.reverse {
+                flex-direction: column !important;
+                min-height: 80vh !important;
+                height: 80vh !important; 
+                justify-content: center !important;
+                padding: 0 5% !important;
+            }
+            .img-wrapper {
+                width: 100% !important;
+                height: 40vh !important;
+                max-height: 40vh !important;
+                margin-bottom: 10px !important;
+            }
+            .collage-img {
+                max-width: 85vw !important;
+                max-height: 35vh !important; 
+            }
+            .text-content-wrapper {
+                align-items: center !important;
+                text-align: center !important;
+                margin-top: 0 !important;
+                width: 100% !important;
+                flex: 0 0 auto !important;
+                z-index: 70 !important; 
+                position: relative !important;
+            }
+            .text-wrapper, .reverse .text-wrapper {
+                display: none !important;
+            }
+            .section-subtitle {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 4em; 
+                margin: 0 !important;
+                font-size: 1.1rem !important;
+                padding: 0 10px !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     <a href="Home.html" id="back-btn">Home</a>
+    <div id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
 
     <div id="map-container">
         <div id="responsive-stage">
@@ -200,6 +331,7 @@
     <div id="hero-text-layer">
         <h1 id="page-title">Loading...</h1>
         <p id="page-date">...</p>
+        <div id="scroll-hint">Scroll to Explore ↓</div>
     </div>
     <div id="end-title-layer">
         <h1 id="end-page-title">Loading...</h1>
@@ -218,8 +350,32 @@
         function transformCoords(homeX, homeY) { return { x: (homeX * TRANSFORM_PARAMS.scaleX) + TRANSFORM_PARAMS.offsetX, y: (homeY * TRANSFORM_PARAMS.scaleY) + TRANSFORM_PARAMS.offsetY }; }
 
         let CITY_DATE_RANGES = {}; 
-        
         const frameBaseTransforms = new Map();
+
+        // 💡 全域關閉下拉選單
+        window.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-content.show').forEach(el => el.classList.remove('show'));
+        });
+
+        window.scrollToLabel = function(labelName) {
+            const tl = window.mainTimeline;
+            if (!tl || tl.labels[labelName] === undefined) return;
+            const progress = tl.labels[labelName] / tl.duration();
+            const scrollPos = tl.scrollTrigger.start + (tl.scrollTrigger.end - tl.scrollTrigger.start) * progress;
+            window.scrollTo({ top: scrollPos, behavior: 'smooth' });
+        };
+
+        window.addEventListener('scroll', () => {
+            const btt = document.getElementById('back-to-top');
+            if (window.scrollY > window.innerHeight * 0.8) btt.classList.add('visible');
+            else btt.classList.remove('visible');
+
+            const hint = document.getElementById('scroll-hint');
+            if (hint) {
+                if (window.scrollY > 50) hint.style.opacity = '0';
+                else hint.style.opacity = '0.8';
+            }
+        });
 
         function getMergedData() {
             const tripEvent = window.DATA.events.find(e => e.text === 'Belgium Trip');
@@ -316,6 +472,11 @@
             
             scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 150vh'}));
 
+            const heroLayer = document.getElementById('hero-text-layer');
+            const coverCityList = document.createElement('div');
+            coverCityList.id = 'cover-city-list';
+            let coverSeen = new Set();
+
             STORY_DATA.forEach((item, index) => {
                 if (index > 0) {
                     const prevItem = STORY_DATA[index - 1]; const pathData = `M ${prevItem.coords.x} ${prevItem.coords.y} L ${item.coords.x} ${item.coords.y}`;
@@ -331,6 +492,40 @@
                     visiblePath.setAttribute("mask", `url(#${maskId})`); routeLayer.appendChild(visiblePath);
                 }
 
+                if ((item.type === 'waypoint' || item.stay) && !coverSeen.has(item.city)) {
+                    let bgImg = '';
+                    let cityItems = STORY_DATA.filter(d => d.city === item.city);
+                    for (let cItem of cityItems) {
+                        if (cItem.parsedNotes) {
+                            for (let n of cItem.parsedNotes) {
+                                for (let s of n.subNotes) {
+                                    if (s.photo && !s.photo.match(/\.(mov|mp4)$/i)) { bgImg = s.photo; break; }
+                                }
+                                if (bgImg) break;
+                            }
+                        }
+                        if (bgImg) break;
+                    }
+                    
+                    if (bgImg) {
+                        coverSeen.add(item.city); 
+                        let btn = document.createElement('div');
+                        btn.className = 'cover-city-chip';
+                        btn.innerText = item.city;
+                        btn.style.setProperty('--bg-img', `url('${bgImg}')`);
+                        
+                        let targetIndex = index;
+                        for (let i = index; i < STORY_DATA.length; i++) {
+                            if (STORY_DATA[i].city === item.city && !STORY_DATA[i].stay && STORY_DATA[i].parsedNotes && STORY_DATA[i].parsedNotes.length > 0) {
+                                targetIndex = i;
+                                break;
+                            }
+                        }
+                        btn.onclick = () => window.scrollToLabel(`cardCenter-${targetIndex}`);
+                        coverCityList.appendChild(btn);
+                    }
+                }
+
                 const marker = document.createElement('div');
                 marker.className = (item.type === 'start' || item.type === 'end') ? 'marker home-icon' : 'marker waypoint-dot';
                 marker.style.left = `${item.coords.x / 10}%`; marker.style.top = `${item.coords.y / 10}%`; marker.id = `marker-${index}`;
@@ -339,8 +534,12 @@
                 const label = document.createElement('div'); label.id = `label-${index}`;
                 let isDummyLabel = false; 
                 
-                const exploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="explore-btn">Explore City &rarr;</a>` : '';
-                const titleExploreBtn = item.link ? `<a href="${item.link}?city=${encodeURIComponent(item.city)}" class="title-explore-btn">Explore City &rarr;</a>` : '';
+                let exploreLink = item.link;
+                if (item.type === 'end' && item.city.includes("Munich")) {
+                    exploreLink = "Germany.html"; 
+                }
+                const exploreBtn = exploreLink ? `<a href="${exploreLink}?city=${encodeURIComponent(item.city)}" class="explore-btn">Explore City &rarr;</a>` : '';
+                const titleExploreBtn = exploreLink ? `<a href="${exploreLink}?city=${encodeURIComponent(item.city)}" class="title-explore-btn">Explore City &rarr;</a>` : '';
 
                 if (item.stay) {
                     label.className = 'city-label stay-label'; label.innerHTML = `<h3 class="stay-city-name">${item.city}</h3><div class="stay-title">OVERNIGHT</div><p>${item.date}</p>`;
@@ -349,13 +548,10 @@
                     
                     if (firstVisitIndex === index) {
                         SEEN_CITIES.add(item.city); label.className = 'city-label';
-                        const dateStr = item.date; // 💡 確保第一次只顯示第一次的日期
-                        
-                        // 💡 準備兩個隱藏區域：一個給逗號 (inline-block，放右邊)，一個給第二次日期 (block，放下面)
+                        const dateStr = item.date; 
                         label.innerHTML = `<h3>${item.city}</h3><p style="margin: 0.5px 0 1px 0;">${dateStr}<span id="revisit-comma-${item.city}" style="opacity: 0; width: 0; overflow: hidden; display: inline-block; vertical-align: middle;"></span><span id="revisit-date-${item.city}" style="opacity: 0; height: 0; overflow: hidden; display: block; margin-top: 0.5px;"></span></p>${exploreBtn}`;
                     } else if (firstVisitIndex !== -1 && firstVisitIndex < index) {
                         isDummyLabel = true; 
-                        // 將逗號和第二次日期分別寫入對應的 span 裡
                         let revisitComma = document.getElementById(`revisit-comma-${item.city}`);
                         let revisitSpan = document.getElementById(`revisit-date-${item.city}`);
                         if (revisitComma && revisitSpan) {
@@ -383,10 +579,8 @@
                 const articleContainer = document.createElement('div'); articleContainer.className = 'story-element article-container'; articleContainer.id = `city-${index}-article`;
                 let totalSubNotes = 0; 
                 
-                // 💡 【新增邏輯】：判斷這筆資料有沒有任何的描述或文章內容
                 let hasArticle = item.parsedNotes && item.parsedNotes.length > 0;
 
-                // 💡 如果既不是過夜，也沒有任何內容，那就直接隱藏白色底紙
                 if (!item.stay && !hasArticle) {
                     articleContainer.style.display = 'none';
                 }
@@ -394,7 +588,62 @@
                 if (item.stay) {
                     titleCard.style.display = 'none'; titleSpacer.style.height = '10vh'; articleContainer.classList.add('stay-mode');
                 } else {
-                    titleCard.innerHTML = `<h2>${item.city}</h2><p>${item.date}</p>${titleExploreBtn}`; titleSpacer.style.height = '150vh';
+                    // 💡 建構城市黑卡，加入景點下拉按鈕
+                    titleCard.innerHTML = `<h2>${item.city}</h2><p>${item.date}</p>`;
+                    let bottomActions = document.createElement('div');
+                    bottomActions.className = 'card-bottom-actions';
+
+                    if (hasArticle) {
+                        let attractions = [];
+                        item.parsedNotes.forEach((note, noteIndex) => {
+                            if (note.title) attractions.push({ title: note.title, idx: noteIndex });
+                        });
+
+                        if (attractions.length > 0) {
+                            let dropdownContainer = document.createElement('div');
+                            dropdownContainer.className = 'attraction-dropdown';
+                            
+                            let btn = document.createElement('button');
+                            btn.className = 'dropdown-btn';
+                            btn.innerHTML = 'Attraction List ↓';
+                            
+                            let content = document.createElement('div');
+                            content.className = 'dropdown-content';
+                            
+                            attractions.forEach(attr => {
+                                let itemEl = document.createElement('div');
+                                itemEl.className = 'attraction-item';
+                                itemEl.innerHTML = attr.title.replace(/<br\s*\/?>/ig, ' '); 
+                                itemEl.onclick = (e) => {
+                                    e.stopPropagation();
+                                    window.scrollToLabel(`section-${index}-${attr.idx}`);
+                                    content.classList.remove('show');
+                                };
+                                content.appendChild(itemEl);
+                            });
+                            
+                            btn.onclick = (e) => {
+                                e.stopPropagation();
+                                document.querySelectorAll('.dropdown-content.show').forEach(el => {
+                                    if (el !== content) el.classList.remove('show');
+                                });
+                                content.classList.toggle('show');
+                            };
+                            
+                            dropdownContainer.appendChild(btn);
+                            dropdownContainer.appendChild(content);
+                            bottomActions.appendChild(dropdownContainer);
+                        }
+                    }
+
+                    if (titleExploreBtn) {
+                        let dummyDiv = document.createElement('div');
+                        dummyDiv.innerHTML = titleExploreBtn;
+                        if (dummyDiv.firstChild) {
+                            bottomActions.appendChild(dummyDiv.firstChild);
+                        }
+                    }
+                    titleCard.appendChild(bottomActions);
 
                     if (hasArticle) {
                         item.parsedNotes.forEach((note, noteIndex) => {
@@ -421,7 +670,8 @@
                             }
 
                             let textHTML = `<div class="text-content-wrapper ${!hasPhoto ? 'full-width' : ''}">`;
-                            if (note.title) textHTML += `<h3 class="section-subtitle" id="subtitle-${index}-${noteIndex}">${note.title}</h3>`;
+                            let origTitle = note.title ? note.title : '';
+                            textHTML += `<h3 class="section-subtitle" id="subtitle-${index}-${noteIndex}" data-orig="${origTitle.replace(/"/g, '&quot;')}">${origTitle}</h3>`;
                             
                             textHTML += `<div class="text-wrapper">`;
                             note.subNotes.forEach((sn, i) => { if(sn.text) textHTML += `<div class="text-item" id="txt-${index}-${noteIndex}-${i}">${sn.text}</div>`; });
@@ -439,6 +689,8 @@
                 articleSpacer.style.height = `${spacerHeight}vh`; scrollContainer.appendChild(articleSpacer);
                 scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 10vh'}));
             });
+
+            heroLayer.appendChild(coverCityList); 
 
             scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 100vh'}));
             setTimeout(createTimeline, 100);
@@ -487,7 +739,6 @@
             wrapper.addEventListener("mouseleave", () => {
                 if (!wrapper.classList.contains("interactive-ready")) return;
                 wrapper.isHovered = false; 
-                
                 for (let i = 0; i < totalImages; i++) {
                     let frameId = `frame-${index}-${noteIndex}-${i}`;
                     let frameEl = document.getElementById(frameId);
@@ -497,10 +748,71 @@
                     }
                 }
             });
+
+            for (let i = 0; i < totalImages; i++) {
+                let frameEl = document.getElementById(`frame-${index}-${noteIndex}-${i}`);
+                let txtEl = document.getElementById(`txt-${index}-${noteIndex}-${i}`);
+                
+                if (frameEl) {
+                    const handleEnter = () => {
+                        if (!wrapper.classList.contains("interactive-ready")) return;
+                        gsap.to(frameEl, { scale: 1.15, zIndex: 50, duration: 0.2, overwrite: "auto" });
+                        
+                        if (window.innerWidth <= 768) {
+                            let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
+                            if (subTitleEl && txtEl) {
+                                subTitleEl.innerHTML = txtEl.innerHTML;
+                                subTitleEl.style.color = "#A62626";
+                            }
+                        } else {
+                            if (txtEl) gsap.to(txtEl, { color: "#A62626", x: 10, duration: 0.2, overwrite: "auto" });
+                        }
+                        
+                        for (let j = 0; j < totalImages; j++) {
+                            if (j !== i) {
+                                gsap.to(`#frame-${index}-${noteIndex}-${j}`, { opacity: 0.2, duration: 0.2, overwrite: "auto" });
+                                let otherTxt = document.getElementById(`txt-${index}-${noteIndex}-${j}`);
+                                if (otherTxt) gsap.to(otherTxt, { opacity: 0.2, duration: 0.2, overwrite: "auto" });
+                            }
+                        }
+                    };
+
+                    const handleLeave = () => {
+                        if (!wrapper.classList.contains("interactive-ready")) return;
+                        let returnScale = wrapper.isHovered ? 1.05 : 1; 
+                        gsap.to(frameEl, { scale: returnScale, zIndex: i + 1, duration: 0.2, overwrite: "auto" });
+                        
+                        if (window.innerWidth <= 768) {
+                            let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
+                            if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
+                                subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
+                                subTitleEl.style.color = "";
+                            }
+                        } else {
+                            if (txtEl) gsap.to(txtEl, { color: "#2C2A29", x: 0, duration: 0.2, overwrite: "auto" });
+                        }
+                        
+                        for (let j = 0; j < totalImages; j++) {
+                            if (j !== i) {
+                                gsap.to(`#frame-${index}-${noteIndex}-${j}`, { opacity: 1, duration: 0.2, overwrite: "auto" });
+                                let otherTxt = document.getElementById(`txt-${index}-${noteIndex}-${j}`);
+                                if (otherTxt) gsap.to(otherTxt, { opacity: 1, duration: 0.2, overwrite: "auto" });
+                            }
+                        }
+                    };
+
+                    frameEl.addEventListener('mouseenter', handleEnter, {passive: true});
+                    frameEl.addEventListener('mouseleave', handleLeave, {passive: true});
+                    frameEl.addEventListener('touchstart', handleEnter, {passive: true});
+                    frameEl.addEventListener('touchend', handleLeave, {passive: true});
+                    frameEl.addEventListener('touchcancel', handleLeave, {passive: true});
+                }
+            }
         }
 
         function createTimeline() {
             const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1, invalidateOnRefresh: true } });
+            window.mainTimeline = tl; 
 
             gsap.set(".article-container", { xPercent: -50, yPercent: 0 }); 
             gsap.set("#map-content-wrapper", { x: 0, y: 0, scale: 1 });
@@ -518,15 +830,20 @@
                 tl.to(`#marker-${index}`, { opacity: 1, scale: 1.5, duration: 0.5 }, "-=1");
 
                 const titleId = `#city-${index}-title`; const articleId = `#city-${index}-article`; const flowStart = `flow-${index}`;
-                
-                // 💡 抓取這筆資料是否有文章內容
                 let hasArticle = item.parsedNotes && item.parsedNotes.length > 0;
+                let titleInStart = tl.duration();
 
-                if (!item.stay) { tl.to(titleId, { y: 0, x: "0%", yPercent: -50, autoAlpha: 1, duration: 2, ease: "power2.out" }); tl.to({}, { duration: 1.5 }); }
+                if (!item.stay) { 
+                    tl.to(titleId, { y: 0, x: "0%", yPercent: -50, autoAlpha: 1, duration: 2, ease: "power2.out" }, titleInStart); 
+                    tl.addLabel(`cardCenter-${index}`); 
+                    tl.to({}, { duration: 1.5 }); 
+                } else {
+                    tl.addLabel(`cardCenter-${index}`);
+                }
+                
                 tl.addLabel(flowStart);
                 
                 if (!item.stay) {
-                    // 💡 【修正】：如果這城市「有內容」，才需要顯示半透明的白色遮罩讓地圖變暗
                     if (hasArticle) {
                         tl.to("#map-dim-layer", { opacity: 0.85, duration: 1.5 }, flowStart); 
                         tl.to(["#markers-layer", "#route-layer"], { opacity: 0.3, duration: 1.5 }, flowStart);
@@ -539,14 +856,15 @@
                 
                 if (item.stay) {
                     tl.fromTo(articleId, { y: "100vh" }, { y: `-50vh`, duration: 4, ease: "none" }, flowStart); timeOffset += 4;
-                } else if (hasArticle) { // 💡 【修正】：確定有文章才執行紙張進場動畫
+                } else if (hasArticle) { 
                     
                     let currentY = -40; 
                     tl.fromTo(articleId, { y: "50vh", autoAlpha: 0 }, { y: `${currentY}vh`, autoAlpha: 1, duration: 2, ease: "power2.out" }, flowStart);
-                    
+
                     item.parsedNotes.forEach((note, noteIndex) => {
                         let isMulti = note.subNotes.length > 1; 
                         let numImages = note.subNotes.length;
+                        let centerTime; 
 
                         if (numImages > 0) {
                             initDynamicHover(`wrapper-${index}-${noteIndex}`, index, noteIndex, numImages);
@@ -557,13 +875,19 @@
                             if (noteIndex > 0) {
                                 let nextY = currentY - SECTION_VH; 
                                 tl.to(articleId, { y: `${nextY}vh`, duration: moveDur, ease: "power2.inOut" }, `${flowStart}+=${timeOffset}`);
+                                centerTime = timeOffset + moveDur; // 💡 精確計算：抵達該區塊的結束瞬間
                                 currentY = nextY;
                                 timeOffset += moveDur; 
+                            } else {
+                                centerTime = 2; // 💡 第一區塊
                             }
                             
                             let holdTime = 4; 
                             let staggerGap = 1.8; 
                             let appearTime = timeOffset; 
+
+                            // 💡 點擊跳轉的完美落點
+                            tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime}`);
 
                             note.subNotes.forEach((sn, i) => {
                                 let itemLabel = `${flowStart}+=${appearTime + (i * staggerGap)}`;
@@ -581,13 +905,13 @@
 
                                     tl.fromTo(`#${frameId}`, 
                                         { scale: 1.4, opacity: 0, rotation: endRot*2, x: 0, y: 0, xPercent: -50, yPercent: -50 }, 
-                                        { scale: 1, opacity: 1, rotation: endRot, x: 0, y: 0, xPercent: -50, yPercent: -50, duration: 1.2, ease: "power2.out", 
+                                        { scale: 1, opacity: 1, rotation: endRot, x: xOffset, y: yOffset, xPercent: -50, yPercent: -50, duration: 1.2, ease: "power2.out", 
                                           onStart: () => { const el = document.querySelector(imgId); if(el && el.tagName === 'VIDEO') el.play(); },
                                           onComplete: () => {
                                               let wrapper = document.getElementById(wrapperId);
                                               if (wrapper) {
                                                   wrapper.classList.add("interactive-ready");
-                                                  if (wrapper.isHovered) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, 1), 50);
+                                                  if (wrapper.isHovered) setTimeout(() => applyDynamicFanEffect(wrapper, index, noteIndex, numImages), 50);
                                               }
                                           } 
                                         }, itemLabel
@@ -615,13 +939,19 @@
                             if (noteIndex > 0) {
                                 let nextY = currentY - SECTION_VH; 
                                 tl.to(articleId, { y: `${nextY}vh`, duration: slideDur, ease: "none" }, `${flowStart}+=${timeOffset}`);
+                                centerTime = timeOffset + slideDur; // 💡 精確計算：單一景點滑入結束的瞬間
                                 currentY = nextY;
                                 lastMoveStart = timeOffset;
                             } else {
                                 lastMoveStart = 0; 
+                                centerTime = 2; // 💡 第一區塊
                             }
 
                             let appearTime = (noteIndex === 0) ? 0.5 : lastMoveStart + (slideDur * 0.25);
+                            
+                            // 💡 點擊跳轉的完美落點
+                            tl.addLabel(`section-${index}-${noteIndex}`, `${flowStart}+=${centerTime}`);
+                            
                             let itemLabel = `${flowStart}+=${appearTime}`;
                             
                             note.subNotes.forEach((sn, i) => { 
@@ -681,7 +1011,6 @@
 
                 let scrollDur = timeOffset; const flowEnd = `flowEnd-${index}`; tl.addLabel(flowEnd, `${flowStart}+=${scrollDur}`);
                 
-                // 💡 【修正】：只有在有文章的情況下，離開城市時才需要把遮罩還原（變回透明）
                 if (!item.stay && hasArticle) { 
                     tl.to("#map-dim-layer", { opacity: 0, duration: 0.8 }, flowEnd); 
                     tl.to(["#markers-layer", "#route-layer"], { opacity: 1, duration: 0.8 }, flowEnd); 
@@ -697,13 +1026,11 @@
                     if (startIndex !== -1) tl.to(`#end-date-${startIndex}`, { autoAlpha: 1, height: "auto", marginTop: "0.5px", duration: 0.5 }, `${flowEnd}-=0.5`);
                 }
                 
-                // 💡 新增：如果是第二次造訪，觸發逗號與下方日期的展開動畫
                 if (!item.stay && item.type === 'waypoint') {
                     let firstVisitIndex = STORY_DATA.findIndex(d => d.type === 'waypoint' && d.city === item.city);
                     if (firstVisitIndex !== -1 && firstVisitIndex < index) {
                         let revisitCommaId = `#revisit-comma-${item.city}`;
                         let revisitSpanId = `#revisit-date-${item.city}`;
-                        // 同時讓逗號寬度變正常，第二日期高度變正常
                         tl.to([revisitCommaId, revisitSpanId], { autoAlpha: 1, width: "auto", height: "auto", duration: 0.5 }, flowStart);
                     }
                 }
