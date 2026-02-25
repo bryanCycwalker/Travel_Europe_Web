@@ -16,7 +16,6 @@ a { text-decoration: none; color: inherit; }
     opacity:0; z-index: 1; will-change: opacity; 
     pointer-events: none; 
 }
-/* 加上 transform-origin: center 讓縮放都以地圖中心為基準 */
 #bgImageContainer svg { 
     position:absolute; top:0; left:0; 
     transform-origin: center center; 
@@ -260,7 +259,7 @@ const state = {
     returnToCountryMode: false,
     isMobile: window.innerWidth <= 768,
     
-    // 【手動縮放狀態】
+    // 手動縮放與平移狀態
     userScale: 1,
     userPanX: 0,
     userPanY: 0,
@@ -305,40 +304,30 @@ function tween(from, to, duration, onUpdate, onComplete) {
 }
 
 // =========================================================
-// 【核心：套用變形 (包含使用者的手動縮放與防越界)】
+// 【核心數學更新：套用變形並防止漂移】
 // =========================================================
 function applyTransform() {
     if (!dom.svg) return;
     
-    // 防呆：不能縮得比原本系統設定的還要小
     if (state.userScale <= 1) {
         state.userScale = 1;
         state.userPanX = 0;
         state.userPanY = 0;
     } else {
-        // 計算精準的邊界，確保不論怎麼拖曳，地圖邊緣都不會露出黑邊
         const svgW = parseFloat(dom.svg.style.width);
         const svgH = parseFloat(dom.svg.style.height);
         
-        // 目前 SVG 中心點在螢幕上的實際座標
-        const curX = state.baseTranslateX + svgW / 2;
-        const curY = state.baseTranslateY + svgH / 2;
+        // 算出縮放後可以被拖曳的最大距離，確保邊界不會露出黑邊
+        const maxPanX = (svgW * state.userScale - svgW) / 2;
+        const maxPanY = (svgH * state.userScale - svgH) / 2;
         
-        // 算出可拖曳的最大距離
-        const maxPanX_Pos = (svgW * state.userScale) / 2 - curX;
-        const maxPanX_Neg = window.innerWidth - curX - (svgW * state.userScale) / 2;
-        
-        const maxPanY_Pos = (svgH * state.userScale) / 2 - curY;
-        const maxPanY_Neg = window.innerHeight - curY - (svgH * state.userScale) / 2;
-        
-        // 強制把 Pan 限制在邊界內
-        if (state.userPanX > maxPanX_Pos) state.userPanX = maxPanX_Pos;
-        if (state.userPanX < maxPanX_Neg) state.userPanX = maxPanX_Neg;
-        if (state.userPanY > maxPanY_Pos) state.userPanY = maxPanY_Pos;
-        if (state.userPanY < maxPanY_Neg) state.userPanY = maxPanY_Neg;
+        // 嚴格將平移量限制在安全範圍內
+        if (state.userPanX > maxPanX) state.userPanX = maxPanX;
+        if (state.userPanX < -maxPanX) state.userPanX = -maxPanX;
+        if (state.userPanY > maxPanY) state.userPanY = maxPanY;
+        if (state.userPanY < -maxPanY) state.userPanY = -maxPanY;
     }
     
-    // 合併系統運算與使用者的操作
     dom.svg.style.transform = `translate(${state.baseTranslateX + state.userPanX}px, ${state.baseTranslateY + state.userPanY}px) scale(${state.userScale})`;
     updateAllMarkers();
 }
@@ -346,16 +335,14 @@ function applyTransform() {
 function transitionPanelContent(direction, updateCallback) {
     const el = dom.panelContent;
     const offset = direction === 'forward' ? -50 : 50;
-    if (state.isMobile) el.style.transform = `translateX(${offset}px)`;
-    else el.style.transform = `translateX(${offset}px)`;
+    el.style.transform = `translateX(${offset}px)`;
     el.style.opacity = '0';
     
     setTimeout(() => {
         updateCallback();
         el.style.transition = 'none';
         const startPos = direction === 'forward' ? 50 : -50;
-        if (state.isMobile) el.style.transform = `translateX(${startPos}px)`;
-        else el.style.transform = `translateX(${startPos}px)`;
+        el.style.transform = `translateX(${startPos}px)`;
         
         void el.offsetWidth;
         el.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
@@ -535,18 +522,41 @@ function handleMapHoverLeave() {
 
 function clearMapHover() { if(dom.svg) dom.svg.querySelectorAll('.country-highlight').forEach(el => el.classList.remove('country-highlight')); }
 
+// =========================================================
+// 【核心：讓 Tooltip 在縮放時也不會漂移的精準數學座標】
+// =========================================================
 function updateTooltip(text, targetEl, isSVGElement = false) {
     if (!text || !dom.svg || !targetEl || (dom.countryLabel.dataset.locked === "true" && !isSVGElement)) return;
     dom.countryLabel.textContent = text; dom.countryLabel.style.opacity = 1;
     let x, y;
+    
     if (isSVGElement) {
-        const bbox = targetEl.getBBox(), pt = dom.svg.createSVGPoint(); 
-        pt.x = bbox.x + bbox.width/2; pt.y = bbox.y + bbox.height/2;
-        const screen = pt.matrixTransform(dom.svg.getScreenCTM()); x = screen.x; y = screen.y;
+        const bbox = targetEl.getBBox();
+        const centerX = bbox.x + bbox.width / 2;
+        const centerY = bbox.y + bbox.height / 2;
+
+        const vbW = dom.svg.viewBox.baseVal.width || 2000;
+        const vbH = dom.svg.viewBox.baseVal.height || 1200;
+        const svgW = parseFloat(dom.svg.style.width) || window.innerWidth;
+        const svgH = parseFloat(dom.svg.style.height) || window.innerHeight;
+
+        const tx = state.baseTranslateX + state.userPanX;
+        const ty = state.baseTranslateY + state.userPanY;
+        const s = state.userScale;
+
+        const px = (centerX / vbW) * svgW;
+        const py = (centerY / vbH) * svgH;
+
+        x = tx + svgW/2 + (px - svgW/2) * s;
+        y = ty + svgH/2 + (py - svgH/2) * s;
     } else {
-        const rect = targetEl.getBoundingClientRect(); x = rect.left + rect.width/2; y = rect.top - 5;
+        const rect = targetEl.getBoundingClientRect(); 
+        x = rect.left + rect.width/2; 
+        y = rect.top - 5;
     }
-    dom.countryLabel.style.left = `${x}px`; dom.countryLabel.style.top = `${y}px`;
+    
+    dom.countryLabel.style.left = `${x}px`; 
+    dom.countryLabel.style.top = `${y}px`;
     dom.countryLabel.style.transform = dom.countryLabel.dataset.locked === "true" ? "translate(-50%, -50%) scale(2)" : "translate(-50%, -50%) scale(1)";
 }
 
@@ -559,6 +569,9 @@ function updateCityTooltip(text, targetEl) {
     dom.cityLabel.style.opacity = 1;
 }
 
+// =========================================================
+// 【核心：讓 Marker 永遠黏在地圖上的同步數學投影】
+// =========================================================
 function updateAllMarkers(hoverCountryId = null) {
     if (!dom.svg) return;
     
@@ -572,13 +585,30 @@ function updateAllMarkers(hoverCountryId = null) {
         return;
     }
 
-    const ctm = dom.svg.getScreenCTM();
+    const vbW = dom.svg.viewBox.baseVal.width || 2000;
+    const vbH = dom.svg.viewBox.baseVal.height || 1200;
+    const svgW = parseFloat(dom.svg.style.width) || window.innerWidth;
+    const svgH = parseFloat(dom.svg.style.height) || window.innerHeight;
+
+    const tx = state.baseTranslateX + state.userPanX;
+    const ty = state.baseTranslateY + state.userPanY;
+    const s = state.userScale;
+
+    // 將內部座標完美投影到實際螢幕上的數學公式 (同步且零延遲)
+    const getScreenPos = (x, y) => { 
+        const px = (x / vbW) * svgW;
+        const py = (y / vbH) * svgH;
+        return {
+            x: tx + svgW/2 + (px - svgW/2) * s,
+            y: ty + svgH/2 + (py - svgH/2) * s
+        };
+    };
+
     const activeCountry = hoverCountryId || state.focusedCountryId;
     if (state.countryFocused && dom.countryLabel.dataset.locked === "true") {
         const countryEl = document.querySelector('.country-focus');
         if (countryEl) updateTooltip(dom.countryLabel.textContent, countryEl, true);
     }
-    const getScreenPos = (x, y) => { const pt = dom.svg.createSVGPoint(); pt.x = x; pt.y = y; return pt.matrixTransform(ctm); };
     
     dom.markers.forEach((el, id) => {
         let isVisible = false, targetX = 0, targetY = 0;
@@ -782,7 +812,6 @@ function updateSVGTransform() {
     dom.svg.style.width = `${currW}px`; 
     dom.svg.style.height = `${currH}px`; 
     
-    // 更新系統基本座標，並觸發合併 Transform (加上使用者的縮放)
     state.baseTranslateX = curX - currW/2;
     state.baseTranslateY = curY - currH/2;
     applyTransform();
@@ -835,7 +864,6 @@ function animateBackToMainView(onComplete, forcedTargetState = null) {
         state.baseTranslateX = startX + (targetX - startX) * eased;
         state.baseTranslateY = startY + (targetY - startY) * eased;
         
-        // 將使用者的手動縮放與平移平滑重置歸零
         state.userScale = startUserScale + (1 - startUserScale) * eased;
         state.userPanX = startUserPanX + (0 - startUserPanX) * eased;
         state.userPanY = startUserPanY + (0 - startUserPanY) * eased;
@@ -885,7 +913,6 @@ function animateSVGView(cx, cy, targetW, targetH, offsetRightPanel = false) {
         state.baseTranslateX = startX + (targetX - startX) * eased;
         state.baseTranslateY = startY + (targetY - startY) * eased;
         
-        // 進入焦點時，平滑重置手動縮放，確保目標準確置中
         state.userScale = startUserScale + (1 - startUserScale) * eased;
         state.userPanX = startUserPanX + (0 - startUserPanX) * eased;
         state.userPanY = startUserPanY + (0 - startUserPanY) * eased;
@@ -1048,7 +1075,6 @@ function startAnimationLoop() {
                     const s0 = getCoverSize(winW, winH);
                     dom.svg.style.width = `${s0.w}px`; dom.svg.style.height = `${s0.h}px`;
                     
-                    // 飛梭時重置使用者的手動操作
                     state.baseTranslateX = (winW - s0.w)/2;
                     state.baseTranslateY = (winH - s0.h)/2;
                     state.userScale = 1;
@@ -1146,7 +1172,6 @@ function init() {
         lastPinchX: 0, lastPinchY: 0 
     };
 
-    // --- 把飛梭的全域滑動加回來了 ---
     let touchStartY = 0;
     window.addEventListener('touchstart', e => {
         touchStartY = e.touches[0].clientY;
@@ -1154,7 +1179,6 @@ function init() {
     
     window.addEventListener('touchmove', e => {
         if (e.target.closest('#leftPanel')) return; 
-        // 避免與地圖雙指縮放/平移衝突
         if (pinchState.active || pinchState.panActive) return;
 
         const touchY = e.touches[0].clientY;
@@ -1167,8 +1191,10 @@ function init() {
         }
         state.velocity += deltaY * 2.5 * speedMultiplier; 
     }, { passive: false });
-    // -----------------------------
 
+    // =========================================================
+    // 【終極升級：支援以「手指中心點」為目標的 Pinch-to-Zoom】
+    // =========================================================
     dom.bgContainer.addEventListener('touchstart', e => {
         if (state.scrollDepth <= state.WARP_DEPTH) return;
         state.mapDragThreshold = false; 
@@ -1219,11 +1245,13 @@ function init() {
 
             const svgW = parseFloat(dom.svg.style.width);
             const svgH = parseFloat(dom.svg.style.height);
+            
+            // 計算目前 SVG 的真實中心點在螢幕上的位置
             const elementCenterX = state.baseTranslateX + state.userPanX + svgW / 2;
             const elementCenterY = state.baseTranslateY + state.userPanY + svgH / 2;
 
+            // 根據兩指中心點與畫面中心點的偏差，反向補償平移量，達到「指哪放哪」的效果
             const scaleRatio = newScale / state.userScale;
-
             state.userPanX -= (pinchCenterX - elementCenterX) * (scaleRatio - 1);
             state.userPanY -= (pinchCenterY - elementCenterY) * (scaleRatio - 1);
             
