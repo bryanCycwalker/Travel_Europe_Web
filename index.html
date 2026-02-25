@@ -16,8 +16,11 @@ a { text-decoration: none; color: inherit; }
     opacity:0; z-index: 1; will-change: opacity; 
     pointer-events: none; 
 }
-/* 加上 transform-origin: center 讓縮放都以地圖中心為基準 */
-#bgImageContainer svg { position:absolute; top:0; left:0; transform-origin: center center; will-change: transform, width, height; }
+#bgImageContainer svg { 
+    position:absolute; top:0; left:0; 
+    transform-origin: center center; /* 確保縮放原點在元素中心 */
+    will-change: transform, width, height; 
+}
 
 /* --- 3. Warp Speed 3D Layers --- */
 #introPhotos {
@@ -256,13 +259,13 @@ const state = {
     returnToCountryMode: false,
     isMobile: window.innerWidth <= 768,
     
-    // --- 新增：使用者的手動縮放與平移狀態 ---
+    // 【手動縮放狀態】
     userScale: 1,
     userPanX: 0,
     userPanY: 0,
     baseTranslateX: 0,
     baseTranslateY: 0,
-    mapDragThreshold: false // 防止拖曳時觸發點擊
+    mapDragThreshold: false
 };
 
 const DATA = window.DATA;
@@ -300,31 +303,42 @@ function tween(from, to, duration, onUpdate, onComplete) {
     requestAnimationFrame(loop);
 }
 
-// 【新增】統一套用 SVG 縮放與平移的核心函式
+// =========================================================
+// 【核心：套用變形 (包含使用者的手動縮放與防越界)】
+// =========================================================
 function applyTransform() {
     if (!dom.svg) return;
     
+    // 防呆：不能縮得比原本系統設定的還要小
     if (state.userScale <= 1) {
         state.userScale = 1;
         state.userPanX = 0;
         state.userPanY = 0;
     } else {
-        // 邊界保護：確保平移不會超過放大的範圍，防止出現黑邊
+        // 計算精準的邊界，確保不論怎麼拖曳，地圖邊緣都不會露出黑邊
         const svgW = parseFloat(dom.svg.style.width);
         const svgH = parseFloat(dom.svg.style.height);
-        const maxPanX = (svgW * state.userScale - svgW) / 2;
-        const maxPanY = (svgH * state.userScale - svgH) / 2;
         
-        if (state.userPanX > maxPanX) state.userPanX = maxPanX;
-        if (state.userPanX < -maxPanX) state.userPanX = -maxPanX;
-        if (state.userPanY > maxPanY) state.userPanY = maxPanY;
-        if (state.userPanY < -maxPanY) state.userPanY = -maxPanY;
+        // 目前 SVG 中心點在螢幕上的實際座標
+        const curX = state.baseTranslateX + svgW / 2;
+        const curY = state.baseTranslateY + svgH / 2;
+        
+        // 算出可拖曳的最大距離
+        const maxPanX_Pos = (svgW * state.userScale) / 2 - curX;
+        const maxPanX_Neg = window.innerWidth - curX - (svgW * state.userScale) / 2;
+        
+        const maxPanY_Pos = (svgH * state.userScale) / 2 - curY;
+        const maxPanY_Neg = window.innerHeight - curY - (svgH * state.userScale) / 2;
+        
+        // 強制把 Pan 限制在邊界內
+        if (state.userPanX > maxPanX_Pos) state.userPanX = maxPanX_Pos;
+        if (state.userPanX < maxPanX_Neg) state.userPanX = maxPanX_Neg;
+        if (state.userPanY > maxPanY_Pos) state.userPanY = maxPanY_Pos;
+        if (state.userPanY < maxPanY_Neg) state.userPanY = maxPanY_Neg;
     }
     
-    // 合併系統運算的 Translate 與 使用者手動的 Pan/Scale
+    // 合併系統運算與使用者的操作
     dom.svg.style.transform = `translate(${state.baseTranslateX + state.userPanX}px, ${state.baseTranslateY + state.userPanY}px) scale(${state.userScale})`;
-    
-    // 更新所有 Marker 位置
     updateAllMarkers();
 }
 
@@ -491,7 +505,7 @@ function setupMapInteractions() {
         });
         el.addEventListener('touchend', (e) => {
             clearTimeout(touchTimer); 
-            if (state.mapDragThreshold) return; // 【修復】如果是拖曳/縮放中，取消點擊進入國家的行為
+            if (state.mapDragThreshold) return; 
             if (!state.eventFocused && !state.countryFocused) {
                  e.preventDefault(); 
                  focusOnCountry(el);
@@ -649,7 +663,7 @@ function focusOnEvent(ev, highlightMarkerId = null) {
             w: parseFloat(dom.svg.style.width), 
             h: parseFloat(dom.svg.style.height), 
             x: state.baseTranslateX,
-            y: state.baseTranslateY 
+            y: state.baseTranslateY
         };
         transitionPanelContent('forward', () => updateTimelineForEvent(ev, highlightMarkerId));
     } else {
@@ -767,7 +781,7 @@ function updateSVGTransform() {
     dom.svg.style.width = `${currW}px`; 
     dom.svg.style.height = `${currH}px`; 
     
-    // 更新系統基本座標，並觸發合併 Transform
+    // 更新系統基本座標，並觸發合併 Transform (加上使用者的縮放)
     state.baseTranslateX = curX - currW/2;
     state.baseTranslateY = curY - currH/2;
     applyTransform();
@@ -870,7 +884,7 @@ function animateSVGView(cx, cy, targetW, targetH, offsetRightPanel = false) {
         state.baseTranslateX = startX + (targetX - startX) * eased;
         state.baseTranslateY = startY + (targetY - startY) * eased;
         
-        // 進入焦點時，平滑重置手動縮放，確保目標準確
+        // 進入焦點時，平滑重置手動縮放，確保目標準確置中
         state.userScale = startUserScale + (1 - startUserScale) * eased;
         state.userPanX = startUserPanX + (0 - startUserPanX) * eased;
         state.userPanY = startUserPanY + (0 - startUserPanY) * eased;
@@ -1033,7 +1047,7 @@ function startAnimationLoop() {
                     const s0 = getCoverSize(winW, winH);
                     dom.svg.style.width = `${s0.w}px`; dom.svg.style.height = `${s0.h}px`;
                     
-                    // 重置使用者的手動操作
+                    // 飛梭時重置使用者的手動操作
                     state.baseTranslateX = (winW - s0.w)/2;
                     state.baseTranslateY = (winH - s0.h)/2;
                     state.userScale = 1;
@@ -1124,24 +1138,37 @@ function init() {
     
     window.addEventListener('wheel', onWheel, { passive: false }); 
     
-    // ==========================================
-    // 【手動 Pinch-to-Zoom 核心邏輯】
-    // ==========================================
-    let pinchState = { active: false, initialDist: 0, initialScale: 1, lastX: 0, lastY: 0, panActive: false };
+    // ======================================================================
+    // 【終極升級：支援以「手指中心點」為目標的 Pinch-to-Zoom 與平移拖曳】
+    // ======================================================================
+    let pinchState = { 
+        active: false, panActive: false, 
+        initialDist: 0, initialScale: 1, 
+        lastX: 0, lastY: 0, 
+        lastPinchX: 0, lastPinchY: 0 
+    };
 
     dom.bgContainer.addEventListener('touchstart', e => {
         if (state.scrollDepth <= state.WARP_DEPTH) return;
-        state.mapDragThreshold = false; // 每次觸控重置拖曳狀態
+        state.mapDragThreshold = false; // 重置防誤觸判定
         
         if (e.touches.length === 2) {
+            // 雙指觸控：啟動縮放
             pinchState.active = true;
             pinchState.panActive = false;
+            
             const dx = e.touches[0].clientX - e.touches[1].clientX;
             const dy = e.touches[0].clientY - e.touches[1].clientY;
             pinchState.initialDist = Math.hypot(dx, dy);
             pinchState.initialScale = state.userScale;
+            
+            // 記錄兩指的中心點座標
+            pinchState.lastPinchX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            pinchState.lastPinchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             e.preventDefault(); 
+            
         } else if (e.touches.length === 1 && state.userScale > 1) {
+            // 單指觸控 (僅在已經放大時)：啟動拖曳平移
             pinchState.panActive = true;
             pinchState.active = false;
             pinchState.lastX = e.touches[0].clientX;
@@ -1151,22 +1178,51 @@ function init() {
 
     dom.bgContainer.addEventListener('touchmove', e => {
         if (state.scrollDepth <= state.WARP_DEPTH) return;
-        if (e.target.closest('#leftPanel') || e.target.closest('#infoBox')) return; // 在選單上滑動時不縮放
+        if (e.target.closest('#leftPanel') || e.target.closest('#infoBox')) return; // 忽略對選單的觸控
 
         if (pinchState.active && e.touches.length === 2) {
-            state.mapDragThreshold = true;
+            state.mapDragThreshold = true; // 標記為正在縮放，防止觸發點擊
+            
+            // 1. 計算縮放比例
             const dx = e.touches[0].clientX - e.touches[1].clientX;
             const dy = e.touches[0].clientY - e.touches[1].clientY;
             const dist = Math.hypot(dx, dy);
             
             let newScale = pinchState.initialScale * (dist / pinchState.initialDist);
-            if (newScale < 1) newScale = 1; // 限制不能縮得比原本還小
-            if (newScale > 4) newScale = 4; // 最大放大 4 倍
+            if (newScale < 1) newScale = 1; // 最小鎖死為 1 倍
+            if (newScale > 5) newScale = 5; // 最大放大 5 倍
             
+            // 2. 取得新的兩指中心點
+            const pinchCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const pinchCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+            // 3. 把縮放期間手指「滑動」的距離，加進平移量裡 (邊放大邊拖曳)
+            const panDx = pinchCenterX - pinchState.lastPinchX;
+            const panDy = pinchCenterY - pinchState.lastPinchY;
+            state.userPanX += panDx;
+            state.userPanY += panDy;
+
+            // 4. 【核心數學】：為了讓畫面往「手指中心點」放大，我們需要反向平移畫布
+            const svgW = parseFloat(dom.svg.style.width);
+            const svgH = parseFloat(dom.svg.style.height);
+            const elementCenterX = state.baseTranslateX + state.userPanX + svgW / 2;
+            const elementCenterY = state.baseTranslateY + state.userPanY + svgH / 2;
+
+            const scaleRatio = newScale / state.userScale;
+
+            state.userPanX -= (pinchCenterX - elementCenterX) * (scaleRatio - 1);
+            state.userPanY -= (pinchCenterY - elementCenterY) * (scaleRatio - 1);
+            
+            // 更新狀態並套用變形
             state.userScale = newScale;
+            pinchState.lastPinchX = pinchCenterX;
+            pinchState.lastPinchY = pinchCenterY;
+
             applyTransform();
             e.preventDefault();
+            
         } else if (pinchState.panActive && e.touches.length === 1) {
+            // 單指拖曳處理
             const dx = e.touches[0].clientX - pinchState.lastX;
             const dy = e.touches[0].clientY - pinchState.lastY;
             
@@ -1185,14 +1241,17 @@ function init() {
 
     dom.bgContainer.addEventListener('touchend', e => {
         if (e.touches.length < 2) pinchState.active = false;
-        if (e.touches.length === 0) pinchState.panActive = false;
-        else if (e.touches.length === 1 && state.userScale > 1) {
+        
+        if (e.touches.length === 0) {
+            pinchState.panActive = false;
+        } else if (e.touches.length === 1 && state.userScale > 1) {
+            // 如果放開一根手指，剩下一根手指時無縫切換為拖曳模式
             pinchState.panActive = true;
             pinchState.lastX = e.touches[0].clientX;
             pinchState.lastY = e.touches[0].clientY;
         }
     }, { passive: false });
-    // ==========================================
+    // ======================================================================
 
     setupIntroGallery();
 
@@ -1224,7 +1283,7 @@ function init() {
         el.addEventListener('click', (e) => { e.stopPropagation(); dom.cityLabel.style.opacity = 0; showRichInfo(id); });
         
         el.addEventListener('touchend', (e) => {
-            if (state.mapDragThreshold) return; // 如果是拖曳中，忽略點擊事件
+            if (state.mapDragThreshold) return; 
             e.stopPropagation();
             dom.cityLabel.style.opacity = 0; showRichInfo(id);
         });
