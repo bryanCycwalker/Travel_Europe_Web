@@ -1013,35 +1013,33 @@ let markerClusterGroup = L.markerClusterGroup({
             btn.style.setProperty('--bg-img', `url('${pin.p}')`);
             
             btn.addEventListener('click', (e) => {
-                // 手機版：第一次點擊展開照片，第二次點擊才跳轉
-                if (isTouchDevice()) {
-                    if (!btn.classList.contains('touched')) {
-                        // 清除其他按鈕的點擊狀態
+                    // 記錄該景點被點擊了！(增加演算法權重)
+                    recordClick(pin.cityId, pin.t); 
+
+                    // 【修改】手機版：點擊時立刻顯示照片背景，但不中斷跳轉！
+                    if (isTouchDevice()) {
                         document.querySelectorAll('.pop-attr-btn').forEach(b => b.classList.remove('touched'));
                         btn.classList.add('touched');
-                        return; // 中斷，不執行跳轉
                     }
-                }
-                
-                // 電腦版直接點擊 / 或手機版第二次點擊：飛梭跳轉並開啟 Popup
-                if (currentMode === 'overview' || currentMode !== pin.cityId) {
-                    showCity(pin.cityId);
-                    // 給地圖 0.5 秒切換圖層的時間，然後飛過去
-                    setTimeout(() => {
+                    
+                    // 直接執行飛梭跳轉並打開 Popup
+                    if (currentMode === 'overview' || currentMode !== pin.cityId) {
+                        showCity(pin.cityId);
+                        setTimeout(() => {
+                            let targetObj = currentMarkers.find(m => m.title === pin.t && m.cityId === pin.cityId);
+                            if(targetObj) {
+                                map.flyTo(targetObj.marker.getLatLng(), 16, { duration: 1.5 });
+                                setTimeout(() => { targetObj.marker.openPopup(); }, 1500);
+                            }
+                        }, 500); // 給地圖半秒鐘切換圖層
+                    } else {
                         let targetObj = currentMarkers.find(m => m.title === pin.t && m.cityId === pin.cityId);
                         if(targetObj) {
                             map.flyTo(targetObj.marker.getLatLng(), 16, { duration: 1.5 });
                             setTimeout(() => { targetObj.marker.openPopup(); }, 1500);
                         }
-                    }, 500);
-                } else {
-                    let targetObj = currentMarkers.find(m => m.title === pin.t && m.cityId === pin.cityId);
-                    if(targetObj) {
-                        map.flyTo(targetObj.marker.getLatLng(), 16, { duration: 1.5 });
-                        setTimeout(() => { targetObj.marker.openPopup(); }, 1500);
                     }
-                }
-            });
+                });
 
             popNav.appendChild(btn);
         });
