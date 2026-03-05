@@ -12,7 +12,7 @@ window.DATA = {
                     type: "start",
                     link: "Germany.html",
                     labelOffset: { x: 2, y: 0 },
-                    desc: "旅程開始，從慕尼黑出發。",
+                    desc: "Kick of in Munich Airport!",
                     notes: [
                         { photo: "Photos/Germany/Munich/Belgium_Trip/bru1 (Small).JPEG", text: "As a newcomer to Germany, I was shocked to see a <span style='font-size:1.3em; font-weight:bold; color: #A32020;'>German drinking beer for breakfast</span> <br>at the airport</br>" },
                         { photo: "Photos/Germany/Munich/Belgium_Trip/bru2 (Small).JPEG", text: "Boarding the first Intra-European flights in my life, I was more than excited!" }
@@ -25,7 +25,7 @@ window.DATA = {
                     type: "waypoint",
                     link: "Belgium.html",
                     labelOffset: { x: 0, y: 1.5 },
-                    desc: "Solo Day Trip", 
+                    desc: "Solo Day Trip!", 
                     notes: [
                         { 
                             title: "Cathedral of St. Michael and St. Gudula", 
@@ -153,7 +153,7 @@ window.DATA = {
                     type: "waypoint",
                     link: "Belgium.html",
                     labelOffset: { x: 2, y: -0.5 },
-                    desc: "University Town",
+                    desc: "Authentic University Town",
                     notes: [
                         { 
                             photo: "Photos/Belgium/Leuven/Belgium_Trip/leu1 (Small).jpg", text: "On the banner wrote <span style='font-size:1.5em; font-weight:bold; color: #A32020;'>'STUDENT WELCOME LEUVEN'</span><br>, while we were on the contrary heading to the church</br>" 
@@ -193,7 +193,7 @@ window.DATA = {
                     type: "waypoint",
                     link: "Belgium.html",
                     labelOffset: { x: -1.5, y: -0.5 },
-                    desc: "Authentic Medieval Town",
+                    desc: "One of my favorite Medieval Town",
                     notes: [
                         { 
                             title: "Minnewaterpark", 
@@ -262,7 +262,7 @@ window.DATA = {
                     type: "waypoint",
                     link: "Belgium.html",
                     labelOffset: { x: -1.8, y: 1.2 },
-                    desc: "Belfry and Castle",
+                    desc: "Lovely Belfry and Castle",
                     notes: [
                         { 
                             title: "Saint Nicholas' Church", 
@@ -332,7 +332,7 @@ window.DATA = {
                     type: "waypoint",
                     link: "Belgium.html",
                     labelOffset: { x: 2, y: -0.5 },
-                    desc: "University Town",
+                    desc: "Take a walk by a lake",
                     notes: [
                         { 
                             title:"Park Abbey", 
@@ -342,7 +342,7 @@ window.DATA = {
                         },
                     ]
                 },
-                { id: "housePoint1", date: "2023-10-04", type: "end",city: "Munich", labelOffset: { x: 2, y: 0 }},
+                { id: "housePoint1", date: "2023-10-04", type: "end", desc: "Back to Munich and ready for the Master!", city: "Munich", labelOffset: { x: 2, y: 0 }},
             ]
         },
         // Paris New Year Trip
