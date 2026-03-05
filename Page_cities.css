@@ -19,11 +19,24 @@ body {
    標題與導覽列
    ========================================= */
 header { 
-    width: 100%; background: #000; color: white; padding: 20px 0; 
+    width: 100%; background: #3b3b3b; color: white; padding: 20px 0; 
     text-align: center; letter-spacing: 2px; position: relative; z-index: 10; 
 }
-header h1 { cursor: pointer; display: inline-block; transition: 0.3s; margin: 0; font-family: 'Playfair Display', serif; }
-header h1:hover { opacity: 0.7; }
+/* 修改：加入背景裁切屬性，預設文字為白色 */
+header h1 { 
+    cursor: pointer; display: inline-block; margin: 0; 
+    font-family: 'Playfair Display', serif; 
+    transition: color 0.4s ease; /* 讓顏色變化滑順 */
+    background-image: var(--hover-flag, none); /* 讀取 JS 傳入的國旗漸層 */
+    background-size: 100% 100%;
+    -webkit-background-clip: text; /* 讓背景被文字形狀裁切 */
+    background-clip: text;
+    color: #fff; /* 預設白色 */
+}
+/* 當滑鼠懸停時，文字變成透明，透出底下的國旗漸層 */
+header h1:hover { 
+    color: transparent; 
+}
 
 .city-nav { width: 90%; max-width: 1200px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 20px 0; z-index: 10; position: relative; }
 .city-btn { padding: 10px 20px; border: 1px solid #ddd; background: white; cursor: pointer; transition: 0.3s; font-size: 14px; border-radius: 2px; font-weight: bold; }
@@ -54,11 +67,6 @@ header h1:hover { opacity: 0.7; }
 .event-date { font-size: 11px; color: #888; font-family: monospace; }
 
 #map { flex: 3; height: 100%; border-radius: 4px; border: 1px solid #eee; min-height: 550px; z-index: 1; }
-
-.custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); }
-.marker-v0 { background-color: #9e9e9e; } 
-.marker-v1 { background-color: #d48a5b; } 
-.marker-v2 { background-color: #8b5a2b; } 
 
 /* =========================================
    自訂地圖 Pop-up 樣式與排版矩陣
@@ -190,7 +198,7 @@ header h1:hover { opacity: 0.7; }
 
 /* Home 按鈕：左上角 */
 .home-btn { 
-    position: absolute; left: 30px; top: 20px; /* 這裡從 20px 改成 30px */
+    position: absolute; left: 30px; top: 20px; 
     color: #fff !important; text-decoration: none; 
     border: 1px solid rgba(255, 255, 255, 0.6) !important; 
     padding: 8px 22px; font-size: 14px; transition: 0.3s; 
@@ -204,7 +212,7 @@ header h1:hover { opacity: 0.7; }
 
 /* 景點清單按鈕：右上角 */
 #attraction-list-btn {
-    position: absolute; right: 30px; top: 20px; /* 這裡從 20px 改成 30px */
+    position: absolute; right: 30px; top: 20px; 
     color: #fff; border: 1px solid rgba(255, 255, 255, 0.6); 
     padding: 8px 22px; font-size: 14px; transition: 0.3s; 
     background: rgba(255, 255, 255, 0.15); 
@@ -219,7 +227,7 @@ header h1:hover { opacity: 0.7; }
 
 /* 景點清單展開面板 */
 #attraction-list-panel {
-    position: absolute; top: 70px; right: 30px; width: 280px; /* right 從 20px 改成 30px */
+    position: absolute; top: 70px; right: 30px; width: 280px; 
     max-height: 70vh; overflow-y: auto;
     background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px;
@@ -283,8 +291,139 @@ header h1:hover { opacity: 0.7; }
 #location-indicator.show { opacity: 1 !important; visibility: visible !important; transform: translate(-50%, 0) !important; }
 
 /* =========================================
-   RWD 手機版響應式設計 (小於 768px)
+   地圖進階功能：搜尋框、圖例與動態標記
    ========================================= */
+
+/* 動態自訂標記 */
+.custom-div-icon { background: transparent; border: none; }
+.marker-pin {
+    width: 100%; height: 100%; border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5); transition: all 0.3s ease;
+}
+/* 強調與暗化效果 */
+/* =========================================
+   動態浮現景點名稱標籤 (預設隱藏，點擊圖例時往上浮現)
+   ========================================= */
+.marker-label {
+    position: absolute;
+    bottom: 24px; /* 定位在圓點正上方 */
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); /* 預設稍微往下沉 */
+    background: rgba(255, 255, 255, 0.85); /* 半透明底色 */
+    backdrop-filter: blur(5px); /* 毛玻璃特效，重疊時依然優雅 */
+    color: #333;
+    font-family: 'Playfair Display', serif; /* 延續優雅字體 */
+    font-style: italic;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(177, 104, 55, 0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    white-space: nowrap; /* 強制不換行 */
+    pointer-events: none; /* 避免擋住滑鼠點擊 */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 100;
+}
+
+/* 當標記被高亮強調時，標籤往上浮現並顯示 */
+.marker-highlighted .marker-label {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+.marker-dimmed .marker-pin { opacity: 0.2; transform: scale(0.7); }
+.marker-highlighted .marker-pin { 
+    transform: scale(1.5); 
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 4px 10px rgba(0,0,0,0.6); 
+    border-width: 3px !important;
+}
+
+/* 地圖搜尋框 (定位於左下角) */
+/* 地圖內控制項手機版微調 */
+    .map-search-wrapper { 
+        left: 10px; 
+        bottom: 20px; 
+        top: auto; 
+        /* 🌟 終極修復：給予明確的像素寬度，絕對不會再被擠壓成圓形 */
+        width: 220px; 
+    }
+#map-search-input {
+    width: 100%; padding: 10px 15px; border-radius: 25px;
+    border: 2px solid rgba(177, 104, 55, 0.8); outline: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-family: inherit; font-size: 14px;
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); transition: 0.3s;
+    box-sizing: border-box;
+}
+#map-search-input:focus { border-color: #8b5a2b; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+#map-search-results {
+    list-style: none; margin: 0 0 8px 0; padding: 0; background: white;
+    border-radius: 12px; box-shadow: 0 -4px 15px rgba(0,0,0,0.15); 
+    max-height: 200px; overflow-y: auto; display: none; position: absolute; 
+    bottom: 100%; left: 0; width: 100%; 
+}
+#map-search-results.active { display: block; }
+.search-result-item {
+    padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;
+    font-size: 13px; color: #333; transition: 0.2s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: #fdf5e6; color: #b16837; font-weight: bold; }
+.search-city-hint { font-size: 10px; color: #999; display: block; margin-top: 2px;}
+
+/* 景點種類圖例 (Legend) */
+.map-legend {
+    position: absolute; bottom: 25px; right: 15px; z-index: 1000;
+    background: rgba(255, 255, 255, 0.9); padding: 12px; border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(5px);
+    font-size: 12px; color: #333; display: flex; flex-direction: column; gap: 6px;
+    max-width: 140px; transition: 0.3s;
+}
+.legend-item {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    transition: 0.2s; padding: 4px; border-radius: 4px; opacity: 0.8;
+}
+.legend-item:hover, .legend-item.active { opacity: 1; background: rgba(0,0,0,0.05); font-weight: bold; transform: translateX(-3px);}
+.legend-color { 
+    width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3); 
+    flex-shrink: 0; 
+}
+/* =========================================
+   熱門景點探索列 (Hashtag 按鈕)
+   ========================================= */
+.pop-nav-container {
+    width: 90%; max-width: 1200px; display: flex; justify-content: center; 
+    gap: 10px; flex-wrap: wrap; margin-bottom: 25px; z-index: 10; position: relative;
+    /* 🌟 防止景點過多時撐爆畫面，超過三行自動變為可上下捲動 */
+    max-height: 120px; overflow-y: auto; padding: 5px;
+}
+/* 專屬極細優雅捲動條 */
+.pop-nav-container::-webkit-scrollbar { width: 4px; }
+.pop-nav-container::-webkit-scrollbar-track { background: transparent; }
+.pop-nav-container::-webkit-scrollbar-thumb { background: rgba(177, 104, 55, 0.3); border-radius: 4px; }
+
+.pop-attr-btn {
+    padding: 8px 18px; border: 1px solid #ddd; background-color: #fff; 
+    border-radius: 30px; font-size: 13px; font-weight: bold; color: #666; 
+    cursor: pointer; transition: all 0.3s ease; position: relative; 
+    overflow: hidden; z-index: 1; text-decoration: none;
+    background-size: cover; background-position: center; background-repeat: no-repeat;
+    /* 確保按鈕不會被壓縮 */
+    flex-shrink: 0;
+}
+.pop-attr-btn::before {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s ease; z-index: -1;
+}
+.pop-attr-btn:hover, .pop-attr-btn.touched {
+    color: #fff; border-color: transparent; text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+    background-image: var(--bg-img); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+.pop-attr-btn:hover::before, .pop-attr-btn.touched::before { opacity: 1; }
+
+
 /* =========================================
    RWD 手機版響應式設計 (小於 768px)
    ========================================= */
@@ -292,29 +431,24 @@ header h1:hover { opacity: 0.7; }
     .main-content { flex-direction: column; height: auto; }
     #map { order: 1; flex: none; width: 100%; height: 450px; min-height: 450px; }
     
-    /* 1. 修正 Travel Log：取消固定高度，改為隨內容長高，並設定最大高度讓它事件過多時可滾動 */
-    #event-sidebar { 
-        order: 2; flex: none; max-width: 100%; width: 100%; 
-        height: auto; 
-        max-height: 450px; 
-    }
-    
-    /* 讓整個白色卡片底部留點空間，避免滑到最底時太擠 */
+    #event-sidebar { order: 2; flex: none; max-width: 100%; width: 100%; height: auto; max-height: 450px; }
     .container { width: 100%; padding: 15px; box-sizing: border-box; margin-bottom: 100px; }
 
-    /* 2. 懸浮 UI 微調：增加與螢幕邊緣的距離 (從 15px 加大到 25px/35px) */
+    /* 懸浮 UI 微調 */
     .home-btn { top: 25px; left: 25px; padding: 7px 18px; font-size: 13px; }
     #attraction-list-btn { top: 25px; right: 25px; padding: 7px 18px; font-size: 13px; }
-    
-    /* 清單面板也要跟著按鈕退縮，並調整寬度避免爆框 */
     #attraction-list-panel { top: 70px; right: 25px; width: calc(100vw - 50px); max-height: 60vh; }
     
-    /* 底部資訊微調 */
     #location-indicator { bottom: 35px; }
     #loc-country { font-size: 12px; letter-spacing: 4px; }
     #loc-city { font-size: 32px; }
-    
-    /* 讓回到頂端與百分比遠離底部邊緣 */
     #scroll-to-top { bottom: 35px; right: 25px; width: 44px; height: 44px; font-size: 18px; }
     #scroll-percentage { bottom: 35px; left: 25px; font-size: 24px; }
+
+    /* 地圖內控制項手機版微調 */
+    .map-search-wrapper { left: 10px; bottom: 20px; top: auto; width: calc(100% - 20px); }
+    .map-legend { bottom: 70px; right: 10px; padding: 8px; font-size: 11px; max-width: 110px;}
+    .legend-color { width: 12px; height: 12px; }
+    .pop-nav-container { margin-bottom: 15px; gap: 6px; max-height: 90px; }
+    .pop-attr-btn { padding: 6px 14px; font-size: 11px; }
 }
