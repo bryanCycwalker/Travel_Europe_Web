@@ -242,21 +242,20 @@
         #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
         #back-to-top:hover { background-color: #A62626; box-shadow: 0 6px 16px rgba(0,0,0,0.3); transform: translateY(-3px); }
 
-        /* 💡 修正：字體縮小、初始隱藏的進度條 */
         #progress-text {
             position: fixed;
             top: 30px;
             right: 30px;
             z-index: 100;
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem; /* 縮小字體 */
+            font-size: 1.5rem; 
             font-style: italic;
             font-weight: 700;
             color: #F9F6F0; 
             text-shadow: 1px 1px 4px rgba(44, 42, 41, 0.8), -1px -1px 4px rgba(44, 42, 41, 0.5); 
             pointer-events: none; 
             transition: opacity 0.3s ease;
-            opacity: 0; /* 一開始完全隱藏 */
+            opacity: 0; 
         }
 
         /* =========================================================
@@ -333,9 +332,8 @@
                 font-size: 0.85em;
             }
 
-            /* 手機版進度數字適配 */
             #progress-text {
-                font-size: 1.2rem; /* 手機版同步等比例縮小 */
+                font-size: 1.2rem; 
                 top: 20px;
                 right: 20px;
             }
@@ -344,7 +342,7 @@
 </head>
 <body>
 
-    <a href="index.html" id="back-btn">Home</a>
+    <a href="Home.html" id="back-btn">Home</a>
     <div id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
     
     <div id="progress-text">0%</div>
@@ -445,7 +443,6 @@
                 else hint.style.opacity = '0.8';
             }
 
-            // 💡 修正：偵測滾動距離，離開第一頁才顯示進度百分比
             const progressText = document.getElementById('progress-text');
             if (progressText) {
                 if (window.scrollY > 50) progressText.style.opacity = '1';
@@ -935,7 +932,9 @@
 
             gsap.set(".article-container", { xPercent: -50, yPercent: 0 }); 
             gsap.set("#map-content-wrapper", { x: 0, y: 0, scale: 1 });
-            tl.to("#cover-layer", { opacity: 0, duration: 1.5 }).to("#hero-text-layer", { y: -200, opacity: 0, duration: 1.5 }, "<");
+            
+            // 💡 修正：使用 autoAlpha: 0 確保隱藏時不再阻擋點擊
+            tl.to("#cover-layer", { autoAlpha: 0, duration: 1.5 }).to("#hero-text-layer", { y: -200, autoAlpha: 0, duration: 1.5 }, "<");
 
             STORY_DATA.forEach((item, index) => {
                 const targetScale = 5; const pos = getFixedPosition(item.coords.x, item.coords.y, targetScale);
