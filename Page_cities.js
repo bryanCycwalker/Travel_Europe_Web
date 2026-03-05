@@ -427,12 +427,20 @@ let markerClusterGroup = L.markerClusterGroup({
         };
         legendUI.addTo(map);
 
+        // 【升級】點擊圖例強調對應景點、關閉氣泡、並自動聚焦 (Auto Zoom)
         document.querySelectorAll('.legend-item').forEach(item => {
             item.addEventListener('click', function() {
                 const clickedCat = this.getAttribute('data-cat');
+                
+                // 1. 關閉畫面上正在顯示的 Popup 氣泡
+                map.closePopup();
+
+                // 2. 判斷是「取消篩選」還是「啟用篩選」
                 if (activeCategory === clickedCat) {
+                    // 【取消篩選】恢復所有點的狀態
                     activeCategory = null;
                     document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
+                    
                     currentMarkers.forEach(mObj => {
                         let iconEl = mObj.marker.getElement();
                         if(iconEl) {
@@ -441,9 +449,15 @@ let markerClusterGroup = L.markerClusterGroup({
                         }
                     });
                 } else {
+                    // 【啟用篩選】強調該類別，並準備計算座標邊界
                     activeCategory = clickedCat;
                     document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
                     this.classList.add('active');
+                    
+                    // 建立一個空的經緯度邊界框 (Bounds)
+                    let bounds = L.latLngBounds();
+                    let hasMatchingMarkers = false;
+
                     currentMarkers.forEach(mObj => {
                         let iconEl = mObj.marker.getElement();
                         if(iconEl) {
@@ -457,7 +471,20 @@ let markerClusterGroup = L.markerClusterGroup({
                                 mObj.marker.setZIndexOffset(-10); 
                             }
                         }
+                        
+                        // 不管這個點有沒有被叢集藏起來，只要符合類別，就把它的座標加入邊界框
+                        if (mObj.cat === activeCategory) {
+                            bounds.extend(mObj.marker.getLatLng());
+                            hasMatchingMarkers = true;
+                        }
                     });
+
+                    // 3. 執行優雅的飛梭與縮放，剛好涵蓋所有符合的景點
+                    if (hasMatchingMarkers) {
+                        // padding: 確保點不會緊貼螢幕邊緣
+                        // maxZoom: 確保如果該類別只有一個點時，不會放得太大 (維持在 15 級)
+                        map.flyToBounds(bounds, { padding: [60, 60], maxZoom: 15, duration: 1.2 });
+                    }
                 }
             });
         });
