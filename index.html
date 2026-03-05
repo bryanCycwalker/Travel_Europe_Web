@@ -246,7 +246,7 @@ a { text-decoration: none; color: inherit; }
 <script>
 const CONFIG = {
     scrollFactor: 0.002, friction: 0.85, 
-    svgUrl: 'https://raw.githubusercontent.com/bryanCycwalker/Travel_Web_svg/refs/heads/main/Europe_map_new.svg'
+    svgUrl: 'https://raw.githubusercontent.com/bryanCycwalker/Travel_Web_svg/refs/heads/main/Europe_map_new_202602.svg'
 };
 
 const state = {
@@ -303,9 +303,6 @@ function tween(from, to, duration, onUpdate, onComplete) {
     requestAnimationFrame(loop);
 }
 
-// =========================================================
-// 【核心數學更新：套用變形並防止漂移】
-// =========================================================
 function applyTransform() {
     if (!dom.svg) return;
     
@@ -317,11 +314,9 @@ function applyTransform() {
         const svgW = parseFloat(dom.svg.style.width);
         const svgH = parseFloat(dom.svg.style.height);
         
-        // 算出縮放後可以被拖曳的最大距離，確保邊界不會露出黑邊
         const maxPanX = (svgW * state.userScale - svgW) / 2;
         const maxPanY = (svgH * state.userScale - svgH) / 2;
         
-        // 嚴格將平移量限制在安全範圍內
         if (state.userPanX > maxPanX) state.userPanX = maxPanX;
         if (state.userPanX < -maxPanX) state.userPanX = -maxPanX;
         if (state.userPanY > maxPanY) state.userPanY = maxPanY;
@@ -411,8 +406,11 @@ function showRichInfo(id) {
             }
         });
         tripMap.forEach(info => {
+            // 【關鍵修改】：自動將旅行名稱轉為網址 (例如: "Belgium Trip" -> "Belgium_Trip.html")
+            let targetTripUrl = info.name.replace(/\s+/g, '_') + '.html';
+            
             listHTML += `
-                <div class="visit-item clickable-box" onclick="window.handleDateTagClick(${info.idx}, '${id}')">
+                <div class="visit-item clickable-box" onclick="window.location.href='${targetTripUrl}'">
                     <div class="visit-header"><span class="visit-date-badge clickable-link">${info.dateRange}</span></div>
                     <div class="visit-main-text">${info.name}</div>
                 </div>`;
@@ -520,11 +518,19 @@ function handleMapHoverLeave() {
     state.hoverEl = null; clearMapHover(); dom.countryLabel.style.opacity = 0; updateAllMarkers(); 
 }
 
-function clearMapHover() { if(dom.svg) dom.svg.querySelectorAll('.country-highlight').forEach(el => el.classList.remove('country-highlight')); }
+function clearMapHover() { 
+    if(dom.svg) dom.svg.querySelectorAll('.country-highlight').forEach(el => el.classList.remove('country-highlight')); 
+}
 
-// =========================================================
-// 【核心：讓 Tooltip 在縮放時也不會漂移的精準數學座標】
-// =========================================================
+// 【新增：統一清除所有標記與事件高亮的函式】
+function clearHighlighting() { 
+    dom.markers.forEach(el => {
+        el.classList.remove('map-marker-highlight');
+        el.classList.remove('star-highlight');
+    }); 
+    dom.timeline.querySelectorAll('.timeline-event').forEach(el => el.classList.remove('active-highlight')); 
+}
+
 function updateTooltip(text, targetEl, isSVGElement = false) {
     if (!text || !dom.svg || !targetEl || (dom.countryLabel.dataset.locked === "true" && !isSVGElement)) return;
     dom.countryLabel.textContent = text; dom.countryLabel.style.opacity = 1;
@@ -569,9 +575,6 @@ function updateCityTooltip(text, targetEl) {
     dom.cityLabel.style.opacity = 1;
 }
 
-// =========================================================
-// 【核心：讓 Marker 永遠黏在地圖上的同步數學投影】
-// =========================================================
 function updateAllMarkers(hoverCountryId = null) {
     if (!dom.svg) return;
     
@@ -594,7 +597,6 @@ function updateAllMarkers(hoverCountryId = null) {
     const ty = state.baseTranslateY + state.userPanY;
     const s = state.userScale;
 
-    // 將內部座標完美投影到實際螢幕上的數學公式 (同步且零延遲)
     const getScreenPos = (x, y) => { 
         const px = (x / vbW) * svgW;
         const py = (y / vbH) * svgH;
@@ -671,7 +673,12 @@ function focusOnCountry(el) {
 }
 
 function returnFromCountryFocus() {
+    dom.infoOverlay.style.display = "none"; // 【強化】隱藏可能開啟的 Popup
     dom.svg.querySelectorAll('.country-focus').forEach(e => e.classList.remove('country-focus'));
+    
+    clearHighlighting(); // 【強化】強制清除所有城市/事件的放大黃色高亮
+    clearMapHover();     // 【強化】強制清除國家版塊的 Hover 變色
+    
     dom.backBtn.style.left = '-80px'; dom.leftPanel.querySelector('h1').textContent = "Timeline";
     delete dom.countryLabel.dataset.locked;
     dom.countryLabel.style.opacity = 0; dom.countryLabel.style.transform = "translate(-50%, -50%) scale(1)"; 
@@ -724,7 +731,13 @@ function focusOnEvent(ev, highlightMarkerId = null) {
 }
 
 function returnFromEvent() {
-    if(!state.eventFocused) return; dom.eventBackBtn.classList.remove('active'); clearHighlighting();
+    if(!state.eventFocused) return; 
+    dom.infoOverlay.style.display = "none"; // 【強化】隱藏可能開啟的 Popup
+    dom.eventBackBtn.classList.remove('active'); 
+    
+    clearHighlighting(); // 【強化】強制清除所有城市/事件的放大黃色高亮
+    clearMapHover();     // 【強化】強制清除因 Timeline 停留而產生的國家高亮
+    
     if (state.returnToCountryMode) {
         dom.backBtn.style.left = '20px'; 
         if(state.isMobile) { dom.leftPanel.classList.remove('mobile-active'); }
@@ -734,10 +747,8 @@ function returnFromEvent() {
         transitionPanelContent('backward', () => { dom.leftPanel.querySelector('h1').textContent = state.savedLeftPanel.title; dom.timeline.innerHTML = state.savedLeftPanel.html; dom.timeline.querySelectorAll('.timeline-event').forEach((div, i) => { div._eventData = DATA.events[i]; }); rebindTimelineEvents(); });
         animateBackToMainView(() => { state.eventFocused = false; state.focusedEvent = null; updateAllMarkers(); }, state.savedSVGState); 
     }
-    DATA.markers.home.forEach(m => document.getElementById(m.id)?.classList.remove('star-highlight'));
 }
 
-function clearHighlighting() { dom.markers.forEach(el => el.classList.remove('map-marker-highlight')); dom.timeline.querySelectorAll('.timeline-event').forEach(el => el.classList.remove('active-highlight')); }
 function highlightMarkerAndTimeline(id) {
     if(!id) return; const marker = dom.markers.get(id); if(marker) marker.classList.add('map-marker-highlight');
     document.querySelectorAll(`.timeline-event[data-marker-id="${id}"]`).forEach(item => {
@@ -1092,11 +1103,7 @@ function startAnimationLoop() {
                     let op = 1.0; 
                     if (currentZ > 100) op = 1.0 - ((currentZ - 100) / 600); 
                     
-                    if (currentZ > 800 || op <= 0) {
-                        el.style.opacity = 0;
-                    } else {
-                        el.style.opacity = op;
-                    }
+                    if (currentZ > 800 || op <= 0) { el.style.opacity = 0; } else { el.style.opacity = op; }
                     el.style.transform = `translate(-50%, -50%) translate3d(${ox}px, ${oy}px, ${currentZ}px)`;
                 });
 
@@ -1115,6 +1122,9 @@ function startAnimationLoop() {
                 // --- Phase 2: 地圖右移與 Timeline ---
                 dom.bgContainer.style.pointerEvents = "auto"; 
                 bgContainer.style.opacity = 1;
+                
+                // 【關鍵修復】：確保進入地圖階段時（包含從外部網頁跳轉回來時），飛梭元素完全隱藏！
+                photosAndTitle.forEach(el => { el.style.opacity = 0; });
                 
                 state.progress = (state.scrollDepth - state.WARP_DEPTH) / TIMELINE_DEPTH;
                 const panelPhase = Math.min(Math.max((state.progress) / 1, 0), 1);
@@ -1138,6 +1148,21 @@ function startAnimationLoop() {
 }
 
 function init() {
+    // === 【新增：智慧判斷是否略過飛梭動畫】 ===
+    const hostname = window.location.hostname;
+    // 檢查前一個網頁 (referrer) 是不是來自同一個網站（例如從遊記頁面按上一頁回來）
+    const isFromOtherInternalPage = hostname ? (document.referrer && document.referrer.includes(hostname)) : false;
+    
+    // 如果是從內部網頁回來，或是這個分頁已經看過動畫了 (sessionStorage)
+    if (isFromOtherInternalPage || sessionStorage.getItem('skipWarpIntro')) {
+        // 直接把進度條推到最後（地圖與 Timeline 完全展開的狀態）
+        // 因為我們沒有鎖死最小進度，所以您依然可以往上滑滾輪回到飛梭動畫！
+        state.scrollDepth = state.WARP_DEPTH + 4000; 
+    } else {
+        // 如果是全新開啟網頁，記錄起來，確保同一個分頁下次重整時會跳過
+        sessionStorage.setItem('skipWarpIntro', 'true');
+    }
+    // ==========================================
     Object.entries(DATA.markers).forEach(([countryCode, cityList]) => {
         cityList.forEach(city => { city.country = countryCode; });
     });
@@ -1192,9 +1217,6 @@ function init() {
         state.velocity += deltaY * 2.5 * speedMultiplier; 
     }, { passive: false });
 
-    // =========================================================
-    // 【終極升級：支援以「手指中心點」為目標的 Pinch-to-Zoom】
-    // =========================================================
     dom.bgContainer.addEventListener('touchstart', e => {
         if (state.scrollDepth <= state.WARP_DEPTH) return;
         state.mapDragThreshold = false; 
@@ -1245,12 +1267,9 @@ function init() {
 
             const svgW = parseFloat(dom.svg.style.width);
             const svgH = parseFloat(dom.svg.style.height);
-            
-            // 計算目前 SVG 的真實中心點在螢幕上的位置
             const elementCenterX = state.baseTranslateX + state.userPanX + svgW / 2;
             const elementCenterY = state.baseTranslateY + state.userPanY + svgH / 2;
 
-            // 根據兩指中心點與畫面中心點的偏差，反向補償平移量，達到「指哪放哪」的效果
             const scaleRatio = newScale / state.userScale;
             state.userPanX -= (pinchCenterX - elementCenterX) * (scaleRatio - 1);
             state.userPanY -= (pinchCenterY - elementCenterY) * (scaleRatio - 1);

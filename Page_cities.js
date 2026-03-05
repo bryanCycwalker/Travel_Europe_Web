@@ -401,12 +401,28 @@ let markerClusterGroup = L.markerClusterGroup({
         const legendUI = L.control({ position: 'bottomright' });
         legendUI.onAdd = function() {
             let div = L.DomUtil.create('div', 'map-legend');
-            let html = `<div style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:4px; margin-bottom:4px; text-align:center;">POI Categories</div>`;
+            let html = `
+                <div class="legend-header">
+                    <span>POI Categories</span>
+                    <span class="legend-toggle-icon">▼</span>
+                </div>
+                <div class="legend-content">
+            `;
             Object.keys(categoryMap).forEach(key => {
                 html += `<div class="legend-item" data-cat="${key}"><div class="legend-color" style="background:${categoryMap[key].color}; border:2px solid ${categoryMap[key].border};"></div><span>${categoryMap[key].label}</span></div>`;
             });
+            html += `</div>`;
             div.innerHTML = html;
             L.DomEvent.disableClickPropagation(div);
+
+            // 【新增】綁定標題點擊收合事件
+            let header = div.querySelector('.legend-header');
+            header.addEventListener('click', function() {
+                div.classList.toggle('collapsed');
+                let icon = div.querySelector('.legend-toggle-icon');
+                icon.innerText = div.classList.contains('collapsed') ? '▲' : '▼';
+            });
+
             return div;
         };
         legendUI.addTo(map);
@@ -556,7 +572,10 @@ let markerClusterGroup = L.markerClusterGroup({
         if (!document.getElementById('global-floating-ui')) {
             const floatingUI = document.createElement('div');
             floatingUI.id = 'global-floating-ui';
+            
+            // 【新增】加入 gallery-main-title
             floatingUI.innerHTML = `
+                <div id="gallery-main-title">Bryan's Memories of Places</div>
                 <div id="scroll-percentage">0%</div>
                 <div id="location-indicator"><div id="loc-country">${config.countryName}</div><div id="loc-city">Overview</div></div>
                 <button id="scroll-to-top">↑</button>
@@ -564,30 +583,41 @@ let markerClusterGroup = L.markerClusterGroup({
                 <div id="attraction-list-panel"></div>
             `;
             document.body.appendChild(floatingUI);
+            
             const homeBtn = document.querySelector('.home-btn');
             if (homeBtn) floatingUI.appendChild(homeBtn);
+            
             document.getElementById('scroll-to-top').addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
             document.getElementById('attraction-list-btn').addEventListener('click', () => { document.getElementById('attraction-list-panel').classList.toggle('open'); });
+            
             window.addEventListener('scroll', () => {
                 let scrollTop = window.scrollY || document.documentElement.scrollTop;
                 let docHeight = document.body.scrollHeight - window.innerHeight;
                 let pct = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
                 pct = Math.max(0, Math.min(100, pct)); 
+                
                 const pctInd = document.getElementById('scroll-percentage');
                 if(pctInd) pctInd.innerText = `${pct}%`;
+                
                 const topBtn = document.getElementById('scroll-to-top');
                 const locInd = document.getElementById('location-indicator');
                 const listBtn = document.getElementById('attraction-list-btn');
+                const mainTitle = document.getElementById('gallery-main-title'); // 抓取大標題
+                
                 const triggerPoint = window.innerHeight * 0.6;
+                
+                // 【修改】當滾動超過門檻時，讓所有元素（包含標題）加上 .show 動畫
                 if (scrollTop > triggerPoint) {
                     if(topBtn) topBtn.classList.add('show');
                     if(pctInd) pctInd.classList.add('show');
                     if(locInd) locInd.classList.add('show');
+                    if(mainTitle) mainTitle.classList.add('show');
                     if(listBtn && document.getElementById('attraction-list-panel').innerHTML.trim() !== '') listBtn.classList.add('show');
                 } else {
                     if(topBtn) topBtn.classList.remove('show');
                     if(pctInd) pctInd.classList.remove('show');
                     if(locInd) locInd.classList.remove('show');
+                    if(mainTitle) mainTitle.classList.remove('show');
                     if(listBtn) listBtn.classList.remove('show');
                     const panel = document.getElementById('attraction-list-panel');
                     if(panel) panel.classList.remove('open');
