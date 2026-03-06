@@ -503,13 +503,13 @@ window.DATA = {
                     photo18: "Photos/Germany/Munich/muc62 (Small).jpg", text18: "Here is Cuvilliés Theatre!",
 
                 },
-                {loc:[48.1382, 11.5730], date:"2023-09-21", t:"Feldherrnhalle", cat: "square", ot:"24/7", tp:"Free", w:"https://www.schloesser.bayern.de/deutsch/schloss/objekte/mu_feldh.htm",
+                {loc:[48.1417, 11.5773], date:"2023-09-21", t:"Feldherrnhalle", cat: "square", ot:"24/7", tp:"Free", w:"https://www.schloesser.bayern.de/deutsch/schloss/objekte/mu_feldh.htm",
                     photo1: "Photos/Germany/Munich/muc63 (Small).jpg", text1: "Built by Ludwig I to memorise the vital military figurs"
                 }, 
-                {loc:[48.1421, 11.5664], date:"2023-09-21", t:"Theatine Church", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.theatinerkirche.de/",
+                {loc:[48.1421, 11.5764], date:"2023-09-21", t:"Theatine Church", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.theatinerkirche.de/",
                     photo1: "Photos/Germany/Munich/muc64 (Small).jpg", text1: "An iconic Italian Baroque style church"
                 }, 
-                {loc:[48.1423, 11.5819], date:"2023-09-21", t:"Bavarian State Chancellery", cat: "square", ot:"Sun 08:00-18:00<br>Mon 08:00-18:00<br>Tue 08:00-18:00<br>Wed 08:00-18:00<br>Thu 08:00-18:00<br>Fri 08:00-18:00<br>Sat 08:00-18:00", tp:"Free", w:"https://www.bayern.de/in-english/",
+                {loc:[48.1423, 11.5829], date:"2023-09-21", t:"Bavarian State Chancellery", cat: "square", ot:"Sun 08:00-18:00<br>Mon 08:00-18:00<br>Tue 08:00-18:00<br>Wed 08:00-18:00<br>Thu 08:00-18:00<br>Fri 08:00-18:00<br>Sat 08:00-18:00", tp:"Free", w:"https://www.bayern.de/in-english/",
                     photo1: "Photos/Germany/Munich/muc65 (Small).jpg", text1: "How imposing it is, a fusion of new and old!"
                 }, 
                 {loc:[48.1316, 11.5497], date:"2023-09-23", t:"Oktoberfest", cat: "square", summer:"Third Saturday of September – First Sunday of October", ots:"Sun <span style='color: #A32020;'>09:00</span>-23:30<br>Mon 10:00-23:30<br>Tue 10:00-23:30<br>Wed 10:00-23:30<br>Thu 10:00-23:30<br>Fri 10:00-23:30<br>Sat <span style='color: #A32020;'>09:00</span>-23:30", tp:"Free Entry", w:"https://www.oktoberfest.de/en",
@@ -519,13 +519,13 @@ window.DATA = {
                     photo4: "Photos/Germany/Munich/muc68 (Small).jpg", text4: "And the classic Roasted Chicken...",             
                     photo5: "Photos/Germany/Munich/muc69 (Small).jpg", text5: "...with tasty sweet Gebrannte Mandeln!!"
                 }, 
-                {loc:[48.1448, 11.5793], date:"2023-09-25", t:"English Garden", cat: "nature", ot:"24/7", tp:"Free", w:"https://www.muenchen.de/en/sights/attractions/english-garden",
+                {loc:[48.1500, 11.5910], date:"2023-09-25", t:"English Garden", cat: "nature", ot:"24/7", tp:"Free", w:"https://www.muenchen.de/en/sights/attractions/english-garden",
                     photo1: "Photos/Germany/Munich/muc70 (Small).jpg", text1: "Monopteros, a famous pavilion and photo spot!",
                     photo2: "Photos/Germany/Munich/muc71 (Small).jpg", text2: "The fantastic wiew from the top of Monopteros~",                
                     photo3: "Photos/Germany/Munich/muc72 (Small).jpg", text3: "And the Chinese Tower, which does nothing with Chinese(?",                     
                     photo4: "Photos/Germany/Munich/muc11 (Small).mp4", text4: "Here is the perfect park to be tranquil~~",
                 }, 
-                {loc:[48.1489, 11.5705], date:"2023-09-28", t:"Alte Pinakothek", cat: "museum", ot:"Sun 10:00-18:00</span><br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-<span style='color: #A32020;'>20:00</span><br>Wed 10:00-<span style='color: #A32020;'>20:00</span><br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"Adult: 9€<br>Student: 6€<br>Sunday: 1€", w:"https://www.pinakothek.de/en/alte-pinakothek",
+                {loc:[48.1483, 11.5698], date:"2023-09-28", t:"Alte Pinakothek", cat: "museum", ot:"Sun 10:00-18:00</span><br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-<span style='color: #A32020;'>20:00</span><br>Wed 10:00-<span style='color: #A32020;'>20:00</span><br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"Adult: 9€<br>Student: 6€<br>Sunday: 1€", w:"https://www.pinakothek.de/en/alte-pinakothek",
                     photo1: "Photos/Germany/Munich/muc73 (Small).jpg", text1: "The Entrance",
                     photo2: "Photos/Germany/Munich/muc74 (Small).jpg", text2: "There are crazy many rooms like this one. Plan your time well~",                
                     photo3: "Photos/Germany/Munich/muc75 (Small).jpg", text3: "Susanna at Her Bath by Albrecht Altdorfer",                     
@@ -534,10 +534,10 @@ window.DATA = {
                     photo6: "Photos/Germany/Munich/muc78 (Small).jpg", text6: "Cathedral towering over a City by Karl Friedrich Schinkel",                     
                     photo7: "Photos/Germany/Munich/muc79 (Small).jpg", text7: "And the HIGHLIGHT: one of the six <span style='font-size:1.5em; font-weight:bold; color: #A32020;'>Sunflowers by Vincent van Gogh!</span>",
                 }, 
-                {loc:[48.1322, 11.5935], date:"2023-09-28", t:"St. Johann Baptist", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.pfarrverband-haidhausen.de/home",
+                {loc:[48.1338, 11.5983], date:"2023-09-28", t:"St. Johann Baptist", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.pfarrverband-haidhausen.de/home",
                     photo1: "Photos/Germany/Munich/muc80 (Small).jpg", text1: "An elegant yet quiet church next to the international church I attended to",
                     photo2: "Photos/Germany/Munich/muc81 (Small).jpg", text2: "",                
-                    photo3: "Photos/Germany/Munich/muc82 (Small).jpg", text3: "That's really spacious!",
+                    photo3: "Photos/Germany/Munich/muc82 (Small).jpg", text3: "Just found an interesting candle :)",
                 }, 
                 // {loc:[48.1769, 11.5583], t:"BMW Museum", d:"Ultimate Craftsmanship"}
             ]},
