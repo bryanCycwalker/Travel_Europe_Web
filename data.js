@@ -14,7 +14,7 @@ window.DATA = {
                     labelOffset: { x: 2, y: 0 },
                     desc: "Kick of in Munich Airport!",
                     notes: [
-                        { photo: "Photos/Germany/Munich/Belgium_Trip/bru1 (Small).JPEG", text: "As a newcomer to Germany, I was shocked to see a <span style='font-size:1.3em; font-weight:bold; color: #A32020;'>German drinking beer for breakfast</span> <br>at the airport</br>" },
+                        { photo: "Photos/Germany/Munich/Belgium_Trip/bru1 (Small).JPEG", text: "As a newcomer to Germany, I was shocked to see a <span style='font-size:1.3em; font-weight:bold; color: #A32020;'>German drinking beer for breakfast</span> at the airport" },
                         { photo: "Photos/Germany/Munich/Belgium_Trip/bru2 (Small).JPEG", text: "Boarding the first Intra-European flights in my life, I was more than excited!" }
                     ]
                 },
@@ -387,7 +387,8 @@ window.DATA = {
                     loc: [48.1754, 11.5520], date:"2023-09-18", t: "Olympiapark", cat: "Parks & Nature", p:"Photos/Munich/muc3.jpg", ot: "24/7", tp: "Free", w: "https://www.olympiapark.de/en",
                     photo1: "Photos/Germany/Munich/muc2 (Small).jpg", text1: "Morning run, thanks to jet lag",
                     photo2: "Photos/Germany/Munich/muc3 (Small).jpg",
-                    photo3: "Photos/Germany/Munich/muc4 (Small).jpg", text3: "and did some pull-ups :)"
+                    photo3: "Photos/Germany/Munich/muc4 (Small).jpg", text3: "and did some pull-ups :)",
+                    photo4: "Photos/Germany/Munich/muc66 (Small).jpg", text4: "Olympiapark at night~~"
                 },
                 {
                     loc: [48.1403, 11.5645], date:"2023-09-19", t: "Justizpalast", cat: "Public Places", p:"Photos/Munich/muc6.jpg", ot: "Sun <span style='color: #A32020;'>Closed</span><br>Mon 08:00-15:00<br>Tue 08:00-15:00<br>Wed 08:00-15:00<br>Thu 08:00-15:00<br>Fri 08:00-<span style='color: #A32020;'>14:00</span><br>Sat <span style='color: #A32020;'>Closed</span>", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
@@ -395,7 +396,7 @@ window.DATA = {
                     photo2: "Photos/Germany/Munich/muc6 (Small).jpg", text2: "Here were the White Rose members tried during WWII.",
                 },
                 {
-                    loc: [48.1390, 11.5668], date:"2023-09-19", t: "Karlstor", cat: "Fortresses", p:"Photos/Munich/muc7.jpg", ot: "24/7", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
+                    loc: [48.1390, 11.5668], date:"2023-09-19", t: "Karlstor", cat: "castle", p:"Photos/Munich/muc7.jpg", ot: "24/7", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
                     photo1: "Photos/Germany/Munich/muc7 (Small).jpg", text1: "The main gate to Munich old town",
                 },
                 {
@@ -477,7 +478,7 @@ window.DATA = {
                     photo7: "Photos/Germany/Munich/muc44 (Small).jpg", text7: "Nymphenburg in the afternoon",
                 },
                 {
-                    loc: [48.1398, 11.5788], date:"2023-09-21", t: "Bavarian State Opera", cat: "Public Places", ot: "Depending on the performance", tp: "Depending on the performance", v: 1, w: "https://www.staatsoper.de/en/visit",
+                    loc: [48.1398, 11.5788], date:"2023-09-21", t: "Bavarian State Opera", cat: "Public Places", ot: "Depending on the performance", tp: "Depending on the performance", w: "https://www.staatsoper.de/en/visit",
                     photo1: "Photos/Germany/Munich/muc45 (Small).jpg", text1: "Just passed by, but it is quite imposing",
                 },
                 {
@@ -499,10 +500,23 @@ window.DATA = {
                     photo15: "Photos/Germany/Munich/muc59 (Small).jpg", text15: "something in between(?",
                     photo16: "Photos/Germany/Munich/muc60 (Small).jpg", text16: "and finally the throne room!",
                     photo17: "Photos/Germany/Munich/muc61 (Small).jpg", text17: "Let's go outside~ actually the exterior is much more boring...",
+                    photo18: "Photos/Germany/Munich/muc62 (Small).jpg", text18: "Here is Cuvilliés Theatre!",
+
                 },
-                {loc:[48.1381, 11.5855], t:"Hofbräuhaus", d:"Bavarian Tradition"},
-                {loc:[48.1448, 11.5793], t:"English Garden", d:"Urban Surfing Spot"}, 
-                {loc:[48.1769, 11.5583], t:"BMW Museum", d:"Ultimate Craftsmanship"}
+                {loc:[48.1382, 11.5730], date:"2023-09-21", t:"Feldherrnhalle", cat: "Public Places", ot:"24/7", tp:"Free", w:"https://www.schloesser.bayern.de/deutsch/schloss/objekte/mu_feldh.htm",
+                    photo1: "Photos/Germany/Munich/muc63 (Small).jpg", text1: "Built by Ludwig I to memorise the vital military figurs"
+                }, 
+                {loc:[48.1421, 11.5664], date:"2023-09-21", t:"Theatine Church", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.theatinerkirche.de/",
+                    photo1: "Photos/Germany/Munich/muc64 (Small).jpg", text1: "An iconic Italian Baroque style church"
+                }, 
+                {loc:[48.1423, 11.5819], date:"2023-09-21", t:"Bavarian State Chancellery", cat: "Public Places", ot:"Sun 08:00-18:00<br>Mon 08:00-18:00<br>Tue 08:00-18:00<br>Wed 08:00-18:00<br>Thu 08:00-18:00<br>Fri 08:00-18:00<br>Sat 08:00-18:00", tp:"Free", w:"https://www.bayern.de/in-english/",
+                    photo1: "Photos/Germany/Munich/muc65 (Small).jpg", text1: "How imposing it is, a fusion of new and old!"
+                }, 
+                {loc:[48.1423, 11.5819], date:"2023-09-23", t:"Oktoberfest", cat: "Public Places", summer:"Third Saturday of September – First Sunday of October", ots:"Sun <span style='color: #A32020;'>09:00</span>-23:30<br>Mon 10:00-23:30<br>Tue 10:00-23:30<br>Wed 10:00-23:30<br>Thu 10:00-23:30<br>Fri 10:00-23:30<br>Sat <span style='color: #A32020;'>09:00</span>-23:30", tp:"Free Entry", w:"https://www.oktoberfest.de/en",
+                    photo1: "Photos/Germany/Munich/muc66 (Small).jpg", text1: "How imposing it is, a fusion of new and old!"
+                }, 
+                // {loc:[48.1448, 11.5793], t:"English Garden", d:"Urban Surfing Spot"}, 
+                // {loc:[48.1769, 11.5583], t:"BMW Museum", d:"Ultimate Craftsmanship"}
             ]},
             { id: "housePoint2", x: 350, y: 355, city: "Vienna", date: "2023-11-12", img: "", desc: "音樂之都。", link: "", linkText: "" },
             { id: "housePoint3", x: 328, y: 321, city: "Dresden", center: [51.0504, 13.7373], desc:"歷史悠久的文化重鎮。", pins: [
@@ -560,7 +574,7 @@ window.DATA = {
             { id: "betrip3", x: 255.5, y: 319, city: "Antwerp", center: [51.2194, 4.4025], img: "Photos/Belgium/Antwerp/Belgium_Trip/ant15 (Small).jpg", date: "2023-09-30", desc: "Remarkable Railway Station", link: "https://en.wikipedia.org/wiki/Antwerp", linkText: "more", pins: [
                 {loc:[51.2172, 4.4214], t:"Antwerpen-Centraal", cat: "square", p:"Photos/Belgium/Antwerp/Belgium_Trip/ant17 (Small).jpg", ot: "Sun 05:45-22:00<br>Mon 05:45-22:00<br>Tue 05:45-22:00<br>Wed 05:45-22:00<br>Thu 05:45-22:00<br>Fri 05:45-22:00<br>Sat 05:45-22:00", tp: "Free", v:1, d:"Beautiful railway station architecture", w: "https://www.belgiantrain.be/nl/station-information/antwerpen/antwerpen-centraal"},
                 {loc:[51.2213, 4.3996], t:"Cathedral of Our Lady", cat: "church", ot: "Sun <span style='color: #A32020;'>13:00</span>-17:00<br>Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-<span style='color: #A32020;'>15:00</span>", tp:"Adults:12€<br>Student:10€", v:0, d:"Gothic cathedral with Rubens paintings", w:"https://www.dekathedraal.be/en/visit"},
-                {loc:[51.2227, 4.3973], t:"Het Steen", cat: "Fortresses", p:"Photos/Belgium/Brussels/Belgium_Trip/ant12 (Small).jpg", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"7€", v:1, d:"Medieval fortress in the city center", w:"https://visit.antwerpen.be/het-steen"},
+                {loc:[51.2227, 4.3973], t:"Het Steen", cat: "castle", p:"Photos/Belgium/Brussels/Belgium_Trip/ant12 (Small).jpg", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"7€", v:1, d:"Medieval fortress in the city center", w:"https://visit.antwerpen.be/het-steen"},
                 {loc: [51.2180, 4.4097], t: "Meir Shopping Street", cat: "commercial", p:"Photos/Belgium/Brussels/Belgium_Trip/ant4 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d: "A chill walking street connecting the central station to the harbour", w:"https://visit.antwerpen.be/en/shopping-zone-meir"},
                 {loc: [51.2185, 4.3983], t: "Plantin-Moretus Museum", cat: "museum", p:"Photos/Belgium/Brussels/Belgium_Trip/ant6 (Small).jpg", ot: "Sun 10:00-17:00<br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-17:00", tp:"Adults:12€<br>18-25:8€", v: 1, d: "The only fully preserved 16th-century printing house (UNESCO site)", w:"https://www.museumplantinmoretus.be/de/ihr-besuch"},
                 {loc: [51.2214, 4.3995], t: "Grote Markt", cat: "square", ot:"24/7", tp:"Free", v: 1, d: "Iconic square with City Hall, Guild Houses, and the Brabo Fountain", w:"https://visit.antwerpen.be/grote-markt"},
@@ -581,7 +595,7 @@ window.DATA = {
                 {loc: [51.0539, 3.7230], t: "Saint Nicholas' Church", cat: "church", p:"Photos/Belgium/Ghent/Belgium_Trip/gh2 (Small).JPEG", ot: "Sun 10:00-16:00<br>Mon 10:00-16:00<br>Tue 10:00-16:00<br>Wed 10:00-16:00<br>Thu 10:00-16:00<br>Fri 10:00-16:00<br>Sat 10:00-16:00", tp: "Free", v: 1, d: "An iconic church in the heart of Ghent", w:"https://www.sintniklaaskerk.be/"},
                 {loc: [51.0537, 3.7248], t: "Belfort van Gent", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/gh7 (Small).jpg", ot: "Sun 10:00-17:30<br>Mon 10:00-17:30<br>Tue 10:00-17:30<br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-17:30", tp: "Adults: 13€<br>19-25:6.5€", v: 1, d: "Iconic belfry guarded by a fire dragon for centuries, with unbeatable views", w:"https://historischehuizen.stad.gent/en/belfry/visit/individual-visit"},
                 {loc: [51.0530, 3.7268], t: "Saint Bavo's Cathedral", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/gh12 (Small).JPEG", ot: "Sun <span style='color: #A32020;'>13:00</span>-17:30<br>Mon 08:30-17:30<br>Tue 08:30-17:30<br>Wed 08:30-17:30<br>Thu 08:30-17:30<br>Fri 08:30-17:30<br>Sat 08:30-17:30", tp: "Free", v: 1, d: "Imposing cathedral featuring refreshing modern stained glass windows", w:"https://www.sintbaafskathedraal.be/en/practical/opening-hours/"},
-                {loc: [51.0571, 3.7208], t: "Castle of the Counts", cat: "Fortresses", p:"Photos/Belgium/Brussels/Belgium_Trip/gh15 (Small).JPEG", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp: "Adults: 15€<br>19-25:7.5€", v: 1, d: "Awe-inspiring medieval castle featuring a notorious torture room and scenic rooftop", w:"https://historischehuizen.stad.gent/en/gravensteen/bezoek/plan-je-bezoek/information-prices"},
+                {loc: [51.0571, 3.7208], t: "Castle of the Counts", cat: "castle", p:"Photos/Belgium/Brussels/Belgium_Trip/gh15 (Small).JPEG", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp: "Adults: 15€<br>19-25:7.5€", v: 1, d: "Awe-inspiring medieval castle featuring a notorious torture room and scenic rooftop", w:"https://historischehuizen.stad.gent/en/gravensteen/bezoek/plan-je-bezoek/information-prices"},
                 {loc: [51.0536, 3.7195], t: "Saint Michael's Church", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/gh27 (Small).JPEG", summer:"Apr-Oct", winter:"Nov-Mar", ots: "Sun 14:00-17:00<br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 14:00-17:00<br>Wed 14:00-17:00<br>Thu 14:00-17:00<br>Fri 14:00-17:00<br>Sat 14:00-17:00", otw:"Sun Closed<br>Mon Closed<br>Tue Closed<br>Wed Closed<br>Thu Closed<br>Fri Closed<br>Sat Closed", tps: "Free", tpw: "Free", v: 1, d: "A majestic church by the river (sadly closed when we arrived)", w:"https://mkgent.be/kerk/st-michaels-church/"},
                 {loc: [51.0546, 3.7204], t: "Graslei and Korenlei", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/gh24 (Small).JPEG", ot:"24/7", tp:"Free", v: 1, d:"Scenic quays along the Leie river", w:"https://visit.gent.be/en/see-do/history-graslei-and-korenlei"},
                 {loc: [51.0543, 3.7216], t: "De Post", cat: "commercial", p: "Photos/Belgium/Brussels/Belgium_Trip/gh30 (Small).jpg", ot: "Sun <span style='color: #A32020;'>12:00</span>-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-<span style='color: #A32020;'>18:30</span><br>Sat 10:00-<span style='color: #A32020;'>18:30</span>", tp: "Free", v: 1, d: "A stunning former post office transformed into a luxury shopping center and hotel, perfectly blending neo-Gothic grandeur with modern lifestyle.", w: "https://depostgent.be/"}

@@ -162,9 +162,24 @@
         .text-content-wrapper.full-width { align-items: center; text-align: center; }
         .text-content-wrapper.full-width .text-wrapper { border: none; padding: 0; }
         
-        .text-item { font-size: 1.2rem; line-height: 1.8; opacity: 0; transition: all 0.3s ease; }
+        /* 💡 修復：內文設計，確保黑色、無襯線、易閱讀 */
+        .text-item { 
+            font-family: sans-serif; 
+            color: #000000; 
+            font-size: 1.15rem; 
+            line-height: 1.8; 
+            letter-spacing: 0.5px;
+            opacity: 0; 
+            transition: all 0.3s ease; 
+        }
         .text-item span { display: inline-block; transform-origin: left center; }
-        .highlight { font-size: 1.35em; font-weight: 900; color: #A62626; font-family: 'Playfair Display', serif; }
+        /* 💡 修復：高亮區塊保持無襯線與原本的紅色 */
+        .highlight { 
+            font-family: sans-serif;
+            font-size: 1.25em; 
+            font-weight: 900; 
+            color: #A62626 !important; 
+        }
 
         #scroll-flow-container { position: relative; top: 0; left: 0; width: 100%; z-index: -1; }
         .ghost-step { width: 100%; height: 200vh; }
@@ -293,16 +308,23 @@
                 padding: 0 5% !important;
             }
             .img-wrapper {
-                width: 100% !important;
+                width: 80%  !important; 
+                max-width: 750px  !important; 
+                height: 80%  !important; 
+                max-height: 550px  !important; 
+                /* width: 100% !important;
                 height: 40vh !important;
-                max-height: 40vh !important;
+                max-height: 40vh !important; */
                 margin-bottom: 10px !important;
                 position: relative !important;
                 z-index: 10 !important; 
             }
             .collage-img {
-                max-width: 85vw !important;
-                max-height: 35vh !important; 
+                max-width: 55vw  !important;;
+                max-height: 40vh  !important;; 
+
+                /* max-width: 85vw !important;
+                max-height: 35vh !important;  */
             }
             .text-content-wrapper {
                 align-items: center !important;
@@ -317,6 +339,7 @@
                 display: none !important;
             }
             
+            /* 💡 修復：移除 flex，讓文字段落能正常由上而下自然換行排列 */
             .section-subtitle {
                 display: block !important;
                 text-align: center !important;
@@ -325,11 +348,6 @@
                 font-size: 1.1rem !important;
                 padding: 0 10px !important;
                 line-height: 1.4 !important;
-            }
-            .section-subtitle span {
-                display: block !important;
-                margin-top: 5px;
-                font-size: 0.85em;
             }
 
             #progress-text {
@@ -342,7 +360,7 @@
 </head>
 <body>
 
-    <a href="Home.html" id="back-btn">Home</a>
+    <a href="index.html" id="back-btn">Home</a>
     <div id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
     
     <div id="progress-text">0%</div>
@@ -407,9 +425,14 @@
                         let nIdx = parts[2];
                         
                         let subTitleEl = document.getElementById(`subtitle-${idx}-${nIdx}`);
+                        // 💡 全域還原：清空文字樣式，回到預設標題
                         if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
                             subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
                             subTitleEl.style.color = "";
+                            subTitleEl.style.fontFamily = "";
+                            subTitleEl.style.fontWeight = "";
+                            subTitleEl.style.lineHeight = "";
+                            subTitleEl.style.letterSpacing = "";
                         }
                         
                         let frames = wrapper.querySelectorAll('.img-frame');
@@ -767,6 +790,20 @@
             heroLayer.appendChild(coverCityList); 
 
             scrollContainer.appendChild(Object.assign(document.createElement('div'), {className: 'ghost-step', style: 'height: 100vh'}));
+            
+            gsap.set("#page-title", { clipPath: "inset(100% 0% 0% 0%)" });
+            gsap.set("#page-date", { clipPath: "inset(0% 0% 100% 0%)" });
+            gsap.set(".cover-city-chip", { autoAlpha: 0, x: -30 });
+            gsap.set("#back-btn", { autoAlpha: 0, y: -20 });
+            gsap.set("#scroll-hint", { opacity: 0, marginTop: -20 });
+
+            const introTl = gsap.timeline({ delay: 0.2 });
+            introTl.to("#page-title", { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "power3.out", clearProps: "clipPath" })
+                   .to("#page-date", { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "power3.out", clearProps: "clipPath" }, "-=0.8")
+                   .to(".cover-city-chip", { autoAlpha: 1, x: 0, duration: 0.8, stagger: 0.1, ease: "power2.out" }, "-=0.4")
+                   .to("#back-btn", { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out" }, "<")
+                   .to("#scroll-hint", { opacity: 0.8, marginTop: 0, duration: 0.8, ease: "power2.out" }, "-=0.4");
+            
             setTimeout(createTimeline, 100);
         }
 
@@ -805,6 +842,25 @@
             if (!wrapper) return;
             wrapper.activeFrame = -1;
 
+            // 💡 修正：如果手機版只有1張照片，檢查是否有標題。沒標題才直接展開文字。
+            if (totalImages === 1 && window.innerWidth <= 768) {
+                let subTitleEl = document.getElementById(`subtitle-${index}-${noteIndex}`);
+                let txtEl = document.getElementById(`txt-${index}-${noteIndex}-0`);
+                
+                let hasTitle = subTitleEl && subTitleEl.hasAttribute('data-orig') && subTitleEl.getAttribute('data-orig').trim() !== '';
+                
+                if (!hasTitle && subTitleEl && txtEl && txtEl.innerHTML.trim() !== '') {
+                    subTitleEl.innerHTML = txtEl.innerHTML;
+                    // 💡 強制注入黑字、無襯線、易讀排版設定
+                    subTitleEl.style.color = "#000000";
+                    subTitleEl.style.fontFamily = "sans-serif";
+                    subTitleEl.style.fontWeight = "400";
+                    subTitleEl.style.lineHeight = "1.8";
+                    subTitleEl.style.letterSpacing = "0.5px";
+                    wrapper.activeFrame = 0;
+                }
+            }
+
             wrapper.addEventListener("mouseenter", () => {
                 if (window.innerWidth <= 768) return;
                 if (!wrapper.classList.contains("interactive-ready")) return;
@@ -836,7 +892,7 @@
                         if (!wrapper.classList.contains("interactive-ready")) return;
                         
                         gsap.to(frameEl, { scale: 1.15, zIndex: 50, duration: 0.2, overwrite: "auto" });
-                        if (txtEl) gsap.to(txtEl, { color: "#A62626", x: 10, duration: 0.2, overwrite: "auto" });
+                        if (txtEl) gsap.to(txtEl, { x: 10, duration: 0.2, overwrite: "auto" }); // 💡 移除電腦版 Hover 變紅
                         
                         for (let j = 0; j < totalImages; j++) {
                             if (j !== i) {
@@ -853,7 +909,7 @@
                         
                         let returnScale = wrapper.isHovered ? 1.05 : 1; 
                         gsap.to(frameEl, { scale: returnScale, zIndex: i + 1, duration: 0.2, overwrite: "auto" });
-                        if (txtEl) gsap.to(txtEl, { color: "#2C2A29", x: 0, duration: 0.2, overwrite: "auto" });
+                        if (txtEl) gsap.to(txtEl, { x: 0, duration: 0.2, overwrite: "auto" }); // 💡 對應復原
                         
                         for (let j = 0; j < totalImages; j++) {
                             if (j !== i) {
@@ -880,10 +936,15 @@
                         wrapper.isHovered = true; 
 
                         if (wrapper.activeFrame === i) {
+                            // 💡 點擊已展開照片：收合並還原 Title
                             wrapper.activeFrame = -1;
                             if (subTitleEl && subTitleEl.hasAttribute('data-orig')) {
                                 subTitleEl.innerHTML = subTitleEl.getAttribute('data-orig');
                                 subTitleEl.style.color = "";
+                                subTitleEl.style.fontFamily = "";
+                                subTitleEl.style.fontWeight = "";
+                                subTitleEl.style.lineHeight = "";
+                                subTitleEl.style.letterSpacing = "";
                             }
                             for (let j = 0; j < totalImages; j++) {
                                 let fEl = document.getElementById(`frame-${index}-${noteIndex}-${j}`);
@@ -891,13 +952,19 @@
                                 if (fEl) gsap.to(fEl, { scale: returnScale, zIndex: j + 1, opacity: 1, duration: 0.2, overwrite: "auto" });
                             }
                         } else {
+                            // 💡 點擊未展開照片：放大並顯示 Text
                             wrapper.activeFrame = i;
                             let activeScale = (totalImages > 1) ? 1.15 : 1.05;
                             gsap.to(frameEl, { scale: activeScale, zIndex: 100, opacity: 1, duration: 0.2, overwrite: "auto" });
                             
                             if (subTitleEl && txtEl && txtEl.innerHTML.trim() !== '') {
                                 subTitleEl.innerHTML = txtEl.innerHTML;
-                                subTitleEl.style.color = "#A62626";
+                                // 💡 強制注入黑字、無襯線、易讀排版設定
+                                subTitleEl.style.color = "#000000";
+                                subTitleEl.style.fontFamily = "sans-serif";
+                                subTitleEl.style.fontWeight = "400";
+                                subTitleEl.style.lineHeight = "1.8";
+                                subTitleEl.style.letterSpacing = "0.5px";
                             }
                             for (let j = 0; j < totalImages; j++) {
                                 if (j !== i) {
@@ -932,8 +999,6 @@
 
             gsap.set(".article-container", { xPercent: -50, yPercent: 0 }); 
             gsap.set("#map-content-wrapper", { x: 0, y: 0, scale: 1 });
-            
-            // 💡 修正：使用 autoAlpha: 0 確保隱藏時不再阻擋點擊
             tl.to("#cover-layer", { autoAlpha: 0, duration: 1.5 }).to("#hero-text-layer", { y: -200, autoAlpha: 0, duration: 1.5 }, "<");
 
             STORY_DATA.forEach((item, index) => {
@@ -1052,7 +1117,7 @@
                             timeOffset += (numImages * staggerGap) + 3; 
 
                         } else {
-                            let slideDur = 3; 
+                            let slideDur = 2.5; 
                             let holdDur = 3; 
                             
                             if (noteIndex > 0) {
