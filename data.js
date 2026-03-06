@@ -384,27 +384,27 @@ window.DATA = {
                     photo3: "Photos/Germany/Munich/muc1 (Small).jpg", text3: "The Landlords, also my former colleague's sister, welcomed me with a Deutsch breakfast :)"
                 },
                 {
-                    loc: [48.1754, 11.5520], date:"2023-09-18", t: "Olympiapark", cat: "nature", p:"Photos/Germany/Munich/muc3.jpg", ot: "24/7", tp: "Free", w: "https://www.olympiapark.de/en",
+                    loc: [48.1754, 11.5520], date:"2023-09-18", t: "Olympiapark", cat: "nature", p:"Photos/Germany/Munich/muc3 (Small).jpg", ot: "24/7", tp: "Free", w: "https://www.olympiapark.de/en",
                     photo1: "Photos/Germany/Munich/muc2 (Small).jpg", text1: "Morning run, thanks to jet lag",
                     photo2: "Photos/Germany/Munich/muc3 (Small).jpg",
                     photo3: "Photos/Germany/Munich/muc4 (Small).jpg", text3: "and did some pull-ups :)",
                     photo4: "Photos/Germany/Munich/muc66 (Small).jpg", text4: "Olympiapark at night~~"
                 },
                 {
-                    loc: [48.1403, 11.5645], date:"2023-09-19", t: "Justizpalast", cat: "square", p:"Photos/Germany/Munich/muc6.jpg", ot: "Sun <span style='color: #A32020;'>Closed</span><br>Mon 08:00-15:00<br>Tue 08:00-15:00<br>Wed 08:00-15:00<br>Thu 08:00-15:00<br>Fri 08:00-<span style='color: #A32020;'>14:00</span><br>Sat <span style='color: #A32020;'>Closed</span>", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
+                    loc: [48.1403, 11.5645], date:"2023-09-19", t: "Justizpalast", cat: "square", p:"Photos/Germany/Munich/muc6 (Small).jpg", ot: "Sun <span style='color: #A32020;'>Closed</span><br>Mon 08:00-15:00<br>Tue 08:00-15:00<br>Wed 08:00-15:00<br>Thu 08:00-15:00<br>Fri 08:00-<span style='color: #A32020;'>14:00</span><br>Sat <span style='color: #A32020;'>Closed</span>", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
                     photo1: "Photos/Germany/Munich/muc5 (Small).jpg", text1: "This is the atrium of the courthouse",
                     photo2: "Photos/Germany/Munich/muc6 (Small).jpg", text2: "Here were the White Rose members tried during WWII.",
                 },
                 {
-                    loc: [48.1390, 11.5668], date:"2023-09-19", t: "Karlstor", cat: "castle", p:"Photos/Germany/Munich/muc7.jpg", ot: "24/7", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
+                    loc: [48.1390, 11.5668], date:"2023-09-19", t: "Karlstor", cat: "castle", p:"Photos/Germany/Munich/muc7 (Small).jpg", ot: "24/7", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/karlstor-stachus",
                     photo1: "Photos/Germany/Munich/muc7 (Small).jpg", text1: "The main gate to Munich old town",
                 },
                 {
-                    loc: [48.1387, 11.5703], date:"2023-09-19", t: "St. Michael Munich", cat: "church", p:"Photos/Germany/Munich/muc8.jpg", ot: "Sun 07:30-<span style='color: #A32020;'>22:00</span><br>Mon <span style='color: #A32020;'>09:30</span>-19:00<br>Tue 07:30-19:00<br>Wed 07:30-19:00<br>Thu 07:30-19:00<br>Fri <span style='color: #A32020;'>09:30</span>-19:00<br>Sat 07:30-19:00", tp: "Free", v: 1, w: "https://www.st-michael-muenchen.de/en/gottesdienst/service/opening-hours",
+                    loc: [48.1387, 11.5703], date:"2023-09-19", t: "St. Michael Munich", cat: "church", p:"Photos/Germany/Munich/muc8 (Small).jpg", ot: "Sun 07:30-<span style='color: #A32020;'>22:00</span><br>Mon <span style='color: #A32020;'>09:30</span>-19:00<br>Tue 07:30-19:00<br>Wed 07:30-19:00<br>Thu 07:30-19:00<br>Fri <span style='color: #A32020;'>09:30</span>-19:00<br>Sat 07:30-19:00", tp: "Free", v: 1, w: "https://www.st-michael-muenchen.de/en/gottesdienst/service/opening-hours",
                     photo1: "Photos/Germany/Munich/muc8 (Small).jpg", text1: "The main gate to Munich old town",
                 },
                 {
-                    loc: [48.1387, 11.5730], date:"2023-09-19", t: "Frauenkirche", cat: "church", p:"Photos/Germany/Munich/muc9.jpg", ot: "Sun 08:00-20:00<br>Mon 08:00-20:00<br>Tue 08:00-20:00<br>Wed 08:00-20:00<br>Thu 08:00-20:00<br>Fri 08:00-20:00<br>Sat 08:00-20:00", tp: "Church:Free<br>Tower:7.5€", v: 1, w: "https://www.muenchner-dom.de/",
+                    loc: [48.1387, 11.5730], date:"2023-09-19", t: "Frauenkirche", cat: "church", p:"Photos/Germany/Munich/muc9 (Small).jpg", ot: "Sun 08:00-20:00<br>Mon 08:00-20:00<br>Tue 08:00-20:00<br>Wed 08:00-20:00<br>Thu 08:00-20:00<br>Fri 08:00-20:00<br>Sat 08:00-20:00", tp: "Church:Free<br>Tower:7.5€", v: 1, w: "https://www.muenchner-dom.de/",
                     photo1: "Photos/Germany/Munich/muc9 (Small).jpg", text1: "So magnificent it was from this corner!",
                     photo2: "Photos/Germany/Munich/muc10 (Small).jpg", text2: "But the interior was actually not the surprising...",
                     photo3: "Photos/Germany/Munich/muc11 (Small).jpg", text3: "Up to the south tower by Elevator(?",
@@ -412,19 +412,19 @@ window.DATA = {
                     photo5: "Photos/Germany/Munich/muc13 (Small).jpg", text5: "Final glimpse",
                 },
                 {
-                    loc: [48.1375, 11.5759], date:"2023-09-19", t: "New Town Hall", cat: "museum", p:"Photos/Germany/Munich/muc14.jpg", ot: "Not open to the public except tours", tp: "Adult:28€<br>Atudent:25€", v: 1, w: "https://www.munich.travel/en/offers/booking/guided-tour-of-the-historic-town-hall-incl.-the-law-library#/",
+                    loc: [48.1375, 11.5759], date:"2023-09-19", t: "New Town Hall", cat: "museum", p:"Photos/Germany/Munich/muc14 (Small).jpg", ot: "Not open to the public except tours", tp: "Adult:28€<br>Atudent:25€", v: 1, w: "https://www.munich.travel/en/offers/booking/guided-tour-of-the-historic-town-hall-incl.-the-law-library#/",
                     photo1: "Photos/Germany/Munich/muc14 (Small).jpg", text1: "The facade was amayinglz detailed!",
                     photo2: "Photos/Germany/Munich/muc15 (Small).jpg", text2: "and inside was like in Hogwarts (but it is not free anymore...)",
                     photo3: "Photos/Germany/Munich/muc16 (Small).jpg",
                 },
                 {
-                    loc: [48.1372, 11.5755], date:"2023-09-19", t: "Marienplatz", cat: "square", p:"Photos/Germany/Munich/muc18.jpg", ot: "24/7", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/attractions/marienplatz-munichs-old-town",
+                    loc: [48.1372, 11.5755], date:"2023-09-19", t: "Marienplatz", cat: "square", p:"Photos/Germany/Munich/muc18 (Small).jpg", ot: "24/7", tp: "Free", v: 1, w: "https://www.muenchen.de/en/sights/attractions/marienplatz-munichs-old-town",
                     photo1: "Photos/Germany/Munich/muc17 (Small).jpg", text1: "A sight from the tower of Frauenkirche",
                     photo2: "Photos/Germany/Munich/muc18 (Small).jpg", text2: "A sight from the tower of St. Peter Church",
                     photo3: "Photos/Germany/Munich/muc3 (Small).mp4", text3:"and a video^^"
                 },
                 {
-                    loc: [48.1362, 11.5773], date:"2023-09-19", t: "Heilig Geist", cat: "church", p:"Photos/Germany/Munich/muc19.jpg", ot: "Sun <span style='color: #A32020;'>08:30</span>-20:00<br>Mon 09:00-20:00<br>Tue 09:00-20:00<br>Wed 09:00-20:00<br>Thu 09:00-20:00<br>Fri 09:00-20:00<br>Sat <span style='color: #A32020;'>08:30</span>-20:00", tp: "Free", v: 1, w: "https://heilig-geist-muenchen.de/",
+                    loc: [48.1362, 11.5773], date:"2023-09-19", t: "Heilig Geist", cat: "church", p:"Photos/Germany/Munich/muc19 (Small).jpg", ot: "Sun <span style='color: #A32020;'>08:30</span>-20:00<br>Mon 09:00-20:00<br>Tue 09:00-20:00<br>Wed 09:00-20:00<br>Thu 09:00-20:00<br>Fri 09:00-20:00<br>Sat <span style='color: #A32020;'>08:30</span>-20:00", tp: "Free", v: 1, w: "https://heilig-geist-muenchen.de/",
                     photo1: "Photos/Germany/Munich/muc19 (Small).jpg", text1: "I really like the pink paint inside the church:)",
                 },
                 {
@@ -433,7 +433,7 @@ window.DATA = {
                     photo2: "Photos/Germany/Munich/muc20 (Small).jpg", text2: "A postcard background, a must to come up!",
                 },
                 {
-                    loc: [48.1368, 11.5770], date:"2023-09-19", t: "Old Town Hall", cat: "square", p:"Photos/Germany/Munich/muc21.jpg", ot: "Sun 10:00-17:30<br>Mon 10:00-17:30<br>Tue <span style='color: #A32020;'>Closed</span><br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-17:30", tp: "8€", v: 1, w: "https://www.spielzeugmuseummuenchen.de/en/admission-eintrittspreise-spielzeugmuseum",
+                    loc: [48.1368, 11.5770], date:"2023-09-19", t: "Old Town Hall", cat: "square", p:"Photos/Germany/Munich/muc21 (Small).jpg", ot: "Sun 10:00-17:30<br>Mon 10:00-17:30<br>Tue <span style='color: #A32020;'>Closed</span><br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-17:30", tp: "8€", v: 1, w: "https://www.spielzeugmuseummuenchen.de/en/admission-eintrittspreise-spielzeugmuseum",
                     photo1: "Photos/Germany/Munich/muc21 (Small).jpg", text1: "The building itself is now atoy museum, and looks newer than the old town hall haha",
                 },
                 {
@@ -441,14 +441,14 @@ window.DATA = {
                     photo1: "Photos/Germany/Munich/muc22 (Small).jpg", text1: "Call of the day with a Bavarian Beer! Prost!",
                 },
                 {
-                    loc: [48.1583, 11.5033], date:"2023-09-20", t: "Nymphenburg Palace", cat: "palace", p:"Photos/Germany/Munich/muc23.jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 10:00-16:00<br>Mon 10:00-16:00<br>Tue 10:00-16:00<br>Wed 10:00-16:00<br>Thu 10:00-16:00<br>Fri 10:00-16:00<br>Sat 10:00-16:00", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult:10€<br>Student:9€", v: 1, w: "https://www.schloss-nymphenburg.de/englisch/tourist/admiss.htm",
+                    loc: [48.1583, 11.5033], date:"2023-09-20", t: "Nymphenburg Palace", cat: "palace", p:"Photos/Germany/Munich/muc23 (Small).jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 10:00-16:00<br>Mon 10:00-16:00<br>Tue 10:00-16:00<br>Wed 10:00-16:00<br>Thu 10:00-16:00<br>Fri 10:00-16:00<br>Sat 10:00-16:00", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult:10€<br>Student:9€", v: 1, w: "https://www.schloss-nymphenburg.de/englisch/tourist/admiss.htm",
                     photo1: "Photos/Germany/Munich/muc23 (Small).jpg", text1: "As a summer palace, an imposing and elegant white front was quite impressing!",
                     photo2: "Photos/Germany/Munich/muc24 (Small).jpg", text2: "This is the main hall!",
                     photo3: "Photos/Germany/Munich/muc24 (Small).jpg", text3: "and one of the old paintings dipicting its past",
                     photo4: "Photos/Germany/Munich/muc5 (Small).mp4", text4: "The most renownd room: Gallery of Beauties",
                 },
                 {
-                    loc: [48.1567, 11.5048], date:"2023-09-20", t: "Marstallmuseum", cat: "museum", p:"Photos/Germany/Munich/muc38.jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 10:00-16:00<br>Mon 10:00-16:00<br>Tue 10:00-16:00<br>Wed 10:00-16:00<br>Thu 10:00-16:00<br>Fri 10:00-16:00<br>Sat 10:00-16:00", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult:8€<br>Student:7€", v: 1, w: "https://www.schloss-nymphenburg.de/englisch/tourist/admiss.htm",
+                    loc: [48.1567, 11.5048], date:"2023-09-20", t: "Marstallmuseum", cat: "museum", p:"Photos/Germany/Munich/muc38 (Small).jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 10:00-16:00<br>Mon 10:00-16:00<br>Tue 10:00-16:00<br>Wed 10:00-16:00<br>Thu 10:00-16:00<br>Fri 10:00-16:00<br>Sat 10:00-16:00", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult:8€<br>Student:7€", v: 1, w: "https://www.schloss-nymphenburg.de/englisch/tourist/admiss.htm",
                     photo1: "Photos/Germany/Munich/muc26 (Small).jpg", text1: "I didn't expect a royal carriage can be so sophisticated...",
                     photo2: "Photos/Germany/Munich/muc27 (Small).jpg", text2: "This is a type of slegde, but more...aristocratic",
                     photo3: "Photos/Germany/Munich/muc28 (Small).jpg",
@@ -460,7 +460,7 @@ window.DATA = {
                     photo9: "Photos/Germany/Munich/muc33 (Small).jpg", text9: "and was greatly astonisched by these flowers. They were made of clay!!!",
                 },
                 {
-                    loc: [48.1562, 11.5003], date:"2023-09-20", t: "Park palaces", cat: "palace", p:"Photos/Germany/Munich/muc35.jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "<span style='color: #A32020;'>Closed</span>", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult: 6€<br>Student: 5€", v: 1, w: "https://nymphenburg.bsv-ticketshop.de/en",
+                    loc: [48.1562, 11.5003], date:"2023-09-20", t: "Park palaces", cat: "palace", p:"Photos/Germany/Munich/muc35 (Small).jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "<span style='color: #A32020;'>Closed</span>", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult: 6€<br>Student: 5€", v: 1, w: "https://nymphenburg.bsv-ticketshop.de/en",
                     photo1: "Photos/Germany/Munich/muc34 (Small).jpg", text1: "There are in total 4 palaces to visit. But I only had time for 2 of them><",
                     photo2: "Photos/Germany/Munich/muc35 (Small).jpg", text2: "This is Pagodenburg, featured with tiles and ceramic",
                     photo3: "Photos/Germany/Munich/muc36 (Small).jpg", text3: "This is Badenburg, featured with a real bath in it!",
@@ -468,7 +468,7 @@ window.DATA = {
                     photo5: "Photos/Germany/Munich/muc7 (Small).mp4",
                 },
                 {
-                    loc: [48.1578, 11.4923], date:"2023-09-20", t: "Palace Park", cat: "nature", p:"Photos/Germany/Munich/muc42.jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 06:00-18:00<br>Mon 06:00-18:00<br>Tue 06:00-18:00<br>Wed 06:00-18:00<br>Thu 06:00-18:00<br>Fri 06:00-18:00<br>Sat 06:00-18:00", ots: "Sun 06:00-21:30<br>Mon 06:00-21:30<br>Tue 06:00-21:30<br>Wed 06:00-21:30<br>Thu 06:00-21:30<br>Fri 06:00-21:30<br>Sat 06:00-21:30", tp: "Free", v: 1, note:"The opening hours in Apr & Oct: 06:00-20:00<br>", w: "https://nymphenburg.bsv-ticketshop.de/en",
+                    loc: [48.1578, 11.4923], date:"2023-09-20", t: "Palace Park", cat: "nature", p:"Photos/Germany/Munich/muc42 (Small).jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 06:00-18:00<br>Mon 06:00-18:00<br>Tue 06:00-18:00<br>Wed 06:00-18:00<br>Thu 06:00-18:00<br>Fri 06:00-18:00<br>Sat 06:00-18:00", ots: "Sun 06:00-21:30<br>Mon 06:00-21:30<br>Tue 06:00-21:30<br>Wed 06:00-21:30<br>Thu 06:00-21:30<br>Fri 06:00-21:30<br>Sat 06:00-21:30", tp: "Free", v: 1, note:"The opening hours in Apr & Oct: 06:00-20:00<br>", w: "https://nymphenburg.bsv-ticketshop.de/en",
                     photo1: "Photos/Germany/Munich/muc38 (Small).jpg", text1: "And the amazingly idyllic park!",
                     photo2: "Photos/Germany/Munich/muc39 (Small).jpg", text2: "Park, Palace, and goose~~",
                     photo3: "Photos/Germany/Munich/muc40 (Small).jpg", text3: "Every view were born to be a painting",
@@ -478,11 +478,11 @@ window.DATA = {
                     photo7: "Photos/Germany/Munich/muc44 (Small).jpg", text7: "Nymphenburg in the afternoon",
                 },
                 {
-                    loc: [48.1398, 11.5788], date:"2023-09-21", t: "Bavarian State Opera", cat: "square", p:"Photos/Germany/Munich/muc45.jpg", ot: "Depending on the performance", tp: "Depending on the performance", w: "https://www.staatsoper.de/en/visit",
+                    loc: [48.1398, 11.5788], date:"2023-09-21", t: "Bavarian State Opera", cat: "square", p:"Photos/Germany/Munich/muc45 (Small).jpg", ot: "Depending on the performance", tp: "Depending on the performance", w: "https://www.staatsoper.de/en/visit",
                     photo1: "Photos/Germany/Munich/muc45 (Small).jpg", text1: "Just passed by, but it is quite imposing",
                 },
                 {
-                    loc: [48.1405, 11.5789], date:"2023-09-21", t: "Munich Residence", cat: "palace", p:"Photos/Germany/Munich/muc46.jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 10:00-17:00<br>Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-17:00", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult:10€<br>Student:9€", v: 1, w: "https://resmue.bsv-ticketshop.de/en",
+                    loc: [48.1405, 11.5789], date:"2023-09-21", t: "Munich Residence", cat: "palace", p:"Photos/Germany/Munich/muc46 (Small).jpg", winter:"Oct-Mar", summer:"Apr-Oct", otw: "Sun 10:00-17:00<br>Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-17:00", ots: "Sun 09:00-18:00<br>Mon 09:00-18:00<br>Tue 09:00-18:00<br>Wed 09:00-18:00<br>Thu 09:00-18:00<br>Fri 09:00-18:00<br>Sat 09:00-18:00", tp: "Adult:10€<br>Student:9€", v: 1, w: "https://resmue.bsv-ticketshop.de/en",
                     photo1: "Photos/Germany/Munich/muc46 (Small).jpg", text1: "Here is where the Bavaria Royal Family once lived. and this is the Portico",
                     photo2: "Photos/Germany/Munich/muc47 (Small).jpg", text2: "This hallway was the entrance for important guests",
                     photo3: "Photos/Germany/Munich/muc48 (Small).jpg",
@@ -503,29 +503,29 @@ window.DATA = {
                     photo18: "Photos/Germany/Munich/muc62 (Small).jpg", text18: "Here is Cuvilliés Theatre!",
 
                 },
-                {loc:[48.1417, 11.5773], date:"2023-09-21", t:"Feldherrnhalle", cat: "square", p:"Photos/Germany/Munich/muc63.jpg", ot:"24/7", tp:"Free", w:"https://www.schloesser.bayern.de/deutsch/schloss/objekte/mu_feldh.htm",
+                {loc:[48.1417, 11.5773], date:"2023-09-21", t:"Feldherrnhalle", cat: "square", p:"Photos/Germany/Munich/muc63 (Small).jpg", ot:"24/7", tp:"Free", w:"https://www.schloesser.bayern.de/deutsch/schloss/objekte/mu_feldh.htm",
                     photo1: "Photos/Germany/Munich/muc63 (Small).jpg", text1: "Built by Ludwig I to memorise the vital military figurs"
                 }, 
-                {loc:[48.1421, 11.5764], date:"2023-09-21", t:"Theatine Church", cat: "church", p:"Photos/Germany/Munich/muc64.jpg", ot:"According to the official announcement", tp:"Free", w:"https://www.theatinerkirche.de/",
+                {loc:[48.1421, 11.5764], date:"2023-09-21", t:"Theatine Church", cat: "church", p:"Photos/Germany/Munich/muc64 (Small).jpg", ot:"According to the official announcement", tp:"Free", w:"https://www.theatinerkirche.de/",
                     photo1: "Photos/Germany/Munich/muc64 (Small).jpg", text1: "An iconic Italian Baroque style church"
                 }, 
-                {loc:[48.1423, 11.5829], date:"2023-09-21", t:"Bavarian State Chancellery", p:"Photos/Germany/Munich/muc65.jpg", cat: "square", ot:"Sun 08:00-18:00<br>Mon 08:00-18:00<br>Tue 08:00-18:00<br>Wed 08:00-18:00<br>Thu 08:00-18:00<br>Fri 08:00-18:00<br>Sat 08:00-18:00", tp:"Free", w:"https://www.bayern.de/in-english/",
+                {loc:[48.1423, 11.5829], date:"2023-09-21", t:"Bavarian State Chancellery", p:"Photos/Germany/Munich/muc65 (Small).jpg", cat: "square", ot:"Sun 08:00-18:00<br>Mon 08:00-18:00<br>Tue 08:00-18:00<br>Wed 08:00-18:00<br>Thu 08:00-18:00<br>Fri 08:00-18:00<br>Sat 08:00-18:00", tp:"Free", w:"https://www.bayern.de/in-english/",
                     photo1: "Photos/Germany/Munich/muc65 (Small).jpg", text1: "How imposing it is, a fusion of new and old!"
                 }, 
-                {loc:[48.1316, 11.5497], date:"2023-09-23", t:"Oktoberfest", cat: "square", p:"Photos/Germany/Munich/muc67.jpg", summer:"Third Saturday of September – First Sunday of October", ots:"Sun <span style='color: #A32020;'>09:00</span>-23:30<br>Mon 10:00-23:30<br>Tue 10:00-23:30<br>Wed 10:00-23:30<br>Thu 10:00-23:30<br>Fri 10:00-23:30<br>Sat <span style='color: #A32020;'>09:00</span>-23:30", tp:"Free Entry", w:"https://www.oktoberfest.de/en",
+                {loc:[48.1316, 11.5497], date:"2023-09-23", t:"Oktoberfest", cat: "square", p:"Photos/Germany/Munich/muc67 (Small).jpg", summer:"Third Saturday of September – First Sunday of October", ots:"Sun <span style='color: #A32020;'>09:00</span>-23:30<br>Mon 10:00-23:30<br>Tue 10:00-23:30<br>Wed 10:00-23:30<br>Thu 10:00-23:30<br>Fri 10:00-23:30<br>Sat <span style='color: #A32020;'>09:00</span>-23:30", tp:"Free Entry", w:"https://www.oktoberfest.de/en",
                     photo1: "Photos/Germany/Munich/muc67 (Small).jpg", text1: "A sea of people...",
                     photo2: "Photos/Germany/Munich/muc9 (Small).mp4", text2: "A Rooftop Instalation of a Roasting Pig?",             
                     photo3: "Photos/Germany/Munich/muc10 (Small).mp4", text3: "Never seen a Ferris Wheel circling so fast ><",             
                     photo4: "Photos/Germany/Munich/muc68 (Small).jpg", text4: "And the classic Roasted Chicken...",             
                     photo5: "Photos/Germany/Munich/muc69 (Small).jpg", text5: "...with tasty sweet Gebrannte Mandeln!!"
                 }, 
-                {loc:[48.1500, 11.5910], date:"2023-09-25", t:"English Garden", cat: "nature", p:"Photos/Germany/Munich/muc71.jpg", ot:"24/7", tp:"Free", w:"https://www.muenchen.de/en/sights/attractions/english-garden",
+                {loc:[48.1500, 11.5910], date:"2023-09-25", t:"English Garden", cat: "nature", p:"Photos/Germany/Munich/muc71 (Small).jpg", ot:"24/7", tp:"Free", w:"https://www.muenchen.de/en/sights/attractions/english-garden",
                     photo1: "Photos/Germany/Munich/muc70 (Small).jpg", text1: "Monopteros, a famous pavilion and photo spot!",
                     photo2: "Photos/Germany/Munich/muc71 (Small).jpg", text2: "The fantastic wiew from the top of Monopteros~",                
                     photo3: "Photos/Germany/Munich/muc72 (Small).jpg", text3: "And the Chinese Tower, which does nothing with Chinese(?",                     
                     photo4: "Photos/Germany/Munich/muc11 (Small).mp4", text4: "Here is the perfect park to be tranquil~~",
                 }, 
-                {loc:[48.1483, 11.5698], date:"2023-09-28", t:"Alte Pinakothek", cat: "museum", p:"Photos/Germany/Munich/muc79.jpg", ot:"Sun 10:00-18:00</span><br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-<span style='color: #A32020;'>20:00</span><br>Wed 10:00-<span style='color: #A32020;'>20:00</span><br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"Adult: 9€<br>Student: 6€<br>Sunday: 1€", w:"https://www.pinakothek.de/en/alte-pinakothek",
+                {loc:[48.1483, 11.5698], date:"2023-09-28", t:"Alte Pinakothek", cat: "museum", p:"Photos/Germany/Munich/muc79 (Small).jpg", ot:"Sun 10:00-18:00</span><br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-<span style='color: #A32020;'>20:00</span><br>Wed 10:00-<span style='color: #A32020;'>20:00</span><br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"Adult: 9€<br>Student: 6€<br>Sunday: 1€", w:"https://www.pinakothek.de/en/alte-pinakothek",
                     photo1: "Photos/Germany/Munich/muc73 (Small).jpg", text1: "The Entrance",
                     photo2: "Photos/Germany/Munich/muc74 (Small).jpg", text2: "There are crazy many rooms like this one. Plan your time well~",                
                     photo3: "Photos/Germany/Munich/muc75 (Small).jpg", text3: "Susanna at Her Bath by Albrecht Altdorfer",                     
@@ -534,7 +534,7 @@ window.DATA = {
                     photo6: "Photos/Germany/Munich/muc78 (Small).jpg", text6: "Cathedral towering over a City by Karl Friedrich Schinkel",                     
                     photo7: "Photos/Germany/Munich/muc79 (Small).jpg", text7: "And the HIGHLIGHT: one of the six <span style='font-size:1.5em; font-weight:bold; color: #A32020;'>Sunflowers by Vincent van Gogh!</span>",
                 }, 
-                {loc:[48.1338, 11.5983], date:"2023-09-28", t:"St. Johann Baptist", p:"Photos/Germany/Munich/muc80.jpg", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.pfarrverband-haidhausen.de/home",
+                {loc:[48.1338, 11.5983], date:"2023-09-28", t:"St. Johann Baptist", p:"Photos/Germany/Munich/muc80 (Small).jpg", cat: "church", ot:"According to the official announcement", tp:"Free", w:"https://www.pfarrverband-haidhausen.de/home",
                     photo1: "Photos/Germany/Munich/muc80 (Small).jpg", text1: "An elegant yet quiet church next to the international church I attended to",
                     photo2: "Photos/Germany/Munich/muc81 (Small).jpg", text2: "",                
                     photo3: "Photos/Germany/Munich/muc82 (Small).jpg", text3: "Just found an interesting candle :)",
