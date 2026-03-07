@@ -224,20 +224,45 @@ window.initMapApp = function(config) {
         let activeCategory = null; 
         let currentMarkers = []; 
 
-        function recordClick(cityId, title) {
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyBmls47LxtwWab72E16iq50AU2LOFjxdaU",
+        authDomain: "travel-europe-tracker.firebaseapp.com",
+        projectId: "travel-europe-tracker",
+        storageBucket: "travel-europe-tracker.firebasestorage.app",
+        messagingSenderId: "515592186228",
+        appId: "1:515592186228:web:920533764ba3d1a9392421"
+        };
+
+        // 初始化 Firebase (防止重複初始化)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // 防呆：過濾掉不能作為資料庫 ID 的特殊符號
+        function sanitizeKey(str) {
+            return str.replace(/[\/\\.#$\[\]]/g, '_');
+        }
+
+        // 寫入點擊數：呼叫雲端讓數字直接 +1
+        async function recordClick(cityId, title) {
             if (!title) return;
-            let key = `poi_click_count_${config.countryName}_${cityId}_${title}`;
-            let clicks = parseInt(localStorage.getItem(key) || '0');
-            localStorage.setItem(key, clicks + 1);
+            let key = sanitizeKey(`${config.countryName}_${cityId}_${title}`);
+            try {
+                // 使用 FieldValue.increment(1) 確保全球多人同時點擊時不會算錯
+                await db.collection('poi_clicks').doc(key).set({
+                    count: firebase.firestore.FieldValue.increment(1)
+                }, { merge: true });
+            } catch (e) {
+                console.error("Firebase write error:", e);
+            }
         }
 
-        function getClicks(cityId, title) {
-            if (!title) return 0;
-            let key = `poi_click_count_${config.countryName}_${cityId}_${title}`;
-            return parseInt(localStorage.getItem(key) || '0');
-        }
-
-        function renderPopularAttractions(mode, targetCityId) {
+        // ===============================================
+        // 【雲端版】動態渲染熱門景點標籤列
+        // ===============================================
+        async function renderPopularAttractions(mode, targetCityId) {
             let popNav = document.querySelector('.pop-nav-container');
             if (!popNav) {
                 popNav = document.createElement('div');
@@ -247,27 +272,48 @@ window.initMapApp = function(config) {
                     navBar.parentNode.insertBefore(popNav, navBar.nextSibling);
                 }
             }
-            popNav.innerHTML = ''; 
+            
+            // 讀取資料時顯示優雅的 Loading 提示
+            popNav.innerHTML = '<span style="color:#999; font-size:13px; font-style:italic;">Loading global trends...</span>'; 
 
+            // 1. 🌟 一次性向 Firebase 抓取所有點擊紀錄
+            let clickData = {};
+            try {
+                const snapshot = await db.collection('poi_clicks').get();
+                snapshot.forEach(doc => { clickData[doc.id] = doc.data().count; });
+            } catch (e) {
+                console.error("Firebase read error:", e);
+            }
+
+            // 讀取用輔助函式
+            function getGlobalClicks(cId, t) {
+                if (!t) return 0;
+                let key = sanitizeKey(`${config.countryName}_${cId}_${t}`);
+                return clickData[key] || 0; // 若雲端沒紀錄則回傳 0
+            }
+
+            popNav.innerHTML = ''; // 清空 loading 提示
             let pinsToDisplay = [];
 
             if (mode === 'overview') {
                 Object.keys(cityData).forEach(cId => {
                     cityData[cId].pins.forEach(pin => {
                         if (pin.t) {
-                            pinsToDisplay.push({ ...pin, cityId: cId, clicks: getClicks(cId, pin.t) });
+                            pinsToDisplay.push({ ...pin, cityId: cId, clicks: getGlobalClicks(cId, pin.t) });
                         }
                     });
                 });
+                
                 pinsToDisplay.sort((a, b) => {
                     if (b.clicks !== a.clicks) return b.clicks - a.clicks;
                     return (b.v || 0) - (a.v || 0);
                 });
                 pinsToDisplay = pinsToDisplay.slice(0, 10);
+
             } else if (targetCityId && cityData[targetCityId]) {
                 cityData[targetCityId].pins.forEach(pin => {
                     if (pin.t) {
-                        pinsToDisplay.push({ ...pin, cityId: targetCityId, clicks: getClicks(targetCityId, pin.t) });
+                        pinsToDisplay.push({ ...pin, cityId: targetCityId, clicks: getGlobalClicks(targetCityId, pin.t) });
                     }
                 });
                 pinsToDisplay.sort((a, b) => {
@@ -276,6 +322,7 @@ window.initMapApp = function(config) {
                 });
             }
 
+            // 2. 產生標籤 DOM
             pinsToDisplay.forEach(pin => {
                 const btn = document.createElement('button');
                 btn.className = 'pop-attr-btn';
@@ -285,14 +332,17 @@ window.initMapApp = function(config) {
                 btn.style.setProperty('--bg-img', bgUrl);
                 
                 btn.addEventListener('click', (e) => {
+                    // 發送點擊資料到 Firebase 雲端！
                     recordClick(pin.cityId, pin.t); 
+
                     if (isTouchDevice()) {
                         document.querySelectorAll('.pop-attr-btn').forEach(b => b.classList.remove('touched'));
                         btn.classList.add('touched');
                     }
                     
                     if (currentMode === 'overview' || currentMode !== pin.cityId) {
-                        showCity(pin.cityId);
+                        // 傳入 true, true 避免突兀跳轉
+                        showCity(pin.cityId, true, true);
                         setTimeout(() => {
                             let targetObj = currentMarkers.find(m => m.title === pin.t && m.cityId === pin.cityId);
                             if(targetObj) {
