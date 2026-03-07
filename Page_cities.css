@@ -76,7 +76,25 @@ header h1:hover { color: transparent; }
     border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 50px; 
     z-index: 10; position: relative; 
 }
-#city-info { margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 20px; }
+/* 修改：原本的標題區塊，加入最大高度與過場動畫 */
+#city-info { 
+    margin-bottom: 20px; 
+    border-left: 4px solid var(--primary-color); 
+    padding-left: 20px; 
+    /* 🌟 加入以下動畫控制屬性 */
+    overflow: hidden;
+    max-height: 150px; /* 給予一個足夠容納文字的高度 */
+    opacity: 1;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* 平滑的過場效果 */
+}
+
+/* 🌟 新增：當切換到總覽模式時的「收合」狀態 */
+#city-info.hidden-mode {
+    max-height: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    /* 刻意保留 padding 與 border 寬度，防止文字消失時產生左右抖動 */
+}
 #city-title { 
     margin: 0; font-size: 28px; font-family: 'Playfair Display', serif; color: #333; 
     cursor: pointer; transition: color 0.3s ease; 

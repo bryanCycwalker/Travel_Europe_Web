@@ -912,8 +912,13 @@ window.initMapApp = function(config) {
 
         function showOverview(preventScroll = false, preventSetView = false) {
             currentMode = 'overview'; 
+            // 【修改】加上 CSS 收合類別，觸發平滑壓縮動畫
             const cityInfoEl = document.getElementById('city-info');
-            if (cityInfoEl) cityInfoEl.style.display = 'none';
+            if (cityInfoEl) {
+                cityInfoEl.classList.add('hidden-mode');
+                // 為了保險，確保 display 是 block 才看得到動畫過程
+                cityInfoEl.style.display = 'block'; 
+            }
 
             document.getElementById('city-title').innerText = config.overviewTitle;
             document.getElementById('city-desc').innerText = config.overviewDesc;
@@ -969,8 +974,13 @@ window.initMapApp = function(config) {
             const data = cityData[cityId];
             if (!data) return;
             
+            // 【修改】移除 CSS 收合類別，觸發平滑伸展動畫
             const cityInfoEl = document.getElementById('city-info');
-            if (cityInfoEl) cityInfoEl.style.display = 'block';
+            if (cityInfoEl) {
+                cityInfoEl.style.display = 'block';
+                // 給瀏覽器一點渲染時間後再移除 class，確保動畫能順利觸發
+                setTimeout(() => cityInfoEl.classList.remove('hidden-mode'), 10);
+            }
 
             document.getElementById('city-title').innerText = data.name;
             document.getElementById('city-desc').innerText = data.desc;
@@ -1024,7 +1034,13 @@ window.initMapApp = function(config) {
                 }
             });
         }
-
+        const headerTitleEl = document.getElementById('header-title');
+        if (headerTitleEl) {
+            headerTitleEl.addEventListener('click', () => {
+                // 這裡不傳入 true，讓它完整重置視角並捲動到最上方
+                showOverview(); 
+            });
+        }
         const navBar = document.getElementById('nav-bar');
         const sortedCityIds = Object.keys(cityData).sort((a, b) => cityData[a].name.localeCompare(cityData[b].name));
         
