@@ -146,6 +146,28 @@ header h1:hover { color: transparent; }
 .matrix-empty-header { border-bottom: 1px dashed #eee; margin-bottom: 2px; }
 
 /* =========================================
+   客製化 Pop-up 內部優雅滾動條
+   ========================================= */
+.leaflet-popup-content {
+    margin: 14px 18px; 
+    line-height: 1.5;
+}
+.leaflet-popup-content::-webkit-scrollbar { 
+    width: 5px; 
+}
+.leaflet-popup-content::-webkit-scrollbar-track { 
+    background: rgba(0,0,0,0.03); 
+    border-radius: 4px; 
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb { 
+    background: rgba(177, 104, 55, 0.4); /* 呼應你的品牌琥珀色 */
+    border-radius: 4px; 
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb:hover { 
+    background: rgba(177, 104, 55, 0.8); 
+}
+
+/* =========================================
    地圖進階功能：搜尋框、圖例與動態標記
    ========================================= */
 .custom-div-icon { background: transparent; border: none; }
@@ -368,8 +390,20 @@ header h1:hover { color: transparent; }
     #scroll-to-top { bottom: 35px; right: 25px; width: 44px; height: 44px; font-size: 18px; }
     #scroll-percentage { bottom: 35px; left: 25px; font-size: 24px; }
     
-    .map-search-wrapper { left: 10px; bottom: 20px; top: auto; width: calc(100% - 20px); }
-    .map-legend { bottom: 70px; right: 10px; padding: 10px; font-size: 11px; max-width: 140px;}
+/* 🌟 復原：給予明確的像素寬度，絕對不會再被擠壓，確保輸入文字清晰可見 */
+    .map-search-wrapper { 
+        left: 10px; 
+        bottom: 20px; 
+        top: auto; 
+        width: 200px; /* 給予固定寬度，避免被擠壓，同時預留空間給右邊的圖例 */
+    }
+    
+    /* 確保手機版輸入框內的文字大小不縮水，顏色清楚 */
+    #map-search-input {
+        font-size: 14px;
+        color: #333;
+    }
+        .map-legend { bottom: 70px; right: 10px; padding: 10px; font-size: 11px; max-width: 140px;}
     .legend-color { width: 12px; height: 12px; }
     .pop-nav-container { margin-bottom: 15px; gap: 6px; max-height: 90px; }
     .pop-attr-btn { padding: 6px 14px; font-size: 11px; }

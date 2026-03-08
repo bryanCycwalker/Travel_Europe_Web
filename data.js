@@ -376,7 +376,7 @@ window.DATA = {
     ],
     markers: {
         home: [
-            { id: "housePoint1", x: 311, y: 357, city: "Munich", center: [48.1351, 11.5820], img: "Photos/Germany/Munich/muc18 (Small).jpg", desc: "目前的居住地，啤酒節與豬腳。", pins: [
+            { id: "housePoint1", x: 311, y: 357, city: "Munich", center: [48.1351, 11.5820], img: "Photos/Germany/Munich/muc18 (Small).jpg", desc: "Current residence", pins: [
                 {
                     loc: [48.3536, 11.7832], date:"2023-09-18", t: "Munich Airport (MUC)", cat: "square", ot: "24/7", tp: "Free", w: "https://www.munich-airport.com/",
                     photo1: "Photos/Germany/Munich/muc1 (Small).mp4", text1: "The Landing & the First Sunrise of my Adventure in Europe.",
@@ -539,6 +539,16 @@ window.DATA = {
                     photo2: "Photos/Germany/Munich/muc81 (Small).jpg", text2: "",                
                     photo3: "Photos/Germany/Munich/muc82 (Small).jpg", text3: "Just found an interesting candle :)",
                 }, 
+                {loc:[48.1351, 11.5817], date:"2023-10-07", t:"Isar Gate", p:"Photos/Germany/Munich/muc83 (Small).jpg", cat: "castle", ot:"temporarily closed", tp:"?", w:"https://www.muenchen.de/en/sights/isartor",
+                    photo1: "Photos/Germany/Munich/muc83 (Small).jpg", text1: "The fresco was a refreshment. Inside now serves as Valentin-Karlstadt-Musäum",
+                },
+                {loc:[48.1486, 11.5670], date:"2023-10-09", t:"Technical University of Munich", p:"Photos/Germany/Munich/muc86 (Small).jpg", cat: "square", ot:"24/7", tp:"Free", w:"https://www.tum.de/en/",
+                    photo1: "Photos/Germany/Munich/muc86 (Small).jpg", text1: "My new University!!",
+                }, 
+                {loc:[48.1475, 11.5566], date:"2023-10-11", t:"Löwenbräukeller - Das Original", p:"Photos/Germany/Munich/muc84 (Small).jpg", cat: "commercial", ot:"Sun 11:00-23:00</span><br>Mon 11:00-23:00<br>Tue 11:00-23:00<br>Wed 11:00-23:00<br>Thu 11:00-23:00<br>Fri 11:00-<span style='color: #A32020;'>23:30</span><br>Sat 11:00-<span style='color: #A32020;'>23:30</span>", tp:"It's a restaurant!", w:"https://loewenbraeukeller.com/de",
+                    photo1: "Photos/Germany/Munich/muc84 (Small).jpg", text1: "Actually this is the same brand as the famous Hofbräuhaus München, but for the locals :)",
+                    photo2: "Photos/Germany/Munich/muc85 (Small).jpg", text2: "Tasty fish ><",
+                }, 
                 // {loc:[48.1769, 11.5583], t:"BMW Museum", d:"Ultimate Craftsmanship"}
             ]},
             { id: "housePoint2", x: 350, y: 355, city: "Vienna", date: "2023-11-12", img: "", desc: "音樂之都。", link: "", linkText: "" },
@@ -549,29 +559,88 @@ window.DATA = {
             { id: "housePoint4", x: 275, y: 308, city: "Enschede", date: "2024-05-18", img:"", desc:"荷蘭邊境的大學城。", link:"", linkText:"" }
         ],
         de: [
-            { id:"dePoint1", x: 305, y: 365, city: "Schwangau", center: [47.5758, 10.7491], desc: "Lands of Fairytale Castles", pins: [
-                {loc:[47.5576, 10.7498], t:"Neuschwanstein Castle", d:"The fairytale inspiration"},
-                {loc:[47.5558, 10.7360], t:"Hohenschwangau Castle", d:"Royal residence"}
+            { id:"dePoint1", x: 310, y: 356, city: "Dachau", center: [48.2630, 11.4330], img: "Photos/Germany/Dachau/dah4 (Small).jpg", desc: "Notorious Town back in WWII", linkText: "more", pins: [
+                {loc:[48.2701, 11.4681], date: "2023-10-06", t:"Dachau Memorial", trip:"Day Trip: Dachau Concentration Camp", p:"Photos/Germany/Dachau/dah4 (Small).jpg", cat: "memorial", ot:"Sun 09:00-17:00<br>Mon 09:00-17:00<br>Tue 09:00-17:00<br>Wed 09:00-17:00<br>Thu 09:00-17:00<br>Fri 09:00-17:00<br>Sat 09:00-17:00", tp:"Free", w:"https://www.kz-gedenkstaette-dachau.de/en/visit/opening-hours/",
+                    photo1: "Photos/Germany/Dachau/dah1 (Small).JPEG", text1: "This is the entrance of the camp",
+                    photo2: "Photos/Germany/Dachau/dah2 (Small).JPEG", text2: "The platform the transported were unloaded, right outside the entrance",
+                    photo3: "Photos/Germany/Dachau/dah3 (Small).JPEG", text3: "The layout of the camp",
+                    photo4: "Photos/Germany/Dachau/dah4 (Small).JPEG", text4: "The installation that reminds the Atrocity",
+                    photo5: "Photos/Germany/Dachau/dah5 (Small).JPEG", text5: "Work makes free. The biggest lie in WWII",                
+                    photo6: "Photos/Germany/Dachau/dah6 (Small).JPEG", text6: "An historical photo demonstrating how cramped the living condition was",
+                    photo7: "Photos/Germany/Dachau/dah7 (Small).JPEG", text7: "The bridge to the crematorium",
+                    photo8: "Photos/Germany/Dachau/dah8 (Small).JPEG", text8: "Here was Where the crime was destroyed",                
+                }
             ]},
-            { id:"dePoint2", x: 286, y: 342, city: "Mannheim", center: [49.4875, 8.4660], desc: "University Town with iconic Water Storage Tower", pins: [
-                {loc:[49.4836, 8.4763], t:"Wasserturm", d:"Historic water tower"},
-                {loc:[49.4828, 8.4631], t:"University of Mannheim", d:"Baroque palace campus"}
-            ]},
-            { id:"dePoint3", x: 288, y: 343, city: "Heidelberg", center: [49.3988, 8.6724], desc: "Fantastic and Breathtaking Valley Landscape", pins: [
-                {loc:[49.4106, 8.7153], t:"Heidelberg Castle", d:"Renaissance ruins"},
-                {loc:[49.4120, 8.7100], t:"Old Bridge", d:"Iconic stone bridge"}
-            ]},
-            { id:"dePoint4", x: 310, y: 356, city: "Dachau", center: [48.2630, 11.4330], desc: "Concentration Camp model", pins: [
-                {date: "2023-10-06", loc:[48.2701, 11.4681], t:"Dachau Memorial", d:"Historical site", trip:"Day Trip: Dachau Concentration Camp"}
-            ]},
-            { id:"berlin", city: "Berlin", center: [52.5200, 13.4050], desc: "The intersection of historical scars and avant-garde art.", pins: [
-                {loc:[52.5163, 13.3777], t:"Brandenburg Gate", d:"Historical Center"}, 
-                {loc:[52.5186, 13.3761], t:"Reichstag Building", d:"Transparent Political Structure"},
-                {loc:[52.5075, 13.3903], t:"Checkpoint Charlie", d:"Cold War Memory"}
-            ]}
+            // { id:"dePoint1", x: 305, y: 365, city: "Schwangau", center: [47.5758, 10.7491], desc: "Lands of Fairytale Castles", pins: [
+            //     {loc:[47.5576, 10.7498], t:"Neuschwanstein Castle", d:"The fairytale inspiration"},
+            //     {loc:[47.5558, 10.7360], t:"Hohenschwangau Castle", d:"Royal residence"}
+            // ]},
+            // { id:"dePoint2", x: 286, y: 342, city: "Mannheim", center: [49.4875, 8.4660], desc: "University Town with iconic Water Storage Tower", pins: [
+            //     {loc:[49.4836, 8.4763], t:"Wasserturm", d:"Historic water tower"},
+            //     {loc:[49.4828, 8.4631], t:"University of Mannheim", d:"Baroque palace campus"}
+            // ]},
+            // { id:"dePoint3", x: 288, y: 343, city: "Heidelberg", center: [49.3988, 8.6724], desc: "Fantastic and Breathtaking Valley Landscape", pins: [
+            //     {loc:[49.4106, 8.7153], t:"Heidelberg Castle", d:"Renaissance ruins"},
+            //     {loc:[49.4120, 8.7100], t:"Old Bridge", d:"Iconic stone bridge"}
+            // ]},
+            
+            // { id:"berlin", city: "Berlin", center: [52.5200, 13.4050], desc: "The intersection of historical scars and avant-garde art.", pins: [
+            //     {loc:[52.5163, 13.3777], t:"Brandenburg Gate", d:"Historical Center"}, 
+            //     {loc:[52.5186, 13.3761], t:"Reichstag Building", d:"Transparent Political Structure"},
+            //     {loc:[52.5075, 13.3903], t:"Checkpoint Charlie", d:"Cold War Memory"}
+            // ]}
         ],
         at: [
-            { id:"atPoint1", x: 324.3, y: 362.3, city: "Salzburg", date: "2023-10-14", img: "", desc: "A town of Mozart and romantic castle", link: "https://en.wikipedia.org/wiki/Salzburg", linkText: "more" },
+            { id:"atPoint1", x: 324.3, y: 362.3, city: "Salzburg", center: [47.8095, 13.0550], img: "", desc: "A town of Mozart and romantic castle", link: "https://en.wikipedia.org/wiki/Salzburg", linkText: "more", pins: [
+                {loc:[47.7970, 13.0467], t:"Kapitelplatz", cat: "square", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal1 (Small).jpg", ot: "24/7", tp:"Free", w:"https://www.salzburg.info/en/sights/squares-streets/kapitelplatz-kapitelschwemme", 
+                    photo1: "Photos/Austria/Salzburg/sal1 (Small).jpg", text1: "Perfect view towards the castle uphills with some cool installation :)",
+                },
+                {loc:[47.7949, 13.0477], t:"Fortress Hohensalzburg", cat: "castle", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal2 (Small).jpg", winter:"Oct-Apr", summer:"May-Sep", otw: "Sun 09:30-17:00<br>Mon 09:30-17:00<br>Tue 09:30-17:00<br>Wed 09:30-17:00<br>Thu 09:30-17:00<br>Fri 09:30-17:00<br>Sat 09:30-17:00", ots: "Sun 08:30-20:00<br>Mon 08:30-20:00<br>Tue 08:30-20:00<br>Wed 08:30-20:00<br>Thu 08:30-20:00<br>Fri 08:30-20:00<br>Sat 08:30-20:00", tp:"Basic Footprint: 12€<br>Basic Funicular: 15.5€<br>All-inclusive Footprint: 14.5€<br>All-inclusive Funicular: 19.2€", w:"https://www.festung-hohensalzburg.at/en/your-visit/tickets", 
+                    photo1: "Photos/Austria/Salzburg/sal2 (Small).jpg", text1: "A towering castle that one can take funicular uphills!",
+                    photo2: "Photos/Austria/Salzburg/sal3 (Small).jpg", text2: "One of the courtyard, looks somehow pale",
+                    photo3: "Photos/Austria/Salzburg/sal4 (Small).jpg", text3: "But boasting a stunning view!",
+                    photo4: "Photos/Austria/Salzburg/sal5 (Small).jpg", text4: "Salzburg Panorama!",
+                    photo5: "Photos/Austria/Salzburg/sal6 (Small).jpg", text5: "There are many exhibitions to explore~~",
+                },
+                {loc:[47.7966, 13.0455], t:"Friedhof St. Peter", cat: "church", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal8 (Small).jpg", winter:"Oct-Mar", summer:"Apr-Sep", otw: "Sun 06:30-18:00<br>Mon 06:30-18:00<br>Tue 06:30-18:00<br>Wed 06:30-18:00<br>Thu 06:30-18:00<br>Fri 06:30-18:00<br>Sat 06:30-18:00", ots: "Sun 06:30-20:00<br>Mon 06:30-20:00<br>Tue 06:30-20:00<br>Wed 06:30-20:00<br>Thu 06:30-20:00<br>Fri 06:30-20:00<br>Sat 06:30-20:00", tp:"Free", w:"https://www.stift-stpeter.at/de/kloster/index.asp?dat=Friedhof-Katakomben", 
+                    photo1: "Photos/Austria/Salzburg/sal7 (Small).jpg", text1: "What interesting is, this graveyard was built alongside a cliff",
+                    photo2: "Photos/Austria/Salzburg/sal8 (Small).jpg",
+                    photo3: "Photos/Austria/Salzburg/sal9 (Small).jpg", text3: "Here you can gaze up to the castle in awe",
+                },
+                {loc:[47.7970, 13.0447], t:"St. Peter's Church", cat: "church", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal10 (Small).jpg", ot: "Sun 08:00-20:00<br>Mon 08:00-20:00<br>Tue 08:00-20:00<br>Wed 08:00-20:00<br>Thu 08:00-20:00<br>Fri 08:00-20:00<br>Sat 08:00-20:00", tp:"Free", w:"https://www.stift-stpeter.at/de/kloster/index.asp?dat=Stiftskirche&id=170&title=Die+Stiftskirche+St%2E+Peter", 
+                    photo1: "Photos/Austria/Salzburg/sal10 (Small).jpg", text1: "Elegent ceiling!",
+                },
+                {loc:[47.7982, 13.0438], t:"Franziskanerkirche", cat: "church", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal12 (Small).jpg", ot: "Sun <span style='color: #A32020;'>07:00</span>-20:00<br>Mon 06:00-20:00<br>Tue 06:00-20:00<br>Wed 06:00-20:00<br>Thu 06:00-20:00<br>Fri 06:00-20:00<br>Sat 06:00-20:00", tp:"Free", w:"https://franziskaner.at/salzburg/", 
+                    photo1: "Photos/Austria/Salzburg/sal11 (Small).jpg", text1: "Actually I didn't expect this will be my favorite church in Salzburg",
+                    photo2: "Photos/Austria/Salzburg/sal12 (Small).jpg", text2: "Behold the astonishing geometric Ceiling!",
+                },
+                {loc:[47.8000, 13.04355], t:"Mozart's Birthplace", cat: "memorial", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal14 (Small).jpg", ot: "Sun 09:00-17:30<br>Mon 09:00-17:30<br>Tue 09:00-17:30<br>Wed 09:00-17:30<br>Thu 09:00-17:30<br>Fri 09:00-17:30<br>Sat 09:00-17:30", tp:"Adult: 15€<br>Student(~27): 12€", w:"https://mozarteum.at/en/mozart-museums/mozarts-birthplace#info", 
+                    photo1: "Photos/Austria/Salzburg/sal13 (Small).jpg", text1: "The house where Mozart was born and bred.",
+                    photo2: "Photos/Austria/Salzburg/sal14 (Small).jpg", text2: "This is Mozart:)",
+                    photo3: "Photos/Austria/Salzburg/sal15 (Small).jpg", text3: "And the violin he played",
+                    photo4: "Photos/Austria/Salzburg/sal16 (Small).jpg", text4: "Actually he was born into a middle-class family. Quite spacious the room is!",
+                    photo5: "Photos/Austria/Salzburg/sal17 (Small).jpg", text5: "One of the miniature scenes he made, as I remember~~",
+                    photo6: "Photos/Austria/Salzburg/sal18 (Small).jpg", text6: "Mozart is also a heavy traveler. All the dots on the map were the places he visited!",
+                    photo7: "Photos/Austria/Salzburg/sal19 (Small).jpg", text7: "A topo map of Salzburg on the ceiling, mega cool!",
+                },
+                {loc:[47.8009, 13.0390], t:"Mönchsberg Elevator", cat: "commercial", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal21 (Small).jpg", ot: "Sun 08:00-21:00<br>Mon 08:00-<span style='color: #A32020;'>19:00</span><br>Tue 08:00-21:00<br>Wed 08:00-21:00<br>Thu 08:00-21:00<br>Fri 08:00-21:00<br>Sat 08:00-21:00", tp:"One way: 3.4€<br>Round trip: 4.8€", w:"https://www.5schaetze.at/en/moenchsbergaufzug/prices.html", 
+                    photo1: "Photos/Austria/Salzburg/sal20 (Small).jpg", text1: "A Mosaic next to the lift",
+                    photo2: "Photos/Austria/Salzburg/sal21 (Small).jpg", text2: "Up there gives an amazing view of Salzburg!",
+                },
+                {loc:[47.8026, 13.0437], t:"Mozart Residence", cat: "memorial", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal21 (Small).jpg", ot: "Sun 09:00-17:30<br>Mon 09:00-17:30<br>Tue 09:00-17:30<br>Wed 09:00-17:30<br>Thu 09:00-17:30<br>Fri 09:00-17:30<br>Sat 09:00-17:30", tp:"Adult: 15€<br>Student: 12€", w:"https://mozarteum.at/en/mozart-museums/mozarts-residence#info", 
+                    photo1: "Photos/Austria/Salzburg/sal22 (Small).jpg", text1: "The house where Mozart family moved to after the one he was born",
+                    photo2: "Photos/Austria/Salzburg/sal23 (Small).jpg", text2: "Maybe also the piano he played before(?",
+                    photo3: "Photos/Austria/Salzburg/sal24 (Small).jpg", text3: "One of his manuscripts",
+                },
+                {loc:[47.8014, 13.0418], t:"Salzburg Rivercruise", cat: "commercial", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal25 (Small).jpg", ot: "Please check on the website", tp:"Please check on the website", w:"https://www.salzburghighlights.at/en/salzburg-boat-cruise/", 
+                    photo1: "Photos/Austria/Salzburg/sal25 (Small).jpg", text1: "Another perspective of Salzburg",
+                    photo2: "Photos/Austria/Salzburg/sal1 (Small).mp4", text2: "Maybe just want to spend time, they just crazily played around with the ship haha",
+                },
+                {loc:[47.8046, 13.0423], t:"Mirabell Gardens", cat: "nature", date: "2023-10-14", trip:"Day Trip: Salzburg", p:"Photos/Austria/Salzburg/sal27 (Small).jpg", ot: "Sun 06:00-21:00<br>Mon 06:00-21:00<br>Tue 06:00-21:00<br>Wed 06:00-21:00<br>Thu 06:00-21:00<br>Fri 06:00-21:00<br>Sat 06:00-21:00", tp:"Free", w:"https://www.stadt-salzburg.at/mirabellgarten/", 
+                    photo1: "Photos/Austria/Salzburg/sal26 (Small).jpg", text1: "A nice Baroque garden",
+                    photo2: "Photos/Austria/Salzburg/sal27 (Small).jpg", text2: "A perfect spot to take photos with flowers in front & castle behind (but I didn't manage well ><)",
+                },
+            ]},
         ],
         be: [
             { id: "betrip1", x: 255, y: 324, city: "Brussels", center: [50.8503, 4.3517], img: "Photos/Belgium/Brussels/Belgium_Trip/bru8 (Small).jpg", date: "2023-09-29", desc: "The Capital of Belgium", link: "https://en.wikipedia.org/wiki/Brussels", linkText: "more", pins: [
@@ -589,39 +658,39 @@ window.DATA = {
             ]},
             { id: "betrip2", x: 258.5, y: 323.5, city: "Leuven", center: [50.8798, 4.7005], img: "Photos/Belgium/Leuven/Belgium_Trip/leu4 (Small).jpg", date: "2023-09-29", desc: "University Town", link: "https://en.wikipedia.org/wiki/Leuven", linkText: "more", pins: [
                 {loc:[50.8787, 4.7011], t:"Town Hall", cat: "square", p:"Photos/Belgium/Leuven/Belgium_Trip/leu4 (Small).jpg", ot: "Sun 10:00-17:00<br>Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-17:00", tp:"Not for visiting", v: 1, d:"Stunning Gothic architecture", w:"https://visitleuven.be/stadhuis"},
-                {loc:[50.8796, 4.7012], t:"St. Peter's Church", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/leu5 (Small).jpg", ot: "Sun <span style='color: #A32020;'>11:00</span>-16:30<br>Mon 10:00-16:30<br>Tue 10:00-16:30<br>Wed 10:00-16:30<br>Thu 10:00-16:30<br>Fri 10:00-16:30<br>Sat 10:00-16:30", tp:"Free", v: 1, d:"Late Gothic church on the Grote Markt", w:"https://www.visitleuven.be/sint-pieterskerk#plan-je-bezoek"},
-                {loc:[50.8700, 4.6966], t:"Groot Begijnhof", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/leu9 (Small).JPEG", ot:"24/7", tp:"Free", v: 1, d:"Historical beguinage, UNESCO site. Now served as student dorms", w: "https://www.visitleuven.be/groot-begijnhof#plan-je-bezoek"},
-                {loc: [50.8760, 4.6983], t: "Sint-Antoniuskapel", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/leu8 (Small).jpg", ot: "Sun 9:00-18:00<br>Mon 9:00-18:00<br>Tue 9:00-18:00<br>Wed 9:00-18:00<br>Thu 9:00-18:00<br>Fri 9:00-18:00<br>Sat 9:00-18:00", tp:"Free", v: 1, d: "The final resting place of Father Damien", w:"https://visitleuven.be/sint-antoniuskapel"},
-                {loc: [50.8644, 4.7180], t: "Park Abbey", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/leu11 (Small).JPEG", ot:"24/7", tp:"Free", v: 2, d: "One of the best-preserved 12th-century abbey complexes in Belgium.", w:"https://www.abdijvanpark.be/en/opening-hours-and-closing-days"}
+                {loc:[50.8796, 4.7012], t:"St. Peter's Church", cat: "church", p:"Photos/Belgium/Leuven/Belgium_Trip/leu5 (Small).jpg", ot: "Sun <span style='color: #A32020;'>11:00</span>-16:30<br>Mon 10:00-16:30<br>Tue 10:00-16:30<br>Wed 10:00-16:30<br>Thu 10:00-16:30<br>Fri 10:00-16:30<br>Sat 10:00-16:30", tp:"Free", v: 1, d:"Late Gothic church on the Grote Markt", w:"https://www.visitleuven.be/sint-pieterskerk#plan-je-bezoek"},
+                {loc:[50.8700, 4.6966], t:"Groot Begijnhof", cat: "square", p:"Photos/Belgium/Leuven/Belgium_Trip/leu9 (Small).JPEG", ot:"24/7", tp:"Free", v: 1, d:"Historical beguinage, UNESCO site. Now served as student dorms", w: "https://www.visitleuven.be/groot-begijnhof#plan-je-bezoek"},
+                {loc: [50.8760, 4.6983], t: "Sint-Antoniuskapel", cat: "church", p:"Photos/Belgium/Leuven/Belgium_Trip/leu8 (Small).jpg", ot: "Sun 9:00-18:00<br>Mon 9:00-18:00<br>Tue 9:00-18:00<br>Wed 9:00-18:00<br>Thu 9:00-18:00<br>Fri 9:00-18:00<br>Sat 9:00-18:00", tp:"Free", v: 1, d: "The final resting place of Father Damien", w:"https://visitleuven.be/sint-antoniuskapel"},
+                {loc: [50.8644, 4.7180], t: "Park Abbey", cat: "church", p:"Photos/Belgium/Leuven/Belgium_Trip/leu11 (Small).JPEG", ot:"24/7", tp:"Free", v: 2, d: "One of the best-preserved 12th-century abbey complexes in Belgium.", w:"https://www.abdijvanpark.be/en/opening-hours-and-closing-days"}
             ]},
             { id: "betrip3", x: 255.5, y: 319, city: "Antwerp", center: [51.2194, 4.4025], img: "Photos/Belgium/Antwerp/Belgium_Trip/ant15 (Small).jpg", date: "2023-09-30", desc: "Remarkable Railway Station", link: "https://en.wikipedia.org/wiki/Antwerp", linkText: "more", pins: [
                 {loc:[51.2172, 4.4214], t:"Antwerpen-Centraal", cat: "square", p:"Photos/Belgium/Antwerp/Belgium_Trip/ant17 (Small).jpg", ot: "Sun 05:45-22:00<br>Mon 05:45-22:00<br>Tue 05:45-22:00<br>Wed 05:45-22:00<br>Thu 05:45-22:00<br>Fri 05:45-22:00<br>Sat 05:45-22:00", tp: "Free", v:1, d:"Beautiful railway station architecture", w: "https://www.belgiantrain.be/nl/station-information/antwerpen/antwerpen-centraal"},
                 {loc:[51.2213, 4.3996], t:"Cathedral of Our Lady", cat: "church", ot: "Sun <span style='color: #A32020;'>13:00</span>-17:00<br>Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-<span style='color: #A32020;'>15:00</span>", tp:"Adult:12€<br>Student:10€", v:0, d:"Gothic cathedral with Rubens paintings", w:"https://www.dekathedraal.be/en/visit"},
-                {loc:[51.2227, 4.3973], t:"Het Steen", cat: "castle", p:"Photos/Belgium/Brussels/Belgium_Trip/ant12 (Small).jpg", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"7€", v:1, d:"Medieval fortress in the city center", w:"https://visit.antwerpen.be/het-steen"},
-                {loc: [51.2180, 4.4097], t: "Meir Shopping Street", cat: "commercial", p:"Photos/Belgium/Brussels/Belgium_Trip/ant4 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d: "A chill walking street connecting the central station to the harbour", w:"https://visit.antwerpen.be/en/shopping-zone-meir"},
-                {loc: [51.2185, 4.3983], t: "Plantin-Moretus Museum", cat: "museum", p:"Photos/Belgium/Brussels/Belgium_Trip/ant6 (Small).jpg", ot: "Sun 10:00-17:00<br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-17:00", tp:"Adult:12€<br>18-25:8€", v: 1, d: "The only fully preserved 16th-century printing house (UNESCO site)", w:"https://www.museumplantinmoretus.be/de/ihr-besuch"},
+                {loc:[51.2227, 4.3973], t:"Het Steen", cat: "castle", p:"Photos/Belgium/Antwerp/Belgium_Trip/ant12 (Small).jpg", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp:"7€", v:1, d:"Medieval fortress in the city center", w:"https://visit.antwerpen.be/het-steen"},
+                {loc: [51.2180, 4.4097], t: "Meir Shopping Street", cat: "commercial", p:"Photos/Belgium/Antwerp/Belgium_Trip/ant4 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d: "A chill walking street connecting the central station to the harbour", w:"https://visit.antwerpen.be/en/shopping-zone-meir"},
+                {loc: [51.2185, 4.3983], t: "Plantin-Moretus Museum", cat: "museum", p:"Photos/Belgium/Antwerp/Belgium_Trip/ant6 (Small).jpg", ot: "Sun 10:00-17:00<br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-17:00", tp:"Adult:12€<br>18-25:8€", v: 1, d: "The only fully preserved 16th-century printing house (UNESCO site)", w:"https://www.museumplantinmoretus.be/de/ihr-besuch"},
                 {loc: [51.2214, 4.3995], t: "Grote Markt", cat: "square", ot:"24/7", tp:"Free", v: 1, d: "Iconic square with City Hall, Guild Houses, and the Brabo Fountain", w:"https://visit.antwerpen.be/grote-markt"},
                 {loc: [51.21687, 4.40999], t: "Rubenshuis", cat: "museum", ot: "Sun 10:00-<span style='color: #A32020;'>18:00</span><br>Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed <span style='color: #A32020;'>Closed</span><br>Thu 10:00-17:00<br>Fri 10:00-17:00<br>Sat 10:00-<span style='color: #A32020;'>18:00</span>", tp: "Adult:12€<br>18-25:8€", v: 0, d: "The former home and studio of Peter Paul Rubens.", w: "https://visit.rubenshuis.be/#/tickets/combi"},
                 {loc: [51.20881, 4.39481], t: "KMSKA - Royal Museum of Fine Arts", cat: "museum", ot: "Mon 10:00-17:00<br>Tue 10:00-17:00<br>Wed 10:00-17:00<br>Thu 10:00-<span style='color: #A32020;'>22:00</span><br>Fri 10:00-17:00<br>Sat 10:00-<span style='color: #A32020;'>18:00</span><br>Sun 10:00-<span style='color: #A32020;'>18:00</span>", tp: "Adult:20€<br>18-26:10€", v: 0, d: "A grand neoclassical museum featuring Flemish masters.", w: "https://kmska.be/en/opening-hours-and-tickets"}
             ]},
             { id: "betrip4", x: 247, y: 319, city: "Bruges", center: [51.2093, 3.2247], img: "Photos/Belgium/Bruges/Belgium_Trip/bg14 (Small).jpg", date: "2023-10-02", desc: "Venice in the North", link: "https://en.wikipedia.org/wiki/Bruges", linkText: "more", pins: [
                 {loc: [51.2047, 3.2245], t: "Church of Our Lady", cat: "church", p:"Photos/Belgium/Bruges/Belgium_Trip/bg7 (Small).JPEG", ot: "Sun <span style='color: #A32020;'>13:30-17:00</span><br>Mon 09:30-17:00<br>Tue 09:30-17:00<br>Wed 09:30-17:00<br>Thu 09:30-17:00<br>Fri 09:30-17:00<br>Sat 09:30-17:00", tp:"Free", v: 1, d: "An old church nestling besides a medieval bridge", w:"https://www.flemishmastersinsitu.com/en/venues/church-our-lady-brugge"},
-                {loc: [51.2024, 3.2243], t: "Huisbrouwerij De Halve Maan", cat: "commercial", p:"Photos/Belgium/Brussels/Belgium_Trip/bg10 (Small).jpg", ot:"Please check the timeslots on the website", tp:"Classic: 16€<br>XL tour: 26€", v: 1, d: "Brewery visit was for sure a must! Beer & Belgium cuisine", w:"https://www.halvemaan.be/en/visit/brewery"},
-                {loc: [51.2055, 3.2217], t: "Sint-Salvatorskathedraal", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/bg11 (Small).jpg", ot: "Sun <span style='color: #A32020;'>14:00-17:00</span><br>Mon 10:00-17:30<br>Tue 10:00-17:30<br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-15:30", tp:"Free", v: 1, d: "The main Cathedral in Bruges", w:"https://www.sintsalvatorskathedraal.be/#"},
-                {loc: [51.2086, 3.2244], t: "Markt", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/bg14 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d: "Amazing square with the iconic bell tower", w:"https://www.visitbruges.be/en/things-to-do/culture-and-heritage/markt-market-square"},
-                {loc: [51.2083, 3.2248], t: "Belfry", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/bg15 (Small).jpg", summer:"Apr-Oct", winter:"Nov-Mar", ots: "Sun 09:00-20:00<br>Mon 09:00-20:00<br>Tue 09:00-20:00<br>Wed 09:00-20:00<br>Thu 09:00-20:00<br>Fri 09:00-20:00<br>Sat 09:00-20:00", otw: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat <span style='color: #A32020;'>09:00-20:00</span>", tps:"16€", tpw:"15€", v: 1, d: "A medieval bell tower with 366 steps, offering panoramic city views and housing a 47-bell carillon.", w:"https://www.museabrugge.be/en/visit/locations/belfort"},
-                {loc: [51.2082, 3.2266], t: "City Hall", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/bg16 (Small).jpg", ot: "Sun 09:30-17:00<br>Mon 09:30-17:00<br>Tue 09:30-17:00<br>Wed 09:30-17:00<br>Thu 09:30-17:00<br>Fri 09:30-17:00<br>Sat 09:30-17:00", tp:"Adult:8€<br>18-25:7€", v: 1, d: "Richly decorated inside, reflecting the wealthiness back then", w:"https://www.museabrugge.be/en/visit/locations/stadhuis"},
-                {loc: [51.2082, 3.2268], t: "Basilica of the Holy Blood", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/bg19 (Small).JPEG", ot: "Sun 10:00-17:15<br>Mon 10:00-17:15<br>Tue 10:00-17:15<br>Wed 10:00-17:15<br>Thu 10:00-17:15<br>Fri 10:00-17:15<br>Sat 10:00-17:15", tp: "Free", v: 1, d: "A famous catholic church on the Burg square", w:"https://www.holyblood.com/homepage-of-the-basilica-of-the-holy-blood"},
-                {loc: [51.1996, 3.2255], t: "Minnewaterpark", cat: "nature", p:"Photos/Belgium/Brussels/Belgium_Trip/bg1 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d:"Romantic park with a 'Lake of Love'", w:"https://www.visitbruges.be/en/things-to-do/culture-and-heritage/minnewaterpark-lake-love-park"},
+                {loc: [51.2024, 3.2243], t: "Huisbrouwerij De Halve Maan", cat: "commercial", p:"Photos/Belgium/Bruges/Belgium_Trip/bg10 (Small).jpg", ot:"Please check on the website", tp:"Classic: 16€<br>XL tour: 26€", v: 1, d: "Brewery visit was for sure a must! Beer & Belgium cuisine", w:"https://www.halvemaan.be/en/visit/brewery"},
+                {loc: [51.2055, 3.2217], t: "Sint-Salvatorskathedraal", cat: "church", p:"Photos/Belgium/Bruges/Belgium_Trip/bg11 (Small).jpg", ot: "Sun <span style='color: #A32020;'>14:00-17:00</span><br>Mon 10:00-17:30<br>Tue 10:00-17:30<br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-15:30", tp:"Free", v: 1, d: "The main Cathedral in Bruges", w:"https://www.sintsalvatorskathedraal.be/#"},
+                {loc: [51.2086, 3.2244], t: "Markt", cat: "square", p:"Photos/Belgium/Bruges/Belgium_Trip/bg14 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d: "Amazing square with the iconic bell tower", w:"https://www.visitbruges.be/en/things-to-do/culture-and-heritage/markt-market-square"},
+                {loc: [51.2083, 3.2248], t: "Belfry", cat: "square", p:"Photos/Belgium/Bruges/Belgium_Trip/bg15 (Small).jpg", summer:"Apr-Oct", winter:"Nov-Mar", ots: "Sun 09:00-20:00<br>Mon 09:00-20:00<br>Tue 09:00-20:00<br>Wed 09:00-20:00<br>Thu 09:00-20:00<br>Fri 09:00-20:00<br>Sat 09:00-20:00", otw: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat <span style='color: #A32020;'>09:00-20:00</span>", tps:"16€", tpw:"15€", v: 1, d: "A medieval bell tower with 366 steps, offering panoramic city views and housing a 47-bell carillon.", w:"https://www.museabrugge.be/en/visit/locations/belfort"},
+                {loc: [51.2082, 3.2266], t: "City Hall", cat: "square", p:"Photos/Belgium/Bruges/Belgium_Trip/bg16 (Small).jpg", ot: "Sun 09:30-17:00<br>Mon 09:30-17:00<br>Tue 09:30-17:00<br>Wed 09:30-17:00<br>Thu 09:30-17:00<br>Fri 09:30-17:00<br>Sat 09:30-17:00", tp:"Adult:8€<br>18-25:7€", v: 1, d: "Richly decorated inside, reflecting the wealthiness back then", w:"https://www.museabrugge.be/en/visit/locations/stadhuis"},
+                {loc: [51.2082, 3.2268], t: "Basilica of the Holy Blood", cat: "church", p:"Photos/Belgium/Bruges/Belgium_Trip/bg19 (Small).JPEG", ot: "Sun 10:00-17:15<br>Mon 10:00-17:15<br>Tue 10:00-17:15<br>Wed 10:00-17:15<br>Thu 10:00-17:15<br>Fri 10:00-17:15<br>Sat 10:00-17:15", tp: "Free", v: 1, d: "A famous catholic church on the Burg square", w:"https://www.holyblood.com/homepage-of-the-basilica-of-the-holy-blood"},
+                {loc: [51.1996, 3.2255], t: "Minnewaterpark", cat: "nature", p:"Photos/Belgium/Bruges/Belgium_Trip/bg1 (Small).jpg", ot:"24/7", tp:"Free", v: 1, d:"Romantic park with a 'Lake of Love'", w:"https://www.visitbruges.be/en/things-to-do/culture-and-heritage/minnewaterpark-lake-love-park"},
             ]},
             { id: "betrip5", x: 251, y: 321, city: "Ghent", center: [51.0543, 3.7174], img: "Photos/Belgium/Ghent/Belgium_Trip/gh28 (Small).JPEG", date: "2023-10-03", desc: "Ghent Belfry and Castle surrounded by Water", link: "https://en.wikipedia.org/wiki/Ghent", linkText: "more", pins: [
                 {loc: [51.0539, 3.7230], t: "Saint Nicholas' Church", cat: "church", p:"Photos/Belgium/Ghent/Belgium_Trip/gh2 (Small).JPEG", ot: "Sun 10:00-16:00<br>Mon 10:00-16:00<br>Tue 10:00-16:00<br>Wed 10:00-16:00<br>Thu 10:00-16:00<br>Fri 10:00-16:00<br>Sat 10:00-16:00", tp: "Free", v: 1, d: "An iconic church in the heart of Ghent", w:"https://www.sintniklaaskerk.be/"},
-                {loc: [51.0537, 3.7248], t: "Belfort van Gent", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/gh7 (Small).jpg", ot: "Sun 10:00-17:30<br>Mon 10:00-17:30<br>Tue 10:00-17:30<br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-17:30", tp: "Adult: 13€<br>19-25:6.5€", v: 1, d: "Iconic belfry guarded by a fire dragon for centuries, with unbeatable views", w:"https://historischehuizen.stad.gent/en/belfry/visit/individual-visit"},
-                {loc: [51.0530, 3.7268], t: "Saint Bavo's Cathedral", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/gh12 (Small).JPEG", ot: "Sun <span style='color: #A32020;'>13:00</span>-17:30<br>Mon 08:30-17:30<br>Tue 08:30-17:30<br>Wed 08:30-17:30<br>Thu 08:30-17:30<br>Fri 08:30-17:30<br>Sat 08:30-17:30", tp: "Free", v: 1, d: "Imposing cathedral featuring refreshing modern stained glass windows", w:"https://www.sintbaafskathedraal.be/en/practical/opening-hours/"},
-                {loc: [51.0571, 3.7208], t: "Castle of the Counts", cat: "castle", p:"Photos/Belgium/Brussels/Belgium_Trip/gh15 (Small).JPEG", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp: "Adult: 15€<br>19-25:7.5€", v: 1, d: "Awe-inspiring medieval castle featuring a notorious torture room and scenic rooftop", w:"https://historischehuizen.stad.gent/en/gravensteen/bezoek/plan-je-bezoek/information-prices"},
-                {loc: [51.0536, 3.7195], t: "Saint Michael's Church", cat: "church", p:"Photos/Belgium/Brussels/Belgium_Trip/gh27 (Small).JPEG", summer:"Apr-Oct", winter:"Nov-Mar", ots: "Sun 14:00-17:00<br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 14:00-17:00<br>Wed 14:00-17:00<br>Thu 14:00-17:00<br>Fri 14:00-17:00<br>Sat 14:00-17:00", otw:"Sun Closed<br>Mon Closed<br>Tue Closed<br>Wed Closed<br>Thu Closed<br>Fri Closed<br>Sat Closed", tps: "Free", tpw: "Free", v: 1, d: "A majestic church by the river (sadly closed when we arrived)", w:"https://mkgent.be/kerk/st-michaels-church/"},
-                {loc: [51.0546, 3.7204], t: "Graslei and Korenlei", cat: "square", p:"Photos/Belgium/Brussels/Belgium_Trip/gh24 (Small).JPEG", ot:"24/7", tp:"Free", v: 1, d:"Scenic quays along the Leie river", w:"https://visit.gent.be/en/see-do/history-graslei-and-korenlei"},
-                {loc: [51.0543, 3.7216], t: "De Post", cat: "commercial", p: "Photos/Belgium/Brussels/Belgium_Trip/gh30 (Small).jpg", ot: "Sun <span style='color: #A32020;'>12:00</span>-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-<span style='color: #A32020;'>18:30</span><br>Sat 10:00-<span style='color: #A32020;'>18:30</span>", tp: "Free", v: 1, d: "A stunning former post office transformed into a luxury shopping center and hotel, perfectly blending neo-Gothic grandeur with modern lifestyle.", w: "https://depostgent.be/"}
+                {loc: [51.0537, 3.7248], t: "Belfort van Gent", cat: "square", p:"Photos/Belgium/Ghent/Belgium_Trip/gh7 (Small).jpg", ot: "Sun 10:00-17:30<br>Mon 10:00-17:30<br>Tue 10:00-17:30<br>Wed 10:00-17:30<br>Thu 10:00-17:30<br>Fri 10:00-17:30<br>Sat 10:00-17:30", tp: "Adult: 13€<br>19-25:6.5€", v: 1, d: "Iconic belfry guarded by a fire dragon for centuries, with unbeatable views", w:"https://historischehuizen.stad.gent/en/belfry/visit/individual-visit"},
+                {loc: [51.0530, 3.7268], t: "Saint Bavo's Cathedral", cat: "church", p:"Photos/Belgium/Ghent/Belgium_Trip/gh12 (Small).JPEG", ot: "Sun <span style='color: #A32020;'>13:00</span>-17:30<br>Mon 08:30-17:30<br>Tue 08:30-17:30<br>Wed 08:30-17:30<br>Thu 08:30-17:30<br>Fri 08:30-17:30<br>Sat 08:30-17:30", tp: "Free", v: 1, d: "Imposing cathedral featuring refreshing modern stained glass windows", w:"https://www.sintbaafskathedraal.be/en/practical/opening-hours/"},
+                {loc: [51.0571, 3.7208], t: "Castle of the Counts", cat: "castle", p:"Photos/Belgium/Ghent/Belgium_Trip/gh15 (Small).JPEG", ot: "Sun 10:00-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-18:00<br>Sat 10:00-18:00", tp: "Adult: 15€<br>19-25:7.5€", v: 1, d: "Awe-inspiring medieval castle featuring a notorious torture room and scenic rooftop", w:"https://historischehuizen.stad.gent/en/gravensteen/bezoek/plan-je-bezoek/information-prices"},
+                {loc: [51.0536, 3.7195], t: "Saint Michael's Church", cat: "church", p:"Photos/Belgium/Ghent/Belgium_Trip/gh27 (Small).JPEG", summer:"Apr-Oct", winter:"Nov-Mar", ots: "Sun 14:00-17:00<br>Mon <span style='color: #A32020;'>Closed</span><br>Tue 14:00-17:00<br>Wed 14:00-17:00<br>Thu 14:00-17:00<br>Fri 14:00-17:00<br>Sat 14:00-17:00", otw:"Sun Closed<br>Mon Closed<br>Tue Closed<br>Wed Closed<br>Thu Closed<br>Fri Closed<br>Sat Closed", tps: "Free", tpw: "Free", v: 1, d: "A majestic church by the river (sadly closed when we arrived)", w:"https://mkgent.be/kerk/st-michaels-church/"},
+                {loc: [51.0546, 3.7204], t: "Graslei and Korenlei", cat: "square", p:"Photos/Belgium/Ghent/Belgium_Trip/gh24 (Small).JPEG", ot:"24/7", tp:"Free", v: 1, d:"Scenic quays along the Leie river", w:"https://visit.gent.be/en/see-do/history-graslei-and-korenlei"},
+                {loc: [51.0543, 3.7216], t: "De Post", cat: "commercial", p: "Photos/Belgium/Ghent/Belgium_Trip/gh30 (Small).jpg", ot: "Sun <span style='color: #A32020;'>12:00</span>-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-<span style='color: #A32020;'>18:30</span><br>Sat 10:00-<span style='color: #A32020;'>18:30</span>", tp: "Free", v: 1, d: "A stunning former post office transformed into a luxury shopping center and hotel, perfectly blending neo-Gothic grandeur with modern lifestyle.", w: "https://depostgent.be/"}
             ]}
         ],
         fr: [
