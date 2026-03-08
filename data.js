@@ -551,12 +551,12 @@ window.DATA = {
                 }, 
                 // {loc:[48.1769, 11.5583], t:"BMW Museum", d:"Ultimate Craftsmanship"}
             ]},
-            { id: "housePoint2", x: 350, y: 355, city: "Vienna", date: "2023-11-12", img: "", desc: "音樂之都。", link: "", linkText: "" },
-            { id: "housePoint3", x: 328, y: 321, city: "Dresden", center: [51.0504, 13.7373], desc:"歷史悠久的文化重鎮。", pins: [
-                {loc:[51.053, 13.735], t:"Frauenkirche", d:"Symbol of peace"},
-                {loc:[51.052, 13.733], t:"Zwinger", d:"Baroque architecture"}
-            ]},
-            { id: "housePoint4", x: 275, y: 308, city: "Enschede", date: "2024-05-18", img:"", desc:"荷蘭邊境的大學城。", link:"", linkText:"" }
+            // { id: "housePoint2", x: 350, y: 355, city: "Vienna", date: "2023-11-12", img: "", desc: "音樂之都。", link: "", linkText: "" },
+            // { id: "housePoint3", x: 328, y: 321, city: "Dresden", center: [51.0504, 13.7373], desc:"歷史悠久的文化重鎮。", pins: [
+            //     {loc:[51.053, 13.735], t:"Frauenkirche", d:"Symbol of peace"},
+            //     {loc:[51.052, 13.733], t:"Zwinger", d:"Baroque architecture"}
+            // ]},
+            // { id: "housePoint4", x: 275, y: 308, city: "Enschede", date: "2024-05-18", img:"", desc:"荷蘭邊境的大學城。", link:"", linkText:"" }
         ],
         de: [
             { id:"dePoint1", x: 310, y: 356, city: "Dachau", center: [48.2630, 11.4330], img: "Photos/Germany/Dachau/dah4 (Small).jpg", desc: "Notorious Town back in WWII", linkText: "more", pins: [
@@ -693,13 +693,13 @@ window.DATA = {
                 {loc: [51.0543, 3.7216], t: "De Post", cat: "commercial", p: "Photos/Belgium/Ghent/Belgium_Trip/gh30 (Small).jpg", ot: "Sun <span style='color: #A32020;'>12:00</span>-18:00<br>Mon 10:00-18:00<br>Tue 10:00-18:00<br>Wed 10:00-18:00<br>Thu 10:00-18:00<br>Fri 10:00-<span style='color: #A32020;'>18:30</span><br>Sat 10:00-<span style='color: #A32020;'>18:30</span>", tp: "Free", v: 1, d: "A stunning former post office transformed into a luxury shopping center and hotel, perfectly blending neo-Gothic grandeur with modern lifestyle.", w: "https://depostgent.be/"}
             ]}
         ],
-        fr: [
-            { id: "frtrip1", x: 239, y: 346, city: "Paris", date: "2023-12-29", img: "paris.jpg", desc: "The Capital of France", link: "https://en.wikipedia.org/wiki/Paris", linkText: "more" },
-            { id: "frtrip2", x: 237, y: 347, city: "Versailles", date: "2024-01-02", img: "versailles.jpg", desc: "The Splendor of France", link: "https://en.wikipedia.org/wiki/Versailles,_Yvelines", linkText: "more" },
-        ],
-        pl: [
-            { id:"plPoint1", x: 380, y: 307, city: "Wroclaw", date: "2024-04-12", img: "", desc: "小矮人的城市。", link: "", linkText: "" },
-            { id:"plPoint2", x: 400, y: 287, city: "Warsaw", date: "2024-04-15", img: "", desc: "浴火重生的鳳凰城。", link: "", linkText: "" }
-        ],
+        // fr: [
+        //     { id: "frtrip1", x: 239, y: 346, city: "Paris", date: "2023-12-29", img: "paris.jpg", desc: "The Capital of France", link: "https://en.wikipedia.org/wiki/Paris", linkText: "more" },
+        //     { id: "frtrip2", x: 237, y: 347, city: "Versailles", date: "2024-01-02", img: "versailles.jpg", desc: "The Splendor of France", link: "https://en.wikipedia.org/wiki/Versailles,_Yvelines", linkText: "more" },
+        // ],
+        // pl: [
+        //     { id:"plPoint1", x: 380, y: 307, city: "Wroclaw", date: "2024-04-12", img: "", desc: "小矮人的城市。", link: "", linkText: "" },
+        //     { id:"plPoint2", x: 400, y: 287, city: "Warsaw", date: "2024-04-15", img: "", desc: "浴火重生的鳳凰城。", link: "", linkText: "" }
+        // ],
     }
 };
