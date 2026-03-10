@@ -109,8 +109,15 @@ a { text-decoration: none; color: inherit; }
 .explore-btn:hover { background: #b16837; }
 .visit-list { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
 .visit-item { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: default; }
+
+/* 大型遊記跳轉按鈕樣式 */
 .visit-item.clickable-box { cursor: pointer; border-color: #ddd; }
 .visit-item.clickable-box:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-color: #b16837; }
+
+/* 【新增】一日遊Hover特效 (不改變游標為手指，單純浮動變色) */
+.visit-item.day-trip-box { cursor: default; border-color: #ddd; }
+.visit-item.day-trip-box:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-color: #ccc; }
+
 .visit-header { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 6px; }
 .visit-date-badge { background: #eef3ff; color: #b16837; font-weight: bold; font-size: 0.85em; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd; transition: all 0.2s; }
 .visit-main-text { font-size: 1.1em; font-weight: bold; color: #333; margin-bottom: 4px; }
@@ -181,7 +188,7 @@ a { text-decoration: none; color: inherit; }
 <div id="introTitle">
     <div class="intro-title-content" data-orig-z="0">
         <h1>Tracing Europe with Bryan</h1>
-        <h2>2023.09.17 - 2026.03.31</h2>
+        <h2>2023.09.17 - 2023.12.24</h2>
     </div>
 </div>
 
@@ -246,7 +253,7 @@ a { text-decoration: none; color: inherit; }
 <script>
 const CONFIG = {
     scrollFactor: 0.002, friction: 0.85, 
-    svgUrl: 'https://raw.githubusercontent.com/bryanCycwalker/Travel_Web_svg/refs/heads/main/Europe_map_new_202602.svg'
+    svgUrl: 'https://raw.githubusercontent.com/bryanCycwalker/Travel_Web_svg/refs/heads/main/Europe_map_new.svg'
 };
 
 const state = {
@@ -368,10 +375,16 @@ function showRichInfo(id) {
         else if (id.startsWith('fr')) cId = 'fr';
     }
 
-    const targetPage = { 'de': 'Germany.html', 'be': 'Belgium.html', 'fr': 'France.html' }[cId] || 'Germany.html';
-
+    const targetPage = { 
+        'de': 'Germany.html', 
+        'be': 'Belgium.html', 
+        'fr': 'France.html', 
+        'at': 'Austria.html', 
+        'pl': 'Poland.html' 
+    }[cId] || 'Germany.html';
     let listHTML = "";
     if (state.eventFocused && state.focusedEvent) {
+        // ... 原本聚焦事件時顯示內部活動的邏輯 ...
         let cityMarkers = (state.focusedEvent.eventMarkers || []).filter(m => m.id === id);
         let processedGroups = [];
 
@@ -395,26 +408,63 @@ function showRichInfo(id) {
                 </div>`;
         });
     } else {
-        let tripMap = new Map();
+        // === 【修改點：整合多日遊與一日遊的邏輯】 ===
+        let allTrips = [];
+        
+        // 1. 抓取大型旅遊 (來自 DATA.events)
         DATA.events.forEach((ev, idx) => {
             let dates = [];
             if (ev.eventMarkers) ev.eventMarkers.filter(m => m.id === id).forEach(m => dates.push(m.date || ev.date));
             if (dates.length === 0 && ev.markerIds && ev.markerIds.includes(id)) dates.push(ev.date);
             if (dates.length > 0) {
                 dates.sort();
-                tripMap.set(idx, { name: ev.text, dateRange: dates.length > 1 ? `${dates[0]} ~ ${dates[dates.length - 1]}` : dates[0], idx: idx });
+                allTrips.push({ 
+                    name: ev.text, 
+                    dateRange: dates.length > 1 ? `${dates[0]} ~ ${dates[dates.length - 1]}` : dates[0], 
+                    isClickable: true 
+                });
             }
         });
-        tripMap.forEach(info => {
-            // 【關鍵修改】：自動將旅行名稱轉為網址 (例如: "Belgium Trip" -> "Belgium_Trip.html")
-            let targetTripUrl = info.name.replace(/\s+/g, '_') + '.html';
-            
-            listHTML += `
-                <div class="visit-item clickable-box" onclick="window.location.href='${targetTripUrl}'">
-                    <div class="visit-header"><span class="visit-date-badge clickable-link">${info.dateRange}</span></div>
-                    <div class="visit-main-text">${info.name}</div>
-                </div>`;
+
+        // 2. 抓取一日遊 (來自 DATA.markers 裡該城市的 pins 陣列，找尋帶有 trip 和 date 的物件)
+        if (baseData && baseData.pins) {
+            baseData.pins.forEach(pin => {
+                if (pin.trip && pin.date) {
+                    // 避免同一個城市有多個景點屬於同一個 day trip 而重複顯示
+                    if (!allTrips.some(t => t.name === pin.trip)) {
+                        allTrips.push({
+                            name: pin.trip,
+                            dateRange: pin.date,
+                            isClickable: false
+                        });
+                    }
+                }
+            });
+        }
+
+        // 3. 依照日期排序 (從早到晚)
+        allTrips.sort((a, b) => new Date(a.dateRange.split(' ~ ')[0]) - new Date(b.dateRange.split(' ~ ')[0]));
+
+        // 4. 產生對應的 HTML 結構
+        allTrips.forEach(info => {
+            if (info.isClickable) {
+                // 大型多日遊：加上 clickable-box 樣式，並綁定跳轉
+                let targetTripUrl = info.name.replace(/\s+/g, '_') + '.html';
+                listHTML += `
+                    <div class="visit-item clickable-box" onclick="window.location.href='${targetTripUrl}'">
+                        <div class="visit-header"><span class="visit-date-badge clickable-link">${info.dateRange}</span></div>
+                        <div class="visit-main-text">${info.name}</div>
+                    </div>`;
+            } else {
+                // 一日遊：加上 day-trip-box 樣式 (純 hover 效果，無點擊事件)
+                listHTML += `
+                    <div class="visit-item day-trip-box">
+                        <div class="visit-header"><span class="visit-date-badge">${info.dateRange}</span></div>
+                        <div class="visit-main-text">${info.name}</div>
+                    </div>`;
+            }
         });
+        // ===========================================
     }
 
     let imagePath = baseData?.img ? baseData.img : "";
@@ -522,7 +572,6 @@ function clearMapHover() {
     if(dom.svg) dom.svg.querySelectorAll('.country-highlight').forEach(el => el.classList.remove('country-highlight')); 
 }
 
-// 【新增：統一清除所有標記與事件高亮的函式】
 function clearHighlighting() { 
     dom.markers.forEach(el => {
         el.classList.remove('map-marker-highlight');
@@ -673,11 +722,11 @@ function focusOnCountry(el) {
 }
 
 function returnFromCountryFocus() {
-    dom.infoOverlay.style.display = "none"; // 【強化】隱藏可能開啟的 Popup
+    dom.infoOverlay.style.display = "none"; 
     dom.svg.querySelectorAll('.country-focus').forEach(e => e.classList.remove('country-focus'));
     
-    clearHighlighting(); // 【強化】強制清除所有城市/事件的放大黃色高亮
-    clearMapHover();     // 【強化】強制清除國家版塊的 Hover 變色
+    clearHighlighting(); 
+    clearMapHover();     
     
     dom.backBtn.style.left = '-80px'; dom.leftPanel.querySelector('h1').textContent = "Timeline";
     delete dom.countryLabel.dataset.locked;
@@ -732,11 +781,11 @@ function focusOnEvent(ev, highlightMarkerId = null) {
 
 function returnFromEvent() {
     if(!state.eventFocused) return; 
-    dom.infoOverlay.style.display = "none"; // 【強化】隱藏可能開啟的 Popup
+    dom.infoOverlay.style.display = "none"; 
     dom.eventBackBtn.classList.remove('active'); 
     
-    clearHighlighting(); // 【強化】強制清除所有城市/事件的放大黃色高亮
-    clearMapHover();     // 【強化】強制清除因 Timeline 停留而產生的國家高亮
+    clearHighlighting(); 
+    clearMapHover();     
     
     if (state.returnToCountryMode) {
         dom.backBtn.style.left = '20px'; 
@@ -1071,7 +1120,6 @@ function startAnimationLoop() {
             }
 
             if (state.scrollDepth <= state.WARP_DEPTH) {
-                // --- Phase 1: 飛梭模式 ---
                 dom.bgContainer.style.pointerEvents = "none"; 
 
                 let warpProgress = state.scrollDepth / state.WARP_DEPTH;
@@ -1119,11 +1167,9 @@ function startAnimationLoop() {
                 updateAllMarkers();
 
             } else {
-                // --- Phase 2: 地圖右移與 Timeline ---
                 dom.bgContainer.style.pointerEvents = "auto"; 
                 bgContainer.style.opacity = 1;
                 
-                // 【關鍵修復】：確保進入地圖階段時（包含從外部網頁跳轉回來時），飛梭元素完全隱藏！
                 photosAndTitle.forEach(el => { el.style.opacity = 0; });
                 
                 state.progress = (state.scrollDepth - state.WARP_DEPTH) / TIMELINE_DEPTH;
@@ -1148,21 +1194,15 @@ function startAnimationLoop() {
 }
 
 function init() {
-    // === 【新增：智慧判斷是否略過飛梭動畫】 ===
     const hostname = window.location.hostname;
-    // 檢查前一個網頁 (referrer) 是不是來自同一個網站（例如從遊記頁面按上一頁回來）
     const isFromOtherInternalPage = hostname ? (document.referrer && document.referrer.includes(hostname)) : false;
     
-    // 如果是從內部網頁回來，或是這個分頁已經看過動畫了 (sessionStorage)
     if (isFromOtherInternalPage || sessionStorage.getItem('skipWarpIntro')) {
-        // 直接把進度條推到最後（地圖與 Timeline 完全展開的狀態）
-        // 因為我們沒有鎖死最小進度，所以您依然可以往上滑滾輪回到飛梭動畫！
         state.scrollDepth = state.WARP_DEPTH + 4000; 
     } else {
-        // 如果是全新開啟網頁，記錄起來，確保同一個分頁下次重整時會跳過
         sessionStorage.setItem('skipWarpIntro', 'true');
     }
-    // ==========================================
+
     Object.entries(DATA.markers).forEach(([countryCode, cityList]) => {
         cityList.forEach(city => { city.country = countryCode; });
     });

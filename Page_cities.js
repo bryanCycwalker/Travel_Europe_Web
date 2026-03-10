@@ -376,6 +376,7 @@ window.initMapApp = function(config) {
             'square': { label: 'Public Places', color: '#8b0000', border: '#4d0000' },
             'nature': { label: 'Parks & Nature', color: '#32CD32', border: '#006400' },
             'commercial': { label: 'Shopping & Dining', color: '#FFD700', border: '#b8860b' },
+            'memorial': { label: 'Memorial', color: '#2d2d2d', border: '#0f0f0f' },
             'other': { label: 'Special Sites', color: '#4682B4', border: '#1e486d' }
         };
 
@@ -410,6 +411,42 @@ window.initMapApp = function(config) {
         map.addLayer(markerClusterGroup);
         map.addLayer(nonClusterGroup);
 
+        let countryPortalLayer = L.layerGroup();
+        
+        if (window.DATA.activeCountries) {
+            window.DATA.activeCountries.forEach(c => {
+                // 防呆：如果是目前正在看的國家，就不要顯示自己的按鈕
+                if (c.name.toLowerCase() === config.countryName.toLowerCase()) return;
+                
+                let icon = L.divIcon({
+                    className: 'custom-country-icon',
+                    html: `<div class="country-portal-btn">${c.name} ↗</div>`,
+                    iconSize: [0, 0] // 設為0讓文字自動撐開並完美置中於座標
+                });
+                
+                // 提高 zIndex 確保按鈕永遠浮在最上層
+                let m = L.marker(c.center, { icon: icon, zIndexOffset: 2000 });
+                m.on('click', () => { 
+                    window.location.href = c.link; // 點擊跳轉到該國網頁
+                });
+                countryPortalLayer.addLayer(m);
+            });
+        }
+
+        // 監聽地圖縮放事件 (Zoom)
+        map.on('zoomend', () => {
+            let threshold = 6; // 🌟 觸發門檻：當縮小到 6 級 (或更小) 時顯示按鈕
+            
+            if (map.getZoom() <= threshold) {
+                if (!map.hasLayer(countryPortalLayer)) map.addLayer(countryPortalLayer);
+            } else {
+                if (map.hasLayer(countryPortalLayer)) map.removeLayer(countryPortalLayer);
+            }
+        });
+        
+        // 初始化載入時檢查一次是否該顯示
+        if (map.getZoom() <= 6) map.addLayer(countryPortalLayer);
+        // 👆 ==========================================
         const searchUI = L.control({ position: 'bottomleft' });
         searchUI.onAdd = function() {
             let div = L.DomUtil.create('div', 'map-search-wrapper');
@@ -555,16 +592,18 @@ window.initMapApp = function(config) {
         // 【升級】地圖縮放與移動事件監聽 (智慧雙向跳轉)
         // ===============================================
         map.on('moveend', function() {
+            // 🌟 防呆：如果地圖是因為我們的程式碼 (flyToBounds) 正在飛行，就禁止觸發智慧跳轉！
+            if (window.isMapFlying) return; 
+
             // 1. 智慧跳轉總覽 (向外縮小 Zoom Out)
             let thresholdZoomOut = config.defaultZoom + 1; 
             if (currentMode !== 'overview' && map.getZoom() <= thresholdZoomOut) {
-                // 傳入 true, true 代表：不捲動網頁、不強制移動地圖(不打斷使用者目前的視野)
                 showOverview(true, true); 
                 return; 
             }
 
             // 2. 智慧跳轉城市 (向內放大 Zoom In 或 拖曳平移)
-            let thresholdZoomIn = 11; // 當放大到 11 級以上，視為進入城市視野
+            let thresholdZoomIn = 11; 
             if (map.getZoom() >= thresholdZoomIn) {
                 let currentCenter = map.getCenter();
                 let closestCity = null;
@@ -910,13 +949,42 @@ window.initMapApp = function(config) {
             }
         }
 
+        // ===============================================
+        // 🌟 【新增】動態盤點並更新圖例狀態 (有景點才亮起)
+        // ===============================================
+        function updateLegendStatus(mode, targetCityId) {
+            let availableCats = new Set();
+            
+            // 1. 盤點畫面上目前擁有的類別
+            if (mode === 'overview') {
+                Object.values(cityData).forEach(city => {
+                    city.pins.forEach(pin => availableCats.add(pin.cat || 'other'));
+                });
+            } else if (targetCityId && cityData[targetCityId]) {
+                cityData[targetCityId].pins.forEach(pin => availableCats.add(pin.cat || 'other'));
+            }
+
+            // 2. 比對圖例按鈕，若沒有該類別則加上 empty-category 淡化它
+            document.querySelectorAll('.legend-item').forEach(item => {
+                let cat = item.getAttribute('data-cat');
+                if (availableCats.has(cat)) {
+                    item.classList.remove('empty-category');
+                } else {
+                    item.classList.add('empty-category');
+                    item.classList.remove('active'); // 防呆：如果原本是選取狀態，強制取消
+                }
+            });
+        }
+
         function showOverview(preventScroll = false, preventSetView = false) {
             currentMode = 'overview'; 
-            // 【修改】加上 CSS 收合類別，觸發平滑壓縮動畫
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.delete('city');
+            window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+            
             const cityInfoEl = document.getElementById('city-info');
             if (cityInfoEl) {
                 cityInfoEl.classList.add('hidden-mode');
-                // 為了保險，確保 display 是 block 才看得到動畫過程
                 cityInfoEl.style.display = 'block'; 
             }
 
@@ -927,33 +995,32 @@ window.initMapApp = function(config) {
             updateEventList(null);
             buildFlythroughNotes(null); 
             
-            // 【修改】如果不阻止視角移動，才執行回到預設總覽中心
-            if (!preventSetView) {
-                map.setView(config.defaultCenter, config.defaultZoom);
-            }
-            
             markerClusterGroup.clearLayers();
             nonClusterGroup.clearLayers();
             currentMarkers = [];
-            
             activeCategory = null;
             document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
 
+            // 全國總覽：掃描「所有」城市的景點計算邊界
+            let bounds = L.latLngBounds();
+            let hasPins = false;
             let markersToAdd = []; 
+            
             Object.keys(cityData).forEach(cityId => {
                 const city = cityData[cityId];
                 city.pins.forEach(pin => {
+                    if (pin.loc) {
+                        bounds.extend(pin.loc);
+                        hasPins = true;
+                    }
                     const icon = getCategoryIcon(pin.cat, pin.t);
                     const m = L.marker(pin.loc, { icon: icon });
                     m.cityId = cityId; 
-                    
                     m.bindTooltip(`<b>${city.name}</b><br>${pin.t || ''}`, { direction: 'top', offset: [0, -10], opacity: 0.95 });
-                    
                     m.on('click', () => { 
                         recordClick(cityId, pin.t);
                         if (currentMode === 'overview') showCity(cityId); 
                     });
-                    
                     markersToAdd.push(m);
                     currentMarkers.push({ marker: m, title: pin.t || '', cityName: city.name, cat: pin.cat || 'other', cityId: cityId });
                 });
@@ -962,11 +1029,20 @@ window.initMapApp = function(config) {
             markerClusterGroup.addLayers(markersToAdd);
             document.querySelectorAll('.city-btn').forEach(b => b.classList.remove('active'));
             
-            if (!preventScroll) {
-                window.scrollTo({ top: 0, behavior: 'smooth' }); 
-            }
+            if (!preventScroll) window.scrollTo({ top: 0, behavior: 'smooth' }); 
             setTimeout(() => map.invalidateSize(), 400); 
             renderPopularAttractions('overview', null);
+            updateLegendStatus('overview', null);
+
+            // 執行全國完美縮放 (加入飛行保護)
+            if (!preventSetView) {
+                window.isMapFlying = true; // 🌟 維持開啟飛行保護
+                
+                // 直接使用你在 HTML config 裡設定好的國家中心點與縮放大小
+                map.flyTo(config.defaultCenter, config.defaultZoom, { duration: 1.2 });
+                
+                map.once('moveend', () => { setTimeout(() => window.isMapFlying = false, 100); });
+            }
         }
 
         function showCity(cityId, preventScroll = false, preventSetView = false) {
@@ -974,11 +1050,13 @@ window.initMapApp = function(config) {
             const data = cityData[cityId];
             if (!data) return;
             
-            // 【修改】移除 CSS 收合類別，觸發平滑伸展動畫
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('city', cityId);
+            window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+
             const cityInfoEl = document.getElementById('city-info');
             if (cityInfoEl) {
                 cityInfoEl.style.display = 'block';
-                // 給瀏覽器一點渲染時間後再移除 class，確保動畫能順利觸發
                 setTimeout(() => cityInfoEl.classList.remove('hidden-mode'), 10);
             }
 
@@ -986,24 +1064,39 @@ window.initMapApp = function(config) {
             document.getElementById('city-desc').innerText = data.desc;
             document.getElementById('loc-city').innerText = data.name;
             
-            // 【修改】如果不阻止視角移動，才執行吸附到該城市的中心點
-            if (!preventSetView) {
-                map.setView(data.center, 12);
-            }
-            
             markerClusterGroup.clearLayers();
             nonClusterGroup.clearLayers();
             currentMarkers = [];
-
             activeCategory = null;
             document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
             
+            // 單一城市：只計算「該城市」的景點邊界
+            let bounds = L.latLngBounds();
+            let hasPins = false;
+            
             data.pins.forEach(pin => {
                 const icon = getCategoryIcon(pin.cat, pin.t);
-                const m = L.marker(pin.loc, { icon: icon }).bindPopup(createPopupHTML(pin, ""), { maxWidth: 360, minWidth: 320 });
+                if (pin.loc) {
+                    bounds.extend(pin.loc);
+                    hasPins = true;
+                }
+                const m = L.marker(pin.loc, { icon: icon }).bindPopup(createPopupHTML(pin, ""), { 
+                    maxWidth: 360, minWidth: 320, maxHeight: 320, autoPan: false  
+                });
                 m.cityId = cityId;
                 
-                m.on('click', () => { recordClick(cityId, pin.t); });
+                m.on('click', () => { 
+                    recordClick(cityId, pin.t); 
+                    let currentZoom = map.getZoom();
+                    let targetPoint = map.project(pin.loc, currentZoom);
+                    let yOffset = window.innerWidth <= 768 ? 160 : 180;
+                    targetPoint.y -= yOffset; 
+                    let targetLatLng = map.unproject(targetPoint, currentZoom);
+                    
+                    window.isMapFlying = true; // 🌟 開啟氣泡置中飛行保護
+                    map.flyTo(targetLatLng, currentZoom, { animate: true, duration: 0.5 });
+                    map.once('moveend', () => { setTimeout(() => window.isMapFlying = false, 100); });
+                });
                 
                 nonClusterGroup.addLayer(m);
                 currentMarkers.push({ marker: m, title: pin.t || '', cityName: data.name, cat: pin.cat || 'other', cityId: cityId });
@@ -1011,14 +1104,25 @@ window.initMapApp = function(config) {
             
             updateEventList(data);
             buildFlythroughNotes(data); 
-            
             document.querySelectorAll('.city-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-id') === cityId));
             
-            if (!preventScroll) {
-                window.scrollTo({ top: 0, behavior: 'smooth' }); 
-            }
+            if (!preventScroll) window.scrollTo({ top: 0, behavior: 'smooth' }); 
             setTimeout(() => map.invalidateSize(), 400); 
             renderPopularAttractions('city', cityId); 
+            updateLegendStatus('city', cityId);
+
+            // 執行單一城市完美縮放 (加入飛行保護)
+            if (!preventSetView) {
+                if (hasPins) {
+                    window.isMapFlying = true; // 🌟 開啟飛行保護
+                    map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 14, duration: 1.2 });
+                    map.once('moveend', () => { setTimeout(() => window.isMapFlying = false, 100); });
+                } else {
+                    window.isMapFlying = true;
+                    map.flyTo(data.center, 12, { duration: 1.2 });
+                    map.once('moveend', () => { setTimeout(() => window.isMapFlying = false, 100); });
+                }
+            }
         }
 
         // --- 執行初始化流程 ---
@@ -1066,6 +1170,17 @@ window.initMapApp = function(config) {
         } else {
             showOverview();
         }
+        window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            let currentCityParam = params.get('city');
+            
+            if (currentCityParam && cityData[currentCityParam]) {
+                // 傳入 true, true 代表自動切換時，不要強迫滾動網頁或移動地圖
+                showCity(currentCityParam, true, true); 
+            } else {
+                showOverview(true, true);
+            }
+        });
 
     } catch (error) {
         console.error(error);
