@@ -379,6 +379,38 @@ header h1:hover { color: transparent; }
 .attraction-item:last-child { border-bottom: none; }
 
 /* =========================================
+   跨國傳送門按鈕 (縮小地圖時顯示)
+   ========================================= */
+.custom-country-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+}
+
+.country-portal-btn {
+    background: linear-gradient(45deg, #1e486d, #4682B4); /* 沉穩知性的藍色系 */
+    color: white;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Playfair Display', serif;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 2px solid white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+/* 滑鼠移過去時，變成你的主題琥珀色，並微微放大 */
+.country-portal-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #b16837, #e6a77e); 
+}
+/* =========================================
    RWD 手機版響應式設計 (小於 768px)
    ========================================= */
 @media (max-width: 768px) {
@@ -422,37 +454,26 @@ header h1:hover { color: transparent; }
         width: calc(100vw - 40px); z-index: 1000;
     }
     #attraction-list-panel.open { transform: translateX(-50%) translateY(0); }
-}
 
-/* =========================================
-   跨國傳送門按鈕 (縮小地圖時顯示)
-   ========================================= */
-.custom-country-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: visible;
-}
+    /* 🌟 修復手機版圖例 (POI Categories) 展開被切斷的問題 */
+    .map-legend .legend-content {
+        max-height: 220px; /* 限制最大高度，確保不會超出地圖頂部 */
+        overflow-y: auto;  /* 當內容超過高度時，自動產生上下滾動條 */
+    }
 
-.country-portal-btn {
-    background: linear-gradient(45deg, #1e486d, #4682B4); /* 沉穩知性的藍色系 */
-    color: white;
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    font-family: 'Playfair Display', serif;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    text-align: center;
-    white-space: nowrap;
-    cursor: pointer;
-    border: 2px solid white;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-/* 滑鼠移過去時，變成你的主題琥珀色，並微微放大 */
-.country-portal-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.5);
-    background: linear-gradient(45deg, #b16837, #e6a77e); 
+    /* 美化圖例內部的滾動條 (與你之前的 Pop-up 風格保持一致) */
+    .map-legend .legend-content::-webkit-scrollbar { 
+        width: 5px; 
+    }
+    .map-legend .legend-content::-webkit-scrollbar-track { 
+        background: rgba(0,0,0,0.03); 
+        border-radius: 4px; 
+    }
+    .map-legend .legend-content::-webkit-scrollbar-thumb { 
+        background: rgba(177, 104, 55, 0.4); /* 你的品牌琥珀色 */
+        border-radius: 4px; 
+    }
+    .map-legend .legend-content::-webkit-scrollbar-thumb:hover { 
+        background: rgba(177, 104, 55, 0.8); 
+    }
 }
